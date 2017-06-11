@@ -36,6 +36,6 @@ Desired Macbook installations
 
 
 ##### References / Suggestions
-[dev-setup](https://github.com/donnemartin/dev-setup)
-[mac-dev-setup](https://github.com/nicolashery/mac-dev-setup)
-[macOs setup](http://sourabhbajaj.com/mac-setup/index.html)
+* [dev-setup](https://github.com/donnemartin/dev-setup)
+* [mac-dev-setup](https://github.com/nicolashery/mac-dev-setup)
+* [macOs setup](http://sourabhbajaj.com/mac-setup/index.html)
