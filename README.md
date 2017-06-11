@@ -31,6 +31,9 @@ Desired Macbook installations
 * [ ] [Atom](https://atom.io/)
 * [ ] [Sublime Text 3](https://www.sublimetext.com/)
 
+### Other
+* [ ] [bower](https://bower.io/)
+
 
 ##### References / Suggestions
 [dev-setup](https://github.com/donnemartin/dev-setup)
