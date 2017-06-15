@@ -10,26 +10,26 @@ Desired Macbook installations
 
 ## Programs and Services
 * [x] [Chrome](https://www.google.com/chrome/index.html)
-* [ ] [Firefox](https://www.mozilla.org/en-US/)
-* [ ] [Pocket](https://getpocket.com/)
-* [ ] [Tunnelblick](https://tunnelblick.net/)
+* [x] [Firefox](https://www.mozilla.org/en-US/)
+* [x] [Pocket](https://getpocket.com/)
+* [x] [Tunnelblick](https://tunnelblick.net/)
 * [ ] [iStat Menus](https://bjango.com/mac/istatmenus/)
-* [ ] [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
+* [x] [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
 * [ ] [f.lux](https://justgetflux.com/)
 * [ ] [Alfred 2](https://www.alfredapp.com/)
-* [ ] [Spectacle](https://www.spectacleapp.com/)
+* [x] [Spectacle](https://www.spectacleapp.com/)
 * [ ] [Bartender 2](https://www.macbartender.com/)
-* [ ] [Amphetamine](https://itunes.apple.com/us/app/amphetamine/id937984704?mt=12)
+* [x] [Amphetamine](https://itunes.apple.com/us/app/amphetamine/id937984704?mt=12)
 * [ ] [Logitech Options](http://support.logitech.com/en_us/software/options)
 * [ ] [Spotify](https://www.spotify.com/us/)
-* [ ] [Republic Anywhere](https://republicwireless.com/republic-anywhere/download/)
-* [ ] [JetBrains Toolbox](https://www.jetbrains.com/toolbox/app/)
+* [x] [Republic Anywhere](https://republicwireless.com/republic-anywhere/download/)
+* [x] [JetBrains Toolbox](https://www.jetbrains.com/toolbox/app/)
     * [ ] Pycharm
     * [ ] Intelli-J
     * [ ] DataGrip
 * [x] [iTerm 2](https://www.iterm2.com/)
-* [ ] [Atom](https://atom.io/)
-* [ ] [Sublime Text 3](https://www.sublimetext.com/)
+* [x] [Atom](https://atom.io/)
+* [x] [Sublime Text 3](https://www.sublimetext.com/)
 
 ### Other
 * [ ] [bower](https://bower.io/)
