@@ -9,7 +9,7 @@ Desired Macbook installations
 * [ ] virtualenv
 
 ## Programs and Services
-* [ ] [Chrome](https://www.google.com/chrome/index.html)
+* [x] [Chrome](https://www.google.com/chrome/index.html)
 * [ ] [Firefox](https://www.mozilla.org/en-US/)
 * [ ] [Pocket](https://getpocket.com/)
 * [ ] [Tunnelblick](https://tunnelblick.net/)
