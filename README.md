@@ -4,8 +4,8 @@ Desired Macbook installations
 ## Important Services
 * [ ] [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 * [ ] [YADR](https://github.com/skwp/dotfiles)
-* [ ] [homebrew](https://brew.sh/)
-* [ ] [python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
+* [x] [homebrew](https://brew.sh/)
+* [x] [python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
 * [ ] virtualenv
 
 ## Programs and Services
