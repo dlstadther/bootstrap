@@ -13,19 +13,19 @@ Desired Macbook installations
 * [x] [Firefox](https://www.mozilla.org/en-US/)
 * [x] [Pocket](https://getpocket.com/)
 * [x] [Tunnelblick](https://tunnelblick.net/)
-* [ ] [iStat Menus](https://bjango.com/mac/istatmenus/)
+* [x] [iStat Menus](https://bjango.com/mac/istatmenus/)
 * [x] [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
 * [ ] [f.lux](https://justgetflux.com/)
-* [ ] [Alfred 2](https://www.alfredapp.com/)
+* [x] [Alfred 2](https://www.alfredapp.com/)
 * [x] [Spectacle](https://www.spectacleapp.com/)
-* [ ] [Bartender 2](https://www.macbartender.com/)
+* [x] [Bartender 2](https://www.macbartender.com/)
 * [x] [Amphetamine](https://itunes.apple.com/us/app/amphetamine/id937984704?mt=12)
 * [ ] [Logitech Options](http://support.logitech.com/en_us/software/options)
-* [ ] [Spotify](https://www.spotify.com/us/)
+* [x] [Spotify](https://www.spotify.com/us/)
 * [x] [Republic Anywhere](https://republicwireless.com/republic-anywhere/download/)
 * [x] [JetBrains Toolbox](https://www.jetbrains.com/toolbox/app/)
-    * [ ] Pycharm
-    * [ ] Intelli-J
+    * [x] Pycharm
+    * [x] Intelli-J
     * [ ] DataGrip
 * [x] [iTerm 2](https://www.iterm2.com/)
 * [x] [Atom](https://atom.io/)
