@@ -27,7 +27,7 @@ Desired Macbook installations
     * [ ] Pycharm
     * [ ] Intelli-J
     * [ ] DataGrip
-* [ ] [iTerm 2](https://www.iterm2.com/)
+* [x] [iTerm 2](https://www.iterm2.com/)
 * [ ] [Atom](https://atom.io/)
 * [ ] [Sublime Text 3](https://www.sublimetext.com/)
 
