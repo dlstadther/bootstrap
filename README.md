@@ -6,7 +6,7 @@ Desired Macbook installations
 * [x] [YADR](https://github.com/skwp/dotfiles)
 * [x] [homebrew](https://brew.sh/)
 * [x] [python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
-* [ ] virtualenv
+* [x] virtualenv
 
 ## Programs and Services
 * [x] [Chrome](https://www.google.com/chrome/index.html)
