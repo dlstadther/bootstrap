@@ -46,3 +46,8 @@ Desired Macbook installations
     * [ ] [OmniFocus](https://www.omnigroup.com/omnifocus)
     * [ ] Wunderlist
     * [ ] Evernote
+    
+### Potential Software Purchases
+* [ ] Sublime Text
+* [ ] OmniFocus
+* [ ] IntelliJ / Jetbrains All Products Pack
