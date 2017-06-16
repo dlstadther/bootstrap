@@ -6,7 +6,7 @@ Desired Macbook installations
 * [x] [YADR](https://github.com/skwp/dotfiles)
 * [x] [homebrew](https://brew.sh/)
 * [x] [python3](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
-* [x] virtualenv
+* [x] [virtualenv](https://virtualenv.pypa.io/en/stable/)
 
 ## Programs and Services
 * [x] [Chrome](https://www.google.com/chrome/index.html)
@@ -15,7 +15,7 @@ Desired Macbook installations
 * [x] [Tunnelblick](https://tunnelblick.net/)
 * [x] [iStat Menus](https://bjango.com/mac/istatmenus/)
 * [x] [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
-* [ ] [f.lux](https://justgetflux.com/)
+* [x] [f.lux](https://justgetflux.com/)
 * [x] [Alfred 2](https://www.alfredapp.com/)
 * [x] [Spectacle](https://www.spectacleapp.com/)
 * [x] [Bartender 2](https://www.macbartender.com/)
@@ -39,3 +39,10 @@ Desired Macbook installations
 * [dev-setup (2017)](https://github.com/donnemartin/dev-setup)
 * [mac-dev-setup (2014)](https://github.com/nicolashery/mac-dev-setup)
 * [macOs setup](http://sourabhbajaj.com/mac-setup/index.html)
+
+
+### Items to Find, Look Into, or Trial
+* Task Manager
+    * [ ] [OmniFocus](https://www.omnigroup.com/omnifocus)
+    * [ ] Wunderlist
+    * [ ] Evernote
