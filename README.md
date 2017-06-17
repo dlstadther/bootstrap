@@ -32,7 +32,7 @@ Desired Macbook installations
 * [x] [Sublime Text 3](https://www.sublimetext.com/)
 
 ### Other
-* [ ] [bower](https://bower.io/)
+* [x] [bower](https://bower.io/)
 
 
 ##### References / Suggestions
