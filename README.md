@@ -51,3 +51,10 @@ Desired Macbook installations
 * [ ] Sublime Text
 * [ ] OmniFocus
 * [ ] IntelliJ / Jetbrains All Products Pack
+
+### brew install
+* git-extras
+* git-flow
+* hub
+* node
+* pyenv
