@@ -58,3 +58,7 @@ Desired Macbook installations
 * hub
 * node
 * pyenv
+
+### Other
+* [gcloud sdk](https://cloud.google.com/sdk/downloads)
+* awscli
