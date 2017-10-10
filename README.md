@@ -1,4 +1,4 @@
-# masos_setup
+# macos_setup
 Desired Macbook installations
 
 ## Important Services
