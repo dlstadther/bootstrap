@@ -58,6 +58,13 @@ Desired Macbook installations
 * hub
 * node
 * pyenv
+```shell
+touch ~/.zsh.after/pyenv.zsh
+echo '# add .pyenv to PATH' >> ~/.zsh.after/pyenv.zsh
+echo 'export PATH="/Users/username/.pyenv:$PATH"' >> ~/.zsh.after/pyenv.zsh
+echo 'eval "$(pyenv init -)"' >> ~/.zsh.after/pyenv.zsh
+echo '' >> ~/.zsh.after/pyenv.zsh
+```
 
 ### Other
 * [gcloud sdk](https://cloud.google.com/sdk/downloads)
