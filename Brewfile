@@ -6,6 +6,7 @@ tap 'homebrew/bundle'
 brew 'mas'
 
 brew 'coreutils'
+brew 'tree'
 
 # Development
 brew 'git'
