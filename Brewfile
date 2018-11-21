@@ -18,6 +18,7 @@ cask 'pycharm'
 brew 'pyenv'
 cask 'sublime-text'
 brew 'terraform'
+brew 'terragrunt'
 brew 'vim', args: ['with-override-system-vi']
 
 # Spacemacs
