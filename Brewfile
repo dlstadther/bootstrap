@@ -9,6 +9,8 @@ brew 'coreutils'
 brew 'tree'
 
 # Development
+cask 'atom'
+cask 'datagrip'
 brew 'git'
 cask 'intellij-idea-ce'
 cask 'iterm2'
@@ -29,9 +31,11 @@ brew 'emacs-plus'
 cask 'alred'
 mas 'Amphetamine', id: 937984704
 cask 'bartender'
+cask 'evernote'
 cask 'google-backup-and-sync'  # non-corp
 # cask 'google-drive-file-stream'  # corp
 cask 'istat-menus'
+cask 'karabiner-elements'
 cask 'spectacle'  # Window Management
 cask 'tunnelblick'
 
