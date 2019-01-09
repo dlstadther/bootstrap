@@ -15,13 +15,13 @@ brew 'git'
 cask 'intellij-idea-ce'
 cask 'iterm2'
 cask 'jetbrains-toolbox'
+brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
 cask 'postman'
 cask 'pycharm'
 brew 'pyenv'
 cask 'sublime-text'
 brew 'terraform'
 brew 'terragrunt'
-brew 'vim', args: ['with-override-system-vi']
 
 # Spacemacs
 tap 'd12frosted/emacs-plus'
