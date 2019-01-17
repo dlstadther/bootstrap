@@ -20,6 +20,7 @@ cask 'postman'
 cask 'pycharm'
 brew 'pyenv'
 cask 'sublime-text'
+brew 'telnet'
 brew 'terraform'
 brew 'terragrunt'
 
