@@ -33,7 +33,6 @@ cask 'alred'
 mas 'Amphetamine', id: 937984704
 cask 'bartender'
 cask 'dropbox'
-cask 'evernote'
 cask 'google-backup-and-sync'  # non-corp
 # cask 'google-drive-file-stream'  # corp
 cask 'istat-menus'
