@@ -41,6 +41,7 @@ cask 'spectacle'  # Window Management
 cask 'tunnelblick'
 
 # GUI Apps
+cask 'boostnote'
 cask 'evernote'
 cask 'firefox'
 cask 'google-chrome'
