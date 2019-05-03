@@ -9,6 +9,7 @@ brew 'coreutils'
 brew 'tree'
 
 # Development
+cask 'arduino'
 cask 'atom'
 cask 'datagrip'
 brew 'git'
