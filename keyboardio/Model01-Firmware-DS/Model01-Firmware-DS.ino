@@ -89,7 +89,9 @@ enum { MACRO_VERSION_INFO,
        MACRO_SPEC_CORNER,
        MACRO_SPEC_THIRD,
        MACRO_SPEC_HALF,
-       MACRO_SPEC_SCREEN
+       MACRO_SPEC_SCREEN,
+       MACRO_MAC_MISSION_CONTROL,
+       MACRO_MAC_LAUNCHPAD
      };
 
 
@@ -246,19 +248,19 @@ KEYMAPS(
 
 #elif defined (PRIMARY_KEYMAP_DS)
   /** Custom key map
-   *  PROG:
-   *  ANY:
+   *  PROG: Mission Control (ctrl + up arrow)
+   *  ANY: Launchpad (ctrl + opt + shift + cmd + L) (configured in keyboard shortcuts)
    *  BTFLY: Spotlight
    */
   [PRIMARY] = KEYMAP_STACKED
-  (___,          Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
+  (M(MACRO_MAC_MISSION_CONTROL), Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
    Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
    Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
    Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
+   M(MACRO_MAC_LAUNCHPAD),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
    M(MACRO_SPOTLIGHT),  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
@@ -436,6 +438,30 @@ static void specScreenMacro(uint8_t keyState) {
 }
 
 
+/** macMissionControlMacro is used launch Mission Control
+ */
+static void macMissionControlMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    kaleidoscope::hid::pressKey(Key_LeftControl);
+    kaleidoscope::hid::pressKey(Key_UpArrow);
+  }
+}
+
+
+/** macLaunchpadMacro is used launch Launchpad
+ * (required setting up shortcut in keyboard settings)
+ */
+static void macLaunchpadMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    kaleidoscope::hid::pressKey(Key_LeftGui);
+    kaleidoscope::hid::pressKey(Key_LeftAlt);
+    kaleidoscope::hid::pressKey(Key_LeftControl);
+    kaleidoscope::hid::pressKey(Key_LeftShift);
+    kaleidoscope::hid::pressKey(Key_L);
+  }
+}
+
+
 /** macroAction dispatches keymap events that are tied to a macro
     to that macro. It takes two uint8_t parameters.
 
@@ -481,6 +507,14 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_SPEC_SCREEN:
     specScreenMacro(keyState);
+    break;
+
+  case MACRO_MAC_MISSION_CONTROL:
+    macMissionControlMacro(keyState);
+    break;
+
+  case MACRO_MAC_LAUNCHPAD:
+    macLaunchpadMacro(keyState);
     break;
 
   }
