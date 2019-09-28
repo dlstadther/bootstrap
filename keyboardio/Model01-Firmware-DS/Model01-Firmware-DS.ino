@@ -631,7 +631,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
 
   // The rainbow effect changes the color of all of the keyboard's keys at the same time
   // running through all the colors of the rainbow.
-  LEDRainbowEffect,
+  // LEDRainbowEffect,
 
   // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
   // and slowly moves the rainbow across your keyboard
@@ -642,7 +642,13 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // LEDChaseEffect,
 
   // These static effects turn your keyboard's LEDs a variety of colors
-  solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
+  // solidRed,
+  // solidOrange,
+  // solidYellow,
+  // solidGreen,
+  // solidBlue,
+  // solidIndigo,
+  solidViolet,
 
   // The breathe effect slowly pulses all of the LEDs on your keyboard
   // LEDBreatheEffect,
