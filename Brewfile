@@ -38,7 +38,7 @@ cask 'google-backup-and-sync'  # non-corp
 # cask 'google-drive-file-stream'  # corp
 cask 'istat-menus'
 cask 'karabiner-elements'
-cask 'spectacle'  # Window Management
+cask 'rectangle'  # Window Management
 cask 'tunnelblick'
 
 # GUI Apps
