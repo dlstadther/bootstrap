@@ -86,10 +86,6 @@ enum { MACRO_VERSION_INFO,
        MACRO_ANY,
        MACRO_SPOTLIGHT,
        MACRO_ALFRED,
-       MACRO_SPEC_CORNER,
-       MACRO_SPEC_THIRD,
-       MACRO_SPEC_HALF,
-       MACRO_SPEC_SCREEN,
        MACRO_MAC_MISSION_CONTROL,
        MACRO_MAC_LAUNCHPAD
      };
@@ -320,9 +316,9 @@ KEYMAPS(
 
   [FUNCTION] =  KEYMAP_STACKED
   (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           Key_CapsLock,
-   Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, M(MACRO_SPEC_CORNER), Key_Spacebar,
-   Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, M(MACRO_SPEC_THIRD),
-   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, M(MACRO_SPEC_HALF),  M(MACRO_SPEC_SCREEN),
+   Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, ___,              Key_Spacebar,
+   Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, ___,
+   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, ___,              ___,
    ___, Key_Delete, ___, ___,
    ___,
 
@@ -397,47 +393,6 @@ static void alfredMacro(uint8_t keyState) {
 }
 
 
-/** specCornerMacro is used to multi-press modifiers for Spectale Corner movement
- */
-static void specCornerMacro(uint8_t keyState) {
-  if (keyIsPressed(keyState)) {
-    kaleidoscope::hid::pressKey(Key_LeftControl);
-    kaleidoscope::hid::pressKey(Key_LeftGui);
-  }
-}
-
-
-/** specThirdMacro is used to multi-press modifiers for Spectale Third movement
- */
-static void specThirdMacro(uint8_t keyState) {
-  if (keyIsPressed(keyState)) {
-    kaleidoscope::hid::pressKey(Key_LeftControl);
-    kaleidoscope::hid::pressKey(Key_LeftAlt);
-  }
-}
-
-
-/** specHalfMacro is used to multi-press modifiers for Spectale Half movement
- */
-static void specHalfMacro(uint8_t keyState) {
-  if (keyIsPressed(keyState)) {
-    kaleidoscope::hid::pressKey(Key_LeftGui);
-    kaleidoscope::hid::pressKey(Key_LeftAlt);
-  }
-}
-
-
-/** specScreenMacro is used to multi-press modifiers for Spectale Screen movement
- */
-static void specScreenMacro(uint8_t keyState) {
-  if (keyIsPressed(keyState)) {
-    kaleidoscope::hid::pressKey(Key_LeftGui);
-    kaleidoscope::hid::pressKey(Key_LeftAlt);
-    kaleidoscope::hid::pressKey(Key_LeftControl);
-  }
-}
-
-
 /** macMissionControlMacro is used launch Mission Control
  */
 static void macMissionControlMacro(uint8_t keyState) {
@@ -491,22 +446,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_ALFRED:
     alfredMacro(keyState);
-    break;
-
-  case MACRO_SPEC_CORNER:
-    specCornerMacro(keyState);
-    break;
-
-  case MACRO_SPEC_THIRD:
-    specThirdMacro(keyState);
-    break;
-
-  case MACRO_SPEC_HALF:
-    specHalfMacro(keyState);
-    break;
-
-  case MACRO_SPEC_SCREEN:
-    specScreenMacro(keyState);
     break;
 
   case MACRO_MAC_MISSION_CONTROL:
