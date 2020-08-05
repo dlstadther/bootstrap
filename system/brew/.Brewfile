@@ -3,10 +3,10 @@ cask_args appdir: '/Applications'
 tap 'caskroom/cask'
 tap 'homebrew/bundle'
 
-brew 'mas'
+# brew 'mas'
 
-brew 'coreutils'
-brew 'tree'
+# brew 'coreutils'
+# brew 'tree'
 
 # Development
 cask 'arduino'
@@ -16,7 +16,7 @@ cask 'iterm2'
 cask 'jetbrains-toolbox'
 brew 'jq'
 cask 'lens'
-brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
+# brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
 brew 'nmap'
 cask 'postman'
 brew 'pyenv'
