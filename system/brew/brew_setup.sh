@@ -1,5 +1,15 @@
 #!/usr/bin/zsh
 
+# Get operating system
+platform='unknown'
+unamestr=$(uname)
+if [[ $unamestr == 'Linux' ]]; then
+  platform='linux'
+elif [[ $unamestr == 'Darwin' ]]; then
+  platform='darwin'
+fi
+echo "OS: $platform"
+
 ABSOLUTESCRIPTPATH=${0:a:h}
 echo "Executing with Absolute Script Path: $ABSOLUTESCRIPTPATH ..."
 
@@ -16,7 +26,14 @@ fi
 
 # symbolic link brewfile
 # rename old one if exists
-SRC="$ABSOLUTESCRIPTPATH/.Brewfile"
+if [[ $platform == 'linux' ]]; then
+    NAME=".Brewfile"
+elif [[ $platform == 'darwin' ]]; then
+    NAME=".Brewfile-mac"
+else
+    echo ""
+fi
+SRC="$ABSOLUTESCRIPTPATH/$NAME"
 DST="$HOME/.Brewfile"
 MODIFIEDDATE=$(date +"%Y%m%dT%H%M%S")
 if [[ -f $DST ]]; then
