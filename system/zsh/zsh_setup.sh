@@ -35,5 +35,5 @@ back_up_if_exists $ZSHDIR .zshrc.after
 back_up_if_exists $ZSHDIR .zshrc.before
 back_up_if_exists $ZSHDIR .zshrc
 
-# source "$HOME/.zshrc"
+source "$HOME/.zshrc"
 
