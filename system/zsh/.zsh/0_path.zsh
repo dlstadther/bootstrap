@@ -1,5 +1,10 @@
 # path, the 0 in the filename causes this to load first
 
+pathPrefix() {
+  # Add to the start of the path
+  PATH=$1:$PATH
+}
+
 pathAppend() {
   # Only adds to the path if it's not already there
   if ! echo $PATH | egrep -q "(^|:)$1($|:)" ; then
@@ -11,5 +16,5 @@ pathAppend() {
 PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++{if (NR > 1) printf ORS; printf $a[$1]}')
 
 pathAppend "$HOME/.pyenv/bin"
-pathAppend "/home/linuxbrew/.linuxbrew/bin"
+pathPrefix "/home/linuxbrew/.linuxbrew/bin"
 
