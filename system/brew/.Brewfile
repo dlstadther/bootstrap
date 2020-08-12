@@ -1,49 +1,24 @@
-cask_args appdir: '/Applications'
+# .Brewfile for linuxbrew
 
 tap 'caskroom/cask'
 tap 'homebrew/bundle'
 
-# brew 'mas'
-
-# brew 'coreutils'
-# brew 'tree'
+# CLI
+brew 'gcc'
+brew 'git'
+brew 'jq'
+brew 'pyenv'
+brew 'tree'
+brew 'telnet'
+brew 'vim'
 
 # Development
-cask 'arduino'
 cask 'atom'
-brew 'git'
-cask 'iterm2'
 cask 'jetbrains-toolbox'
-brew 'jq'
-cask 'lens'
-# brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
-brew 'nmap'
 cask 'postman'
-brew 'pyenv'
-cask 'sublime-text'
-brew 'telnet'
-brew 'terraform'
-brew 'terragrunt'
-
-# Spacemacs
-tap 'd12frosted/emacs-plus'
-brew 'emacs-plus'
-
-# Apps
-cask 'alred'
-mas 'Amphetamine', id: 937984704
-cask 'bartender'
-cask 'dropbox'
-cask 'google-backup-and-sync'  # non-corp
-# cask 'google-drive-file-stream'  # corp
-cask 'istat-menus'
-cask 'karabiner-elements'
-cask 'rectangle'  # Window Management
-cask 'tunnelblick'
+#cask 'sublime-text'
 
 # GUI Apps
-cask 'boostnote'
-cask 'evernote'
 cask 'firefox'
 cask 'google-chrome'
 cask 'slack'
