@@ -1,8 +1,35 @@
-# install brew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+#!/usr/bin/zsh
+
+ABSOLUTESCRIPTPATH=${0:a:h}
+echo "Executing with Absolute Script Path: $ABSOLUTESCRIPTPATH ..."
+
+# install brew if not installed
+# update brew if installed
+brew -v
+if [[ $? != 0 ]]; then
+    echo "Brew not installed; Installing ..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+else
+    echo "Brew is already installed; Updating ..."
+    brew update
+fi
 
 # symbolic link brewfile
-ln -s $(dirname $0)/.Brewfile $HOME/.Brewfile
+# rename old one if exists
+SRC="$ABSOLUTESCRIPTPATH/.Brewfile"
+DST="$HOME/.Brewfile"
+MODIFIEDDATE=$(date +"%Y%m%dT%H%M%S")
+if [[ -f $DST ]]; then
+    RENAMED="$DST.bak.$MODIFIEDDATE"
+    echo "Backing up $DST to $RENAMED ..."
+    mv "$DST" "$RENAMED"
+else
+    echo "$DST did not exist ..."
+fi
+
+echo "Symbolic linking $SRC to $DST"
+ln -s $SRC $DST
 
 # brew install
-brew bundle install --global --verbose --no-upgrade
+#brew bundle install --global --verbose --no-upgrade
+
