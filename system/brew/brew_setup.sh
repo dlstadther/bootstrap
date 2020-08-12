@@ -27,7 +27,7 @@ fi
 # symbolic link brewfile
 # rename old one if exists
 if [[ $platform == 'linux' ]]; then
-    NAME=".Brewfile"
+    NAME=".Brewfile-linux"
 elif [[ $platform == 'darwin' ]]; then
     NAME=".Brewfile-mac"
 else
