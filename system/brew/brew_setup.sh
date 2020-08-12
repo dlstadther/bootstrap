@@ -20,8 +20,8 @@ if [[ $? != 0 ]]; then
     echo "Brew not installed; Installing ..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 else
-    echo "Brew is already installed; Updating ..."
-    brew update
+    echo "Brew is already installed; Doctoring ..."
+    brew doctor
 fi
 
 # symbolic link brewfile
