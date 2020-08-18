@@ -1,6 +1,6 @@
 # .Brewfile for linuxbrew
 
-tap 'caskroom/cask'
+tap 'homebrew/cask', 'git@github.com:homebrew/homebrew-cask'
 tap 'homebrew/bundle'
 
 # CLI
