@@ -22,8 +22,16 @@ fi
 # if brew, run brew/setup.sh
 
 # add option to also install zsh
-# if darwin, brew install zsh
-# if ubuntu, apt install zsh -y
+# TODO: ONLY INSTALL IF DNE - check existing shell and/or if zsh is already in /etc/shells
+echo "Installing zsh ..."
+if [[ $platform == 'darwin' ]]; then
+    brew install zsh
+elif [[ $platform == 'linux' ]]; then
+    # if flavor == debian
+    sudo apt install zsh -y
+else
+    echo "OS zsh installation process not configured ..."
+fi
 
 # switch to zsh
 # chsh -s `which zsh`
