@@ -15,6 +15,7 @@ pathAppend() {
 # Remove duplicate entries from PATH:
 PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++{if (NR > 1) printf ORS; printf $a[$1]}')
 
-pathAppend "$HOME/.pyenv/bin"
-pathPrefix "/home/linuxbrew/.linuxbrew/bin"
+pathPrefix "$HOME/.pyenv/bin"  # pyenv
+pathPrefix "$HOME/.cargo/bin"  # rust
+pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
 
