@@ -14,6 +14,11 @@ python -m venv ~/venv/ansible
 ~/venv/ansible/bin/python -m pip install ansible
 ```
 
+## Gather Facts
+```shell
+~/venv/ansible/bin/ansible all -m setup
+```
+
 ## Execute
 
 ### Test
