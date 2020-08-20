@@ -1,0 +1,7 @@
+---
+
+- name: Echo 2
+  tags: test
+  debug:
+    msg: "This is echo test 2"
+

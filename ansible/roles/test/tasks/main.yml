@@ -1,0 +1,7 @@
+- name: added in 2.4, previously you used 'include'
+  import_tasks: test_02.yml
+  # when: ansible_facts['os_family']|lower == 'debian'
+
+- import_tasks: test_00_apt.yml
+- import_tasks: test_01.yml
+
