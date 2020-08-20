@@ -18,6 +18,10 @@ python -m venv ~/venv/ansible
 
 ### Test
 ```shell
-~/venv/ansible/bin/ansible-playbook test.yml --inventory inventory -l python3 --ask-become-pass
+~/venv/ansible/bin/ansible-playbook test.yml --inventory inventory --limit python3 --ask-become-pass
+```
+or
+```shell
+~/venv/ansible/bin/ansible-playbook test.yml --ask-become-pass
 ```
 
