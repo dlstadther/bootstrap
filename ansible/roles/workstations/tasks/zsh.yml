@@ -1,0 +1,24 @@
+# install zsh
+# install via apt if debian
+# install via brew if mac
+
+# set as default shell
+
+
+# Copy zsh config to $HOME
+- name: Copying ZSH config to $HOME
+  become: false
+  copy:
+    src: "zsh/{{ item }}"
+    dest: "{{ lookup('env', 'HOME') }}"
+    owner: "{{ lookup('env', 'USER') }}"
+    group: "{{ lookup('env', 'USER') }}"
+    mode: 0644
+    backup: yes
+  with_items:
+    - ".zsh"
+    - ".zsh.after"
+    - ".zsh.before"
+    - ".zshrc"
+
+# source

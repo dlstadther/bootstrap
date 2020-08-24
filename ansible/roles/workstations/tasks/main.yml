@@ -10,6 +10,8 @@
 
 # apt
 # zsh
+- import_tasks: zsh.yml
+
 # brew
 
 # python (pyenv installs)
