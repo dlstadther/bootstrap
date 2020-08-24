@@ -1,0 +1,17 @@
+# Debug statement to verify USER
+- name: Check current user
+  debug:
+    msg: "Current user: {{ lookup('env', 'USER') }}"
+
+# git
+# vim
+- import_tasks: vim.yml
+  #when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+# apt
+# zsh
+# brew
+
+# python (pyenv installs)
+# rust
+# system76

@@ -1,0 +1,12 @@
+# Copy .vimrc config to $HOME
+- name: Copying VIM config to $HOME
+  become: false
+  copy:
+    src: "{{ item }}"
+    dest: "{{ lookup('env', 'HOME') }}"
+    owner: "{{ lookup('env', 'USER') }}"
+    group: "{{ lookup('env', 'USER') }}"
+    mode: 0644
+    backup: yes
+  with_items:
+    - ".vimrc"
