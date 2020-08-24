@@ -2,7 +2,7 @@
 - name: Copying VIM config to $HOME
   become: false
   copy:
-    src: "{{ item }}"
+    src: "vim/{{ item }}"
     dest: "{{ lookup('env', 'HOME') }}"
     owner: "{{ lookup('env', 'USER') }}"
     group: "{{ lookup('env', 'USER') }}"
