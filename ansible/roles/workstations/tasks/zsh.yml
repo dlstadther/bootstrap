@@ -1,9 +1,34 @@
 # install zsh
 # install via apt if debian
+- name: Install/Update ZSH (debian)
+  apt:
+    name: zsh
+    update_cache: yes
+    state: latest
+    autoclean: yes
+    autoremove: yes
+  when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
 # install via brew if mac
+- name: Install/Update ZSH (mac)
+  homebrew:
+    name: zsh
+    update_homebrew: yes
+    state: latest
+  when: ansible_distribution in ["MacOS"]  # TODO: check for this actual value
+
+# Get zsh location
+- name: which ZSH
+  become: false
+  command: 'which zsh'
+  register: whichzsh
 
 # set as default shell
-
+- name: Set USER default shell
+  become: false
+  user:
+    name: "{{ lookup('env', 'USER') }}"  # TODO: see about adding username to host vars
+    shell: "{{ whichzsh.stdout }}"
 
 # Copy zsh config to $HOME
 - name: Copying ZSH config to $HOME
@@ -21,4 +46,7 @@
     - ".zsh.before"
     - ".zshrc"
 
-# source
+# Source zsh config
+- name: Load ZSH config
+  become: false
+  command: "{{ whichzsh.stdout }} -c 'source {{ lookup('env', 'HOME') }}/.zshrc'"
