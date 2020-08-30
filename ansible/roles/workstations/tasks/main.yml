@@ -6,11 +6,13 @@
 # git
 # vim
 - import_tasks: vim.yml
+  tags: [vim]
   #when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
 
 # apt
 # zsh
 - import_tasks: zsh.yml
+  tags: [zsh]
 
 # brew
 - import_tasks: homebrew.yml
