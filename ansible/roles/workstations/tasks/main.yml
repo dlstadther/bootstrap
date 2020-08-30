@@ -13,6 +13,8 @@
 - import_tasks: zsh.yml
 
 # brew
+- import_tasks: homebrew.yml
+  tags: [homebrew]
 
 # python (pyenv installs)
 # rust
