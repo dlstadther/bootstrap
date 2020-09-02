@@ -12,6 +12,9 @@ python -m venv ~/venv/ansible
 
 # install ansible, latest
 ~/venv/ansible/bin/python -m pip install ansible
+
+# install jmespath; required for jetbrains toolbox install on Linux
+~/venv/ansible/bin/pip install jmespath==0.10.0
 ```
 
 ## Gather Facts
@@ -29,4 +32,3 @@ or
 ```shell
 ~/venv/ansible/bin/ansible-playbook test.yml --ask-become-pass
 ```
-

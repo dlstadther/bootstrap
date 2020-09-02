@@ -1,0 +1,85 @@
+# Add Apt Key + Repo - ATOM
+- name: Add apt signing key to keyring - Atom
+  become: true
+  apt_key:
+    url: https://packagecloud.io/AtomEditor/atom/gpgkey
+    keyring: /etc/apt/trusted.gpg.d/atom.gpg
+    state: present
+
+- name: Add apt repo - Atom
+  become: true
+  apt_repository:
+    repo: deb https://packagecloud.io/AtomEditor/atom/any/ any main
+    filename: atom
+    state: present
+    update_cache: no
+    mode: 0644
+
+
+# SPOTIFY
+- name: Add apt signing key to keyring - Spotify
+  become: true
+  apt_key:
+    url: https://download.spotify.com/debian/pubkey.gpg
+    keyring: /etc/apt/trusted.gpg.d/spotify.gpg
+    state: present
+
+- name: Add apt repo - Spotify
+  become: true
+  apt_repository:
+    repo: deb http://repository.spotify.com stable non-free
+    filename: spotify
+    state: present
+    update_cache: no
+    mode: 0644
+
+# ZULIP
+- name: Add apt signing key server - Zulip
+  become: true
+  apt_key:
+    keyserver: pool.sks-keyservers.net
+    id: 69AD12704E71A4803DCA3A682424BE5AE9BD10D9
+
+- name: Add apt repo - Zulip
+  become: true
+  apt_repository:
+    repo: deb https://dl.bintray.com/zulip/debian/ stable main
+    filename: zulip
+    state: present
+    update_cache: no
+    mode: 0644
+
+
+# install deb
+- name: Install .deb - Google Chrome
+  become: true
+  apt:
+    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+- name: Install .deb - Slack
+  become: true
+  apt:
+    deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.8.0-amd64.deb
+
+- name: Install .deb - Zoom
+  become: true
+  apt:
+    deb: https://zoom.us/client/latest/zoom_amd64.deb
+
+
+# install apt packages
+- name: Install packages
+  become: true
+  apt:
+    name:
+      # applications
+      - atom
+      - spotify-client
+      - zulip
+      # frameworks / packages
+      # - htop
+      # - tmux
+    update_cache: yes
+    state: latest
+    autoclean: yes
+    autoremove: yes
