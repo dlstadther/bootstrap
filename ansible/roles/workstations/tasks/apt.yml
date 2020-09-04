@@ -1,3 +1,8 @@
+# Gather list of installed apt packages
+- name: Get package facts
+  package_facts:
+    manager: apt
+
 # Add Apt Key + Repo - ATOM
 - name: Add apt signing key to keyring - Atom
   become: true
@@ -51,20 +56,29 @@
 
 
 # install deb
+- name: Install .deb - Discord
+  become: true
+  apt:
+    deb: https://discordapp.com/api/download?platform=linux&format=deb
+  when: '"discord" not in ansible_facts.packages'
+
 - name: Install .deb - Google Chrome
   become: true
   apt:
     deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  when: '"google-chrome-stable" not in ansible_facts.packages'
 
 - name: Install .deb - Slack
   become: true
   apt:
     deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.8.0-amd64.deb
+  when: '"slack-desktop" not in ansible_facts.packages'
 
 - name: Install .deb - Zoom
   become: true
   apt:
     deb: https://zoom.us/client/latest/zoom_amd64.deb
+  when: '"zoom" not in ansible_facts.packages'
 
 
 # install apt packages
