@@ -21,6 +21,23 @@
     mode: 0644
 
 
+# # ETCHER
+# - name: Add apt signing key to keyring - Etcher
+#   become: true
+#   apt_key:
+#     keyserver: keyserver.ubuntu.com
+#     id: 379CE192D401AB61
+#
+# - name: Add apt repo - Etcher
+#   become: true
+#   apt_repository:
+#     repo: deb https://deb.etcher.io stable etcher
+#     filename: etcher
+#     state: present
+#     update_cache: no
+#     mode: 0644
+
+
 # SPOTIFY
 - name: Add apt signing key to keyring - Spotify
   become: true
@@ -88,6 +105,7 @@
     name:
       # applications
       - atom
+      # - balena-etcher-electron
       - spotify-client
       - zulip
       # frameworks / packages
