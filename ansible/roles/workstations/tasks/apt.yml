@@ -1,3 +1,9 @@
+# Get lsb_release name
+- name: lsb release name
+  become: false
+  command: 'lsb_release -cs'
+  register: lsbrelease
+
 # Gather list of installed apt packages
 - name: Get package facts
   package_facts:
@@ -74,6 +80,24 @@
 #     mode: 0644
 
 
+# TERRAFORM
+- name: Add apt signing key to keyring - Terraform
+  become: true
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    keyring: /etc/apt/trusted.gpg.d/terraform.gpg
+    state: present
+
+- name: Add apt repo - Terraform
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ lsbrelease.stdout }} main"
+    filename: terraform
+    state: present
+    update_cache: no
+    mode: 0644
+
+
 # ZULIP
 - name: Add apt signing key server - Zulip
   become: true
@@ -127,6 +151,7 @@
       # - balena-etcher-electron
       - spotify-client
       # - sublime-text
+      - terraform
       - zulip
       # frameworks / packages
       # - htop
