@@ -42,7 +42,7 @@
 - name: Add apt signing key to keyring - Spotify
   become: true
   apt_key:
-    url: https://download.spotify.com/debian/pubkey.gpg
+    url: https://download.spotify.com/debian/pubkey_0D811D58.gpg
     keyring: /etc/apt/trusted.gpg.d/spotify.gpg
     state: present
 
