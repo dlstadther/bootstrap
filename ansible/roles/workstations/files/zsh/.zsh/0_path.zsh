@@ -17,5 +17,6 @@ PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++{if (NR > 1) printf ORS;
 
 pathPrefix "$HOME/.pyenv/bin"  # pyenv
 pathPrefix "$HOME/.cargo/bin"  # rust
+pathPrefix "$(go env GOPATH)/bin"  # golang
 pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
 
