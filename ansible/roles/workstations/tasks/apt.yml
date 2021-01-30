@@ -3,7 +3,7 @@
   package_facts:
     manager: apt
 
-# Add Apt Key + Repo - ATOM
+#  ATOM
 - name: Add apt signing key to keyring - Atom
   become: true
   apt_key:
