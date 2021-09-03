@@ -99,20 +99,21 @@
 
 
 # ZULIP
-- name: Add apt signing key server - Zulip
-  become: true
-  apt_key:
-    keyserver: pool.sks-keyservers.net
-    id: 69AD12704E71A4803DCA3A682424BE5AE9BD10D9
-
-- name: Add apt repo - Zulip
-  become: true
-  apt_repository:
-    repo: deb https://dl.bintray.com/zulip/debian/ stable main
-    filename: zulip
-    state: present
-    update_cache: no
-    mode: 0644
+# - name: Add apt signing key to keyring - Zulip
+#   become: true
+#   apt_key:
+#     url: https://download.zulip.com/desktop/apt/zulip-desktop.asc
+#     keyring: /etc/apt/trusted.gpg.d/zulip-desktop.asc
+#     state: present
+#
+# - name: Add apt repo - Zulip
+#   become: true
+#   apt_repository:
+#     repo: deb https://download.zulip.com/desktop/apt stable main
+#     filename: zulip
+#     state: present
+#     update_cache: no
+#     mode: 0644
 
 
 # install deb
@@ -152,7 +153,7 @@
       - spotify-client
       # - sublime-text
       - terraform
-      - zulip
+      # - zulip
       # frameworks / packages
       # - htop
       # - tmux
