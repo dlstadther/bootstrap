@@ -32,3 +32,15 @@ or
 ```shell
 ~/venv/ansible/bin/ansible-playbook test.yml --ask-become-pass
 ```
+
+### install
+
+#### LEMP9
+```shell
+~/venv/ansible/bin/ansible-playbook lemp9.yml --ask-become-pass
+```
+
+Only run specific tags
+```shell
+~/venv/ansible/bin/ansible-playbook lemp9.yml --ask-become-pass --tags "apt,zsh"
+```
