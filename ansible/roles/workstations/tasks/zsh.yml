@@ -25,7 +25,7 @@
 
 # set as default shell
 - name: Set USER default shell
-  become: false
+  become: true
   user:
     name: "{{ lookup('env', 'USER') }}"  # TODO: see about adding username to host vars
     shell: "{{ whichzsh.stdout }}"
