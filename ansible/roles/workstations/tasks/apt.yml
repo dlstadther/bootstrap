@@ -26,6 +26,22 @@
     update_cache: no
     mode: 0644
 
+# DOCKER
+- name: Add apt signing key to keyring - Docker
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/trusted.gpg.d/docker.gpg
+    state: present
+
+- name: Add apt repo - Docker
+  become: true
+  apt_repository:
+    repo: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu hirsute stable
+    filename: docker
+    state: present
+    update_cache: no
+    mode: 0644
 
 # # ETCHER
 # - name: Add apt signing key to keyring - Etcher
@@ -152,6 +168,10 @@
       # applications
       - atom
       # - balena-etcher-electron
+      - containerd.io
+      - docker-ce
+      - docker-ce-cli
+      - podman
       - spotify-client
       - sublime-text
       - terraform

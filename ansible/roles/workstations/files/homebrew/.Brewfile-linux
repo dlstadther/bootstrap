@@ -3,8 +3,8 @@
 tap 'homebrew/bundle'
 
 # CLI
-brew 'docker'
-brew 'docker-compose'
+#brew 'docker'
+#brew 'docker-compose'
 brew 'gcc'
 brew 'golang'
 brew 'git'
