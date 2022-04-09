@@ -45,21 +45,21 @@
 
 
 # SPOTIFY
-- name: Add apt signing key to keyring - Spotify
-  become: true
-  apt_key:
-    url: https://download.spotify.com/debian/pubkey_0D811D58.gpg
-    keyring: /etc/apt/trusted.gpg.d/spotify.gpg
-    state: present
+# - name: Add apt signing key to keyring - Spotify
+#   become: true
+#   apt_key:
+#     url: https://download.spotify.com/debian/pubkey_0D811D58.gpg
+#     keyring: /etc/apt/trusted.gpg.d/spotify.gpg
+#     state: present
 
-- name: Add apt repo - Spotify
-  become: true
-  apt_repository:
-    repo: deb http://repository.spotify.com stable non-free
-    filename: spotify
-    state: present
-    update_cache: no
-    mode: 0644
+# - name: Add apt repo - Spotify
+#   become: true
+#   apt_repository:
+#     repo: deb http://repository.spotify.com stable non-free
+#     filename: spotify
+#     state: present
+#     update_cache: no
+#     mode: 0644
 
 
 # SUBLIME-TEXT
