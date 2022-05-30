@@ -19,4 +19,5 @@ pathPrefix "$HOME/.pyenv/bin"  # pyenv
 pathPrefix "$HOME/.cargo/bin"  # rust
 pathPrefix "$(go env GOPATH)/bin"  # golang
 pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
+pathPrefix "$HOME/.local/bin"  # poetry
 
