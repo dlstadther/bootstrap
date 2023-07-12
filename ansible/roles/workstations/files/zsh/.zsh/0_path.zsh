@@ -15,9 +15,10 @@ pathAppend() {
 # Remove duplicate entries from PATH:
 PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++{if (NR > 1) printf ORS; printf $a[$1]}')
 
+pathPrefix "/opt/homebrew/bin"  # brew
 pathPrefix "$HOME/.pyenv/bin"  # pyenv
 pathPrefix "$HOME/.cargo/bin"  # rust
-pathPrefix "$(go env GOPATH)/bin"  # golang
+# pathPrefix "$(go env GOPATH)/bin"  # golang
 pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
 pathPrefix "$HOME/.local/bin"  # poetry
 
