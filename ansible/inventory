@@ -1,0 +1,4 @@
+[python3]
+localhost ansible_connection=local
+lemp9 ansible_connection=local
+mbp2022 ansible_connection=local

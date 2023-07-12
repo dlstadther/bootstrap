@@ -1,0 +1,67 @@
+cask_args appdir: '/Applications'
+
+tap 'caskroom/cask'
+tap 'homebrew/bundle'
+
+# If some previously purchased software from the Mac App Store needs
+# to be included, we can use mas to ease the installs.
+# brew 'mas'
+
+brew 'coreutils'
+brew 'gcc'
+brew 'tree'
+
+# Development
+cask 'arduino'
+# cask 'atom'
+cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
+brew 'git'
+brew 'helm'
+# cask 'iterm2'
+# cask 'jetbrains-toolbox'
+brew 'jq'
+brew 'derailed/k9s/k9s'
+brew 'kind'
+brew 'kubernetes-cli'
+cask 'lens'
+# brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
+brew 'nmap'
+cask 'postman'
+brew 'pyenv'
+cask 'raspberry-pi-imager'
+cask 'sublime-text'
+brew 'telnet'
+brew 'terraform'
+brew 'terragrunt'
+brew 'vim'
+cask 'visual-studio-code'
+
+# Spacemacs
+# tap 'd12frosted/emacs-plus'
+# brew 'emacs-plus'
+
+# Apps
+# cask 'alred'
+mas 'Amphetamine', id: 937984704
+# cask 'bartender'
+# cask 'dropbox'
+# cask 'google-backup-and-sync'  # non-corp
+# cask 'google-drive-file-stream'  # corp
+cask 'itsycal'
+cask 'istat-menus'
+cask 'karabiner-elements'
+cask 'rectangle'  # Window Management
+cask 'tunnelblick'
+
+# GUI Apps
+cask 'ankerwork'
+cask 'arc'  # internet browser
+# cask 'boostnote'
+cask 'discord'
+# cask 'evernote'
+cask 'firefox'
+cask 'google-chrome'
+cask 'multimc'
+cask 'slack'
+cask 'spotify'
+cask 'zoom'

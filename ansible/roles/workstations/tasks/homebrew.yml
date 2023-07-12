@@ -1,0 +1,61 @@
+# Get brew location
+- name: which brew
+  become: false
+  command: 'which brew'
+  register: whichbrew
+
+# install brew
+- name: Check if homebrew is already installed
+  become: false
+  stat:
+    path: "{{ whichbrew.stdout }}"
+  register: brewdoesexist
+
+# curl command prompts user something so we need to add yes to pass y
+# This means we cannot use Ansible command module, because pipe is not supported.
+# Shell module seems to run the command properly, but for some reason it does not exit ever (perhaps because yes runs forever).
+- name: Install brew if not exists
+  become: false
+  script: install-homebrew.sh
+  when: not brewdoesexist.stat.exists
+
+
+# Update brew
+- name: Update homebrew
+  become: false
+  homebrew:
+    update_homebrew: yes
+
+# ln -s .Brewfile based on ansible_distribution
+- name: Set Brewfile name for MacOS
+  set_fact:
+    brewfilename: ".Brewfile-mac"
+  when: ansible_distribution in ["MacOSX"]
+
+- name: Set Brewfile name for Debian
+  set_fact:
+    brewfilename: ".Brewfile-linux"
+  when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+# Copy brew config to $HOME
+- name: Copying .Brewfile config to $HOME
+  become: false
+  copy:
+    src: "homebrew/{{ item }}"
+    dest: "{{ lookup('env', 'HOME') }}/.Brewfile"
+    owner: "{{ lookup('env', 'USER') }}"
+    # group: "{{ lookup('env', 'USER') }}"  # linux only
+    mode: 0644
+    backup: yes
+  with_items:
+    - "{{ brewfilename }}"
+
+# brew bundle cmd
+- name: Brew bundle
+  become: false
+  command: "brew bundle install --global --verbose --no-upgrade"
+  register: brewbundle
+
+# print output from brew bundle
+- name: Display Brew bundle output
+  debug: var=brewbundle

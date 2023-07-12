@@ -1,0 +1,8 @@
+---
+
+- hosts: mbp2022
+  become: true
+  vars:
+    ansible_python_interpreter: .venv/bin/python
+  roles:
+    - workstations

@@ -1,0 +1,18 @@
+# .Brewfile for linuxbrew
+
+tap 'homebrew/bundle'
+
+# CLI
+#brew 'docker'
+#brew 'docker-compose'
+brew 'gcc'
+brew 'golang'
+brew 'git'
+brew 'helm'
+brew 'jq'
+brew 'kind'
+brew 'kubernetes-cli'
+brew 'minikube'
+brew 'pyenv'
+brew 'tree'
+brew 'vim'

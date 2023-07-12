@@ -1,0 +1,38 @@
+# Debug statement to verify USER
+- name: Check current user
+  debug:
+    msg: "Current user: {{ lookup('env', 'USER') }}"
+
+# git
+# - import_tasks: git.yml
+#   tags: [git]
+
+# vim
+- import_tasks: vim.yml
+  tags: [vim]
+  #when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+# apt
+- import_tasks: apt.yml
+  tags: [apt]
+  when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+# jetbrains-toolbox
+- import_tasks: jetbrains-toolbox.yml
+  become: false  # required to install for non-root user
+  vars:
+    jetbrains_toolbox_version: latest
+  tags: [jetbrains]
+  when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+# zsh
+- import_tasks: zsh.yml
+  tags: [zsh]
+
+# brew
+- import_tasks: homebrew.yml
+  tags: [homebrew]
+
+# python (pyenv installs)
+# rust
+# system76

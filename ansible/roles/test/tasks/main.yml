@@ -1,0 +1,6 @@
+- import_tasks: test_02.yml
+  when: ansible_distribution in ["Debian", "Ubuntu", "Pop!_OS"]
+
+- import_tasks: test_00_apt.yml
+- import_tasks: test_01.yml
+

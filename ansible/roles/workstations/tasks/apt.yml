@@ -1,0 +1,185 @@
+# Get lsb_release name
+- name: lsb release name
+  become: false
+  command: 'lsb_release -cs'
+  register: lsbrelease
+
+# Gather list of installed apt packages
+- name: Get package facts
+  package_facts:
+    manager: apt
+
+#  ATOM
+- name: Add apt signing key to keyring - Atom
+  become: true
+  apt_key:
+    url: https://packagecloud.io/AtomEditor/atom/gpgkey
+    keyring: /etc/apt/trusted.gpg.d/atom.gpg
+    state: present
+
+- name: Add apt repo - Atom
+  become: true
+  apt_repository:
+    repo: deb https://packagecloud.io/AtomEditor/atom/any/ any main
+    filename: atom
+    state: present
+    update_cache: no
+    mode: 0644
+
+# DOCKER
+- name: Add apt signing key to keyring - Docker
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/trusted.gpg.d/docker.gpg
+    state: present
+
+- name: Add apt repo - Docker
+  become: true
+  apt_repository:
+    repo: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu hirsute stable
+    filename: docker
+    state: present
+    update_cache: no
+    mode: 0644
+
+# # ETCHER
+# - name: Add apt signing key to keyring - Etcher
+#   become: true
+#   apt_key:
+#     keyserver: keyserver.ubuntu.com
+#     id: 379CE192D401AB61
+#
+# - name: Add apt repo - Etcher
+#   become: true
+#   apt_repository:
+#     repo: deb https://deb.etcher.io stable etcher
+#     filename: etcher
+#     state: present
+#     update_cache: no
+#     mode: 0644
+
+
+# SPOTIFY
+# - name: Add apt signing key to keyring - Spotify
+#   become: true
+#   apt_key:
+#     url: https://download.spotify.com/debian/pubkey_0D811D58.gpg
+#     keyring: /etc/apt/trusted.gpg.d/spotify.gpg
+#     state: present
+
+# - name: Add apt repo - Spotify
+#   become: true
+#   apt_repository:
+#     repo: deb http://repository.spotify.com stable non-free
+#     filename: spotify
+#     state: present
+#     update_cache: no
+#     mode: 0644
+
+
+# SUBLIME-TEXT
+- name: Add apt signing key to keyring - Sublime Text
+  become: true
+  apt_key:
+    url: https://download.sublimetext.com/sublimehq-pub.gpg
+    keyring: /etc/apt/trusted.gpg.d/sublime-text.gpg
+    state: present
+
+- name: Add apt repo - Sublime Text
+  become: true
+  apt_repository:
+    repo: deb https://download.sublimetext.com/ apt/stable/
+    filename: sublime-text
+    state: present
+    update_cache: no
+    mode: 0644
+
+
+# TERRAFORM
+- name: Add apt signing key to keyring - Terraform
+  become: true
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    keyring: /etc/apt/trusted.gpg.d/terraform.gpg
+    state: present
+
+- name: Add apt repo - Terraform
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ lsbrelease.stdout }} main"
+    filename: terraform
+    state: present
+    update_cache: no
+    mode: 0644
+
+
+# ZULIP
+# - name: Add apt signing key to keyring - Zulip
+#   become: true
+#   apt_key:
+#     url: https://download.zulip.com/desktop/apt/zulip-desktop.asc
+#     keyring: /etc/apt/trusted.gpg.d/zulip-desktop.asc
+#     state: present
+#
+# - name: Add apt repo - Zulip
+#   become: true
+#   apt_repository:
+#     repo: deb https://download.zulip.com/desktop/apt stable main
+#     filename: zulip
+#     state: present
+#     update_cache: no
+#     mode: 0644
+
+
+# install deb
+- name: Install .deb - Discord
+  become: true
+  apt:
+    deb: https://discordapp.com/api/download?platform=linux&format=deb
+  when: '"discord" not in ansible_facts.packages'
+
+- name: Install .deb - Google Chrome
+  become: true
+  apt:
+    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  when: '"google-chrome-stable" not in ansible_facts.packages'
+
+- name: Install .deb - Slack
+  become: true
+  apt:
+    deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.8.0-amd64.deb
+  when: '"slack-desktop" not in ansible_facts.packages'
+
+- name: Install .deb - Zoom
+  become: true
+  apt:
+    deb: https://zoom.us/client/latest/zoom_amd64.deb
+  when: '"zoom" not in ansible_facts.packages'
+
+
+# install apt packages
+- name: Install packages
+  become: true
+  apt:
+    name:
+      # utilities
+      - apt-transport-https
+      # applications
+      - atom
+      # - balena-etcher-electron
+      - containerd.io
+      - docker-ce
+      - docker-ce-cli
+      - podman
+      - spotify-client
+      - sublime-text
+      - terraform
+      # - zulip
+      # frameworks / packages
+      # - htop
+      # - tmux
+    update_cache: yes
+    state: latest
+    autoclean: yes
+    autoremove: yes

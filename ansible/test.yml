@@ -1,0 +1,14 @@
+---
+
+- hosts: localhost
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      changed_when: False
+  tasks:
+    - name: Verify setup
+      debug:
+        msg: "Ansible is working!"
+
