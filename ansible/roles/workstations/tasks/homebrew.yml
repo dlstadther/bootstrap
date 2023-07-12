@@ -30,7 +30,7 @@
 - name: Set Brewfile name for MacOS
   set_fact:
     brewfilename: ".Brewfile-mac"
-  when: ansible_distribution in ["MacOS"]  # TODO: check for this actual value
+  when: ansible_distribution in ["MacOSX"]
 
 - name: Set Brewfile name for Debian
   set_fact:
@@ -44,7 +44,7 @@
     src: "homebrew/{{ item }}"
     dest: "{{ lookup('env', 'HOME') }}/.Brewfile"
     owner: "{{ lookup('env', 'USER') }}"
-    group: "{{ lookup('env', 'USER') }}"
+    # group: "{{ lookup('env', 'USER') }}"  # linux only
     mode: 0644
     backup: yes
   with_items:

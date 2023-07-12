@@ -11,11 +11,12 @@
 
 # install via brew if mac
 - name: Install/Update ZSH (mac)
+  become: false
   homebrew:
     name: zsh
     update_homebrew: yes
     state: latest
-  when: ansible_distribution in ["MacOS"]  # TODO: check for this actual value
+  when: ansible_distribution in ["MacOSX"]
 
 # Get zsh location
 - name: which ZSH
@@ -37,7 +38,7 @@
     src: "zsh/{{ item }}"
     dest: "{{ lookup('env', 'HOME') }}"
     owner: "{{ lookup('env', 'USER') }}"
-    group: "{{ lookup('env', 'USER') }}"
+    # group: "{{ lookup('env', 'USER') }}"  # linux only
     mode: 0644
     backup: yes
   with_items:

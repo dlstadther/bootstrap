@@ -5,7 +5,7 @@
     src: "vim/{{ item }}"
     dest: "{{ lookup('env', 'HOME') }}"
     owner: "{{ lookup('env', 'USER') }}"
-    group: "{{ lookup('env', 'USER') }}"
+    # group: "{{ lookup('env', 'USER') }}"  # linux only
     mode: 0644
     backup: yes
   with_items:
