@@ -16,15 +16,19 @@ cask 'arduino'
 # cask 'atom'
 brew 'd2'  # alternative to mermaid (diagram)
 cask 'dbeaver-community'
+brew 'dive'  # analyze docker images
 cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
+brew 'gh'  # github-cli
 brew 'git'
 brew 'helm'
+brew 'helmenv'
 # cask 'iterm2'
 # cask 'jetbrains-toolbox'
 brew 'jq'
 brew 'derailed/k9s/k9s'
 brew 'kind'
 brew 'kubernetes-cli'
+brew 'kubectx'
 cask 'lens'
 # brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
 brew 'nmap'
@@ -35,8 +39,10 @@ cask 'sublime-text'
 brew 'telnet'
 brew 'terraform'
 brew 'terragrunt'
+brew 'tree'
 brew 'vim'
 cask 'visual-studio-code'
+brew 'yq'
 
 # Spacemacs
 # tap 'd12frosted/emacs-plus'
@@ -64,6 +70,7 @@ cask 'discord'
 cask 'firefox'
 cask 'google-chrome'
 cask 'multimc'
+cask 'obsidian'
 cask 'slack'
 cask 'spotify'
 cask 'zoom'
