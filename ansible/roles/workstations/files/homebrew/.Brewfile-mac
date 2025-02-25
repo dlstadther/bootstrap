@@ -53,6 +53,7 @@ brew 'yq'
 mas 'Amphetamine', id: 937984704
 # cask 'bartender'
 # cask 'dropbox'
+cssk 'flux'
 # cask 'google-backup-and-sync'  # non-corp
 # cask 'google-drive-file-stream'  # corp
 cask 'itsycal'
