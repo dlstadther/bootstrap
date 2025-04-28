@@ -17,9 +17,10 @@ PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++{if (NR > 1) printf ORS;
 
 pathPrefix "/opt/homebrew/bin"  # brew
 pathPrefix "$HOME/.pyenv/bin"  # pyenv
-pathPrefix "$HOME/.cargo/bin"  # rust
+# pathPrefix "$HOME/.rbenv/bin"  # rbenv
+# pathPrefix "$HOME/.cargo/bin"  # rust
 # pathPrefix "$(go env GOPATH)/bin"  # golang
-pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
+# pathPrefix "/home/linuxbrew/.linuxbrew/bin"  # homebrew
 pathPrefix "$HOME/.local/bin"  # poetry
 pathPrefix "$HOME/.cargo/env"  # uv
-
+pathPrefix "$HOME/google-cloud-sdk/bin"  # gcloud

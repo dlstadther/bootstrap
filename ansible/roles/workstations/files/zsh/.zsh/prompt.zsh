@@ -19,4 +19,4 @@ PROMPT='%F{yellow}[%*] %(?.%F{green}√.%F{red}?%?)%f %B%F{240}%4~%f%b ${vcs_inf
 
 # sys time
 #RPROMPT='%*'
-#RPROMPT=''
+RPROMPT=''
