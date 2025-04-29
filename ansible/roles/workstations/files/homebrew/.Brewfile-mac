@@ -2,6 +2,7 @@ cask_args appdir: '/Applications'
 
 tap 'caskroom/cask'
 tap 'homebrew/bundle'
+tap 'little-angry-clouds/homebrew-my-brews'  # helmenv
 
 # If some previously purchased software from the Mac App Store needs
 # to be included, we can use mas to ease the installs.
@@ -18,6 +19,7 @@ brew 'd2'  # alternative to mermaid (diagram)
 cask 'dbeaver-community'
 brew 'dive'  # analyze docker images
 cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
+cask 'google-cloud-sdk'
 brew 'gh'  # github-cli
 brew 'git'
 brew 'helm'
@@ -25,16 +27,18 @@ brew 'helmenv'
 # cask 'iterm2'
 # cask 'jetbrains-toolbox'
 brew 'jq'
-brew 'derailed/k9s/k9s'
+brew 'k9s'
 brew 'kind'
 brew 'kubernetes-cli'
 brew 'kubectx'
 cask 'lens'
 # brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
 brew 'nmap'
+brew 'postgresql'
 cask 'postman'
 brew 'pyenv'
 cask 'raspberry-pi-imager'
+brew 'rbenv'
 cask 'sublime-text'
 brew 'telnet'
 brew 'terraform'
@@ -53,7 +57,7 @@ brew 'yq'
 mas 'Amphetamine', id: 937984704
 # cask 'bartender'
 # cask 'dropbox'
-cssk 'flux'
+cask 'flux'
 # cask 'google-backup-and-sync'  # non-corp
 # cask 'google-drive-file-stream'  # corp
 cask 'itsycal'
