@@ -21,10 +21,11 @@ brew 'dive'  # analyze docker images
 cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
 cask 'google-cloud-sdk'
 brew 'gh'  # github-cli
+cask 'ghostty'
 brew 'git'
 brew 'helm'
 brew 'helmenv'
-# cask 'iterm2'
+cask 'iterm2'
 # cask 'jetbrains-toolbox'
 brew 'jq'
 brew 'just'
