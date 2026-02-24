@@ -121,3 +121,8 @@ alias gz='tar -zcvf'
 
 # TEST
 alias stadther="echo Stadther"
+
+# AI
+alias c="cd ~/code"
+alias cl="claude"
+alias oc="opencode"
