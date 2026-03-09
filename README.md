@@ -4,6 +4,16 @@
 2. `$ brew bundle`
 3. Check apps.md for remaining applications/services
 
+## Ansible
+
+Requires [mise](https://mise.jdx.dev). From the `ansible/` directory:
+
+```shell
+cd ansible
+mise install   # installs uv
+uv sync        # installs project dependencies
+```
+
 
 Copy Zsh only
 ```shell

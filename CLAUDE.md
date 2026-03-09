@@ -6,32 +6,29 @@ A personal system bootstrap and configuration automation project using Ansible. 
 
 ## Commands
 
-All Ansible commands run from the `ansible/` directory with Poetry.
+All Ansible commands run from the `ansible/` directory with uv.
 
 **Setup (one-time):**
 ```shell
-pyenv install 3.11.4
-pyenv global 3.11.4
-curl -sSL https://install.python-poetry.org | python3 -
-cd ansible && poetry install
+make build
 ```
 
 **Run playbooks:**
 ```shell
 # Dry run (check mode)
-poetry run ansible-playbook mbp2022.yml --ask-become-pass --check
+uv run ansible-playbook mbp2022.yml --ask-become-pass --check
 
 # Full macOS setup
-poetry run ansible-playbook mbp2022.yml --ask-become-pass
+uv run ansible-playbook mbp2022.yml --ask-become-pass
 
 # Selective tags (e.g., only zsh)
-poetry run ansible-playbook mbp2022.yml --ask-become-pass --tags "zsh"
+uv run ansible-playbook mbp2022.yml --ask-become-pass --tags "zsh"
 
 # LEMP9 server
-poetry run ansible-playbook lemp9.yml --ask-become-pass --tags "apt,zsh"
+uv run ansible-playbook lemp9.yml --ask-become-pass --tags "apt,zsh"
 
 # Test connectivity
-poetry run ansible-playbook test.yml --ask-become-pass
+uv run ansible-playbook test.yml --ask-become-pass
 ```
 
 **Quick Zsh-only copy (no Ansible):**
