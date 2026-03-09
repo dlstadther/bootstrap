@@ -24,3 +24,4 @@ pathPrefix "$HOME/.pyenv/bin"  # pyenv
 pathPrefix "$HOME/.local/bin"  # poetry
 pathPrefix "$HOME/.cargo/env"  # uv
 pathPrefix "$HOME/google-cloud-sdk/bin"  # gcloud
+pathPrefix "$HOME/.opencode/bin"  # opencode
