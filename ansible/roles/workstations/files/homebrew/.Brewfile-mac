@@ -15,10 +15,18 @@ brew 'tree'
 # Development
 cask 'arduino'
 # cask 'atom'
+brew 'act'  # run GitHub Actions locally
+brew 'astro'
+brew 'beads'
+brew 'coursier'  # Scala/JVM artifact fetcher
 brew 'd2'  # alternative to mermaid (diagram)
 cask 'dbeaver-community'
 brew 'dive'  # analyze docker images
+brew 'dolt'  # git for data
 cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
+brew 'flock'
+brew 'gascity'
+brew 'gemini-cli'
 cask 'google-cloud-sdk'
 brew 'gh'  # github-cli
 cask 'ghostty'
@@ -36,15 +44,22 @@ brew 'kubectx'
 cask 'lens'
 # brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
 brew 'nmap'
+brew 'node'
+brew 'nvm'
+brew 'podman'
 brew 'postgresql'
 cask 'postman'
+brew 'prek'
 brew 'pyenv'
 cask 'raspberry-pi-imager'
 brew 'rbenv'
+brew 'ripgrep'
+brew 'ruby'
 cask 'sublime-text'
 brew 'telnet'
 brew 'terraform'
 brew 'terragrunt'
+brew 'tmux'
 brew 'tree'
 brew 'vim'
 cask 'visual-studio-code'
