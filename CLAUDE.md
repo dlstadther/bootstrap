@@ -4,7 +4,7 @@
 
 A personal private system bootstrap and configuration automation project using Ansible. Automates developer machine setup (macOS MBP 2022, Linux LEMP9 server) including Zsh configuration, Homebrew packages, Vim, and JetBrains Toolbox.
 
-Commit directly to `master` — no feature branches or PRs unless explicitly requested.
+Commit directly to `main` — no feature branches or PRs unless explicitly requested.
 
 ## Commands
 
