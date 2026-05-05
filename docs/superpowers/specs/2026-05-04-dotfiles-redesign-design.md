@@ -58,6 +58,9 @@ bootstrap/
 ### Machine Detection
 Hostname detected via `hostname -s`. If `hosts/<machine>/` does not exist, only shared dotfiles are installed — new machines work without any host directory.
 
+### Symlink Granularity
+The install script symlinks **individual files**, not directories. This prevents tools from writing generated files into the repo (e.g., ghostty writing a cache file next to its config). Parent directories (e.g., `~/.config/ghostty/`) are created if they don't exist, but are not themselves symlinked.
+
 ### Symlink Logic (per file)
 1. Target does not exist → create parent directories + create symlink
 2. Target is already a symlink pointing into this repo → skip (idempotent)
