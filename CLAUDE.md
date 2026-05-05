@@ -2,78 +2,54 @@
 
 ## What This Is
 
-A personal private system bootstrap and configuration automation project using Ansible. Automates developer machine setup (macOS MBP 2022, Linux LEMP9 server) including Zsh configuration, Homebrew packages, Vim, and JetBrains Toolbox.
+A personal private system bootstrap and configuration automation project using a symlink-based dotfiles approach. Manages developer machine setup (macOS MBP 2022, Linux LEMP9 server) by symlinking configs from this repo into `~/`.
 
 Commit directly to `main` — no feature branches or PRs unless explicitly requested.
 
 ## Commands
 
-All Ansible commands run from the `ansible/` directory.
-
-**Setup (one-time):**
+**Install dotfiles (symlink into ~/):**
 ```shell
-mise install   # installs uv via mise
-uv sync        # installs ansible and dependencies
+./install.sh
+# or
+make install
 ```
 
-**Run playbooks:**
+**Brewfile management:**
 ```shell
-# Dry run (check mode)
-uv run ansible-playbook mbp2022.yml --ask-become-pass --check
-
-# Full macOS setup
-uv run ansible-playbook mbp2022.yml --ask-become-pass
-
-# Selective tags
-uv run ansible-playbook mbp2022.yml --ask-become-pass --tags "zsh"
-
-# LEMP9 server
-uv run ansible-playbook lemp9.yml --ask-become-pass --tags "apt,zsh"
-
-# Test connectivity
-uv run ansible-playbook test.yml --ask-become-pass
-
-# Gather host facts
-uv run ansible all -m setup
+make brew-install   # install packages from dotfiles/.Brewfile
+make brew-sync      # show drift between live brew state and dotfiles/.Brewfile
+make brew-dump      # write live brew state back to dotfiles/.Brewfile (~/.Brewfile)
 ```
 
-**Quick Zsh-only copy (no Ansible):**
+**Quick Zsh-only copy (no symlinks):**
 ```shell
-cp -r ./ansible/roles/workstations/files/zsh/ ~/
+cp -r ./dotfiles/.zsh* ~/
 ```
-
-**Available tags:** `vim`, `apt`, `jetbrains`, `zsh`, `homebrew`
 
 ## Architecture
 
-### Ansible Structure
+### Directory Structure
 
-- `ansible/mbp2022.yml` — macOS playbook (runs `workstations` role)
-- `ansible/lemp9.yml` — Linux server playbook (runs `common` + `workstations` roles)
-- `ansible/roles/workstations/tasks/main.yml` — imports task files conditionally by OS and tag
-- `ansible/roles/workstations/files/` — dotfiles and configs deployed by Ansible
-
-OS detection via `ansible_distribution` drives conditional task inclusion (e.g., `apt` and `jetbrains` tasks only run on Debian/Ubuntu/Pop!_OS; `homebrew` zsh install only on MacOSX).
-
-### Inventory
-
-`ansible/inventory` defines hosts `localhost`, `mbp2022`, `lemp9` under the `[python3]` group. All use `ansible_connection=local`. `mbp2022.yml` uses `.venv/bin/python` as the interpreter; `lemp9.yml` uses `/usr/bin/python3`.
+- `dotfiles/` — shared config files mirroring `~/`; `install.sh` symlinks each file into place
+- `hosts/<machine>/` — machine-specific overrides; applied after shared dotfiles (detected via `hostname -s`)
+- `install.sh` — idempotent symlink installer; backs up conflicts as `<file>.bak.<timestamp>`
+- `Makefile` — convenience targets for install and Brewfile management
 
 ### Zsh Configuration
 
-Located in `ansible/roles/workstations/files/zsh/`:
+Located in `dotfiles/`:
 - `.zshrc` — entry point, sources files from `.zsh/`
 - `.zsh/` — modular configs loaded in numeric order (`0_path.zsh`, `0000_before.zsh`, etc.)
 - `.zsh.before/` / `.zsh.after/` — hook directories for pre/post configs
 
 Each tool gets its own file (e.g., `pyenv.zsh`, `nvm.zsh`, `golang.zsh`, `aliases.zsh`).
 
-### Brewfiles
+### Brewfile
 
-- `ansible/roles/workstations/files/homebrew/.Brewfile-mac` — macOS packages
-- `ansible/roles/workstations/files/homebrew/.Brewfile-linux` — LinuxBrew packages
+- `dotfiles/.Brewfile` — symlinked to `~/.Brewfile`; used by `brew bundle install --global`
 
-Ansible copies the appropriate Brewfile to `~/.Brewfile` based on detected OS, then runs `brew bundle install --global`.
+Use `make brew-dump` to capture live state back into the repo file.
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
