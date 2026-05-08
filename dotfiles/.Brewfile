@@ -1,98 +1,104 @@
-cask_args appdir: '/Applications'
+tap "coursier/formulas"
+tap "derailed/k9s"
+tap "gastownhall/gascity"
+tap "grishka/grishka"
+tap "homebrew/bundle"
 
-tap 'caskroom/cask'
-tap 'homebrew/bundle'
-tap 'little-angry-clouds/homebrew-my-brews'  # helmenv
+brew "act"
+brew "astro"
+brew "beads"
+brew "coreutils"
+brew "d2"
+brew "dolt"
+brew "flock"
+brew "gcc"
+brew "gemini-cli"
+brew "gh"
+brew "git"
+brew "helm"
+brew "jq"
+brew "just"
+brew "kind"
+brew "kubernetes-cli"
+brew "kubectx"
+brew "mas"
+brew "nmap"
+brew "nvm"
+brew "prek"
+brew "pyenv"
+brew "telnet"
+brew "terraform"
+brew "terragrunt"
+brew "tmux"
+brew "tree"
+brew "vim"
+brew "zsh"
+brew "coursier/formulas/coursier"
+brew "derailed/k9s/k9s"
+brew "gastownhall/gascity/gascity"
 
-# If some previously purchased software from the Mac App Store needs
-# to be included, we can use mas to ease the installs.
-# brew 'mas'
+cask "ankerwork"
+cask "arduino"
+cask "claudebar"
+cask "codex"
+cask "dbeaver-community"
+cask "discord"
+cask "docker-desktop"
+cask "firefox"
+cask "flux-app"
+cask "gcloud-cli"
+cask "ghostty"
+cask "handy"
+cask "istat-menus"
+cask "iterm2"
+cask "itsycal"
+cask "karabiner-elements"
+cask "lens"
+cask "microsoft-openjdk"
+cask "microsoft-openjdk@17"
+cask "multimc"
+cask "grishka/grishka/neardrop"
+cask "phantomjs"
+cask "postman"
+cask "raspberry-pi-imager"
+cask "slack"
+cask "spotify"
+cask "sublime-text"
+cask "tunnelblick"
+cask "zoom"
 
-brew 'coreutils'
-brew 'gcc'
-brew 'tree'
+vscode "bierner.markdown-mermaid"
+vscode "davidanson.vscode-markdownlint"
+vscode "dendron.dendron"
+vscode "dendron.dendron-markdown-shortcuts"
+vscode "dendron.dendron-paste-image"
+vscode "docker.docker"
+vscode "eamodio.gitlens"
+vscode "foam.foam-vscode"
+vscode "github.copilot-chat"
+vscode "github.vscode-github-actions"
+vscode "johnpapa.vscode-peacock"
+vscode "ms-azuretools.vscode-containers"
+vscode "ms-azuretools.vscode-docker"
+vscode "ms-python.debugpy"
+vscode "ms-python.python"
+vscode "ms-python.vscode-pylance"
+vscode "ms-python.vscode-python-envs"
+vscode "ms-toolsai.jupyter"
+vscode "ms-toolsai.jupyter-keymap"
+vscode "ms-toolsai.jupyter-renderers"
+vscode "ms-toolsai.vscode-jupyter-cell-tags"
+vscode "ms-toolsai.vscode-jupyter-slideshow"
+vscode "ms-vscode-remote.remote-containers"
+vscode "redhat.vscode-yaml"
+vscode "scala-lang.scala"
+vscode "scalameta.metals"
+vscode "streetsidesoftware.code-spell-checker"
+vscode "tamasfe.even-better-toml"
+vscode "terrastruct.d2"
+vscode "yzhang.markdown-all-in-one"
 
-# Development
-cask 'arduino'
-# cask 'atom'
-brew 'act'  # run GitHub Actions locally
-brew 'astro'
-brew 'beads'
-brew 'coursier'  # Scala/JVM artifact fetcher
-brew 'd2'  # alternative to mermaid (diagram)
-cask 'dbeaver-community'
-brew 'dive'  # analyze docker images
-brew 'dolt'  # git for data
-cask 'docker'  # brew docker is the cli; cask docker is docker-desktop
-brew 'flock'
-brew 'gascity'
-brew 'gemini-cli'
-cask 'google-cloud-sdk'
-brew 'gh'  # github-cli
-cask 'ghostty'
-brew 'git'
-brew 'helm'
-brew 'helmenv'
-cask 'iterm2'
-# cask 'jetbrains-toolbox'
-brew 'jq'
-brew 'just'
-brew 'k9s'
-brew 'kind'
-brew 'kubernetes-cli'
-brew 'kubectx'
-cask 'lens'
-# brew 'macvim'  # yadr zsh wants me to use macvim instead of vim
-brew 'nmap'
-brew 'node'
-brew 'nvm'
-brew 'podman'
-brew 'postgresql'
-cask 'postman'
-brew 'prek'
-brew 'pyenv'
-cask 'raspberry-pi-imager'
-brew 'rbenv'
-brew 'ripgrep'
-brew 'ruby'
-cask 'sublime-text'
-brew 'telnet'
-brew 'terraform'
-brew 'terragrunt'
-brew 'tmux'
-brew 'tree'
-brew 'vim'
-cask 'visual-studio-code'
-brew 'yq'
+go "cmd/go"
+go "cmd/gofmt"
 
-# Spacemacs
-# tap 'd12frosted/emacs-plus'
-# brew 'emacs-plus'
-
-# Apps
-# cask 'alred'
-mas 'Amphetamine', id: 937984704
-# cask 'bartender'
-# cask 'dropbox'
-cask 'flux'
-# cask 'google-backup-and-sync'  # non-corp
-# cask 'google-drive-file-stream'  # corp
-cask 'itsycal'
-cask 'istat-menus'
-cask 'karabiner-elements'
-cask 'rectangle'  # Window Management
-cask 'tunnelblick'
-
-# GUI Apps
-cask 'ankerwork'
-cask 'arc'  # internet browser
-# cask 'boostnote'
-cask 'discord'
-# cask 'evernote'
-cask 'firefox'
-cask 'google-chrome'
-cask 'multimc'
-cask 'obsidian'
-cask 'slack'
-cask 'spotify'
-cask 'zoom'
+uv "tox", with: ["tox-uv"]

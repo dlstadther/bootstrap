@@ -14,4 +14,4 @@ brew-sync:
 	diff dotfiles/.Brewfile /tmp/.Brewfile.current || true
 
 brew-dump:
-	brew bundle dump --force
+	brew bundle dump --force --file=dotfiles/.Brewfile
