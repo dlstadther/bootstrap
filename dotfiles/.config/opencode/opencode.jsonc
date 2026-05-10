@@ -1,0 +1,32 @@
+// expected to install at ~/.config/opencode/opencode.jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  //"theme": "opencode",
+  "theme": "nord",
+
+  "model": "github-copilot/claude-sonnet-4.6",
+  "small_model": "github-copilot/claude-haiku-4.5",
+
+  "autoupdate": true,
+
+  "tui": {
+    "scroll_acceleration": {
+      "enabled": true
+    }
+  },
+
+  // You can also define agents using markdown files in ~/.config/opencode/agents/
+  "agent": {
+    "code-reviewer": {
+      "description": "Reviews code for best practices and potential issues",
+      "model": "github-copilot/claude-sonnet-4.6",
+      "prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
+      "tools": {
+        // Disable file modification tools for review-only agent
+        "write": false,
+        "edit": false
+      }
+    }
+  }
+}
