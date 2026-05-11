@@ -79,23 +79,9 @@ prefix + U    # update existing plugins
 ## Structure
 
 ```
-dotfiles/                   # shared configs, mirrors ~/
-  .Brewfile                 # Homebrew bundle
-  .gitconfig
-  .tmux.conf
-  .vimrc
-  .zshrc
-  .zsh/                     # modular zsh configs (loaded in order)
-  .zsh.before/
-  .zsh.after/
-  .claude/                  # Claude Code settings
-  .config/
-    ghostty/
-    lazygit/
-    opencode/
-    tmux/
+dotfiles/        # shared configs, mirrors ~/
 hosts/
-  mbp2022/                  # machine-specific overrides (detected via hostname -s)
-install.sh                  # idempotent symlink installer
-Makefile                    # convenience targets
+  <hostname>/    # machine-specific overrides (detected via hostname -s)
+install.sh       # idempotent symlink installer
+Makefile         # convenience targets
 ```
