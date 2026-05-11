@@ -1,0 +1,19 @@
+gui:
+  sidePanelWidth: 0.40
+  splitDiff: always
+  showNumstatInFilesView: true
+  expandFocusedSidePanel: true
+  statusPanelView: allBranchesLog
+  disableStartupPopups: true
+
+git:
+  autoFetch: true
+  diffContextSize: 6
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
+  log:
+    showGraph: always
+
+refresher:
+  refreshInterval: 3
