@@ -23,13 +23,13 @@ make brew-install     # install packages from dotfiles/.Brewfile
 
 ### Post-install steps
 
-**tmux — bootstrap TPM (one-time):**
+**tmux — install/update TPM:**
 
 ```shell
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+make init-tmux
 ```
 
-Then start a tmux session and press `prefix + I` (capital i) to install all plugins defined in `.tmux.conf`.
+Then start a tmux session and press `prefix + I` (capital i) to install all plugins defined in `.tmux.conf`. Re-running `make init-tmux` will pull the latest TPM instead of re-cloning.
 
 ---
 
@@ -60,6 +60,7 @@ prefix + U    # update existing plugins
 | Target | Description |
 |---|---|
 | `make install` | Symlink all dotfiles into `~/` |
+| `make init-tmux` | Install TPM (or pull latest if already present) |
 | `make diff` | Show uncommitted changes to dotfiles |
 | `make brew-install` | Install packages from `dotfiles/.Brewfile` |
 | `make brew-sync` | Show drift between live brew state and `dotfiles/.Brewfile` |

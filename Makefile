@@ -1,4 +1,4 @@
-.PHONY: install diff brew-install brew-sync brew-dump
+.PHONY: install diff brew-install brew-sync brew-dump init-tmux
 
 install:
 	./install.sh
@@ -15,3 +15,6 @@ brew-sync:
 
 brew-dump:
 	brew bundle dump --force --file=dotfiles/.Brewfile
+
+init-tmux:
+	./scripts/init-tmux.sh
