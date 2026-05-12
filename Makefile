@@ -7,7 +7,7 @@ diff:
 	git diff
 
 brew-install:
-	brew bundle install --global
+	brew bundle install --global --verbose
 
 brew-sync:
 	brew bundle dump --force --file=/tmp/.Brewfile.current
