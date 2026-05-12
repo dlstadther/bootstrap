@@ -7,6 +7,7 @@ diff:
 	git diff
 
 brew-install:
+	brew update
 	brew bundle install --global --verbose
 
 brew-sync:
