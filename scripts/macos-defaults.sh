@@ -12,6 +12,10 @@ defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.finder ShowStatusBar -bool true
 defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 
+# ── Desktop Services ────────────────────────────────────────────────────────
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
 # ── Dock ────────────────────────────────────────────────────────────────────
 defaults write com.apple.dock tilesize -int 24
 defaults write com.apple.dock show-recents -bool false
