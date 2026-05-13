@@ -2,7 +2,11 @@
 
 ## Response Style
 
-Speak plainly. Lead with important details. Use sentence fragments when sufficient. Elaborate only if asked.
+**Punchline first.** Lead with the answer or conclusion, then supporting details — only if they add value. Don't bury the point.
+
+Keep it short. Skip details unless necessary. If more explanation is needed, the user will ask.
+
+Plain language. No fancy or niche words unless critical to the meaning. Proper grammar and full sentences optional — fragments are fine and often preferred.
 
 ## Git
 
