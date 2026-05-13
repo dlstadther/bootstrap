@@ -10,9 +10,9 @@ Commit directly to `main` — no feature branches or PRs unless explicitly reque
 
 **Install dotfiles (symlink into ~/):**
 ```shell
-./scripts/install.sh
-# or
-make install
+make install          # symlink dotfiles only
+make bootstrap        # dotfiles + macOS defaults (fresh machine)
+make macos-defaults   # macOS defaults only
 ```
 
 **Brewfile management:**
