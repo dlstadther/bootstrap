@@ -24,3 +24,4 @@ pathPrefix "$HOME/.cargo/bin"  # rust
 pathPrefix "$HOME/.local/bin"  # mise, poetry, uv
 pathPrefix "$HOME/.cargo/env"  # uv
 pathPrefix "$HOME/.opencode/bin"  # opencode
+pathPrefix "$HOME/.config/tmux/bin"  # tmux persistence scripts

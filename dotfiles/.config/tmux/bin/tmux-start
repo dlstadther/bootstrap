@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+if ! tmux info &>/dev/null; then
+  echo "error: tmux is not running." >&2
+  echo "  Start tmux first: tmux new-session -d -s main" >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "==> Step 1: Restoring sessions..."
+"$SCRIPT_DIR/tmux-restore"
+
+sleep 2
+
+echo ""
+echo "==> Step 2: Running bootstrap..."
+"$SCRIPT_DIR/tmux-bootstrap"
+
+echo ""
+echo "All done. Attach with: tmux attach"

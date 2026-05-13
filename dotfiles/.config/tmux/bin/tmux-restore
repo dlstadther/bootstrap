@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Trigger tmux-resurrect restore from the command line.
+# Must be run from inside a running tmux session.
+
+if ! tmux info &>/dev/null; then
+  echo "error: tmux is not running. Start tmux first." >&2
+  exit 1
+fi
+
+RESURRECT_SCRIPT="$HOME/.tmux/plugins/tmux-resurrect/scripts/restore.sh"
+
+if [[ ! -f "$RESURRECT_SCRIPT" ]]; then
+  RESURRECT_SCRIPT="$HOME/.config/tmux/plugins/tmux-resurrect/scripts/restore.sh"
+fi
+
+if [[ ! -f "$RESURRECT_SCRIPT" ]]; then
+  echo "error: tmux-resurrect not found. Is the plugin installed?" >&2
+  exit 1
+fi
+
+echo "Restoring tmux session from last snapshot..."
+tmux run-shell "$RESURRECT_SCRIPT"
+echo "Done. Use prefix + Ctrl+r inside tmux if this had no effect."
