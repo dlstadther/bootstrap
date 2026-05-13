@@ -2,7 +2,7 @@
 
 # Symlink shared dotfiles and host-specific overrides into ~/
 install:
-	./install.sh
+	./scripts/install.sh
 
 # Full machine setup: dotfiles + macOS defaults
 bootstrap: install macos-defaults

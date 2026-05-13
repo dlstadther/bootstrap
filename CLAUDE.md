@@ -10,7 +10,7 @@ Commit directly to `main` — no feature branches or PRs unless explicitly reque
 
 **Install dotfiles (symlink into ~/):**
 ```shell
-./install.sh
+./scripts/install.sh
 # or
 make install
 ```
@@ -31,9 +31,9 @@ cp -r ./dotfiles/.zsh* ~/
 
 ### Directory Structure
 
-- `dotfiles/` — shared config files mirroring `~/`; `install.sh` symlinks each file into place
+- `dotfiles/` — shared config files mirroring `~/`; `scripts/install.sh` symlinks each file into place
 - `hosts/<machine>/` — machine-specific overrides; applied after shared dotfiles (detected via `hostname -s`)
-- `install.sh` — idempotent symlink installer; backs up conflicts as `<file>.bak.<timestamp>`
+- `scripts/` — automation scripts (`install.sh`, `macos-defaults.sh`, `init-tmux.sh`)
 - `Makefile` — convenience targets for install and Brewfile management
 
 ### Zsh Configuration
