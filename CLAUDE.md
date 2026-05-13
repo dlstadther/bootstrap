@@ -10,7 +10,7 @@ A personal system bootstrap and configuration automation project using a symlink
 
 Do NOT commit:
 - Credentials, API keys, tokens, or secrets of any kind
-- Personal identifiers (email addresses, usernames, account IDs)
+- Personal identifiers beyond GitHub email/username (account IDs, phone numbers, etc.)
 - Hostnames, IPs, or network topology details
 - Anything private or sensitive — when in doubt, leave it out
 
