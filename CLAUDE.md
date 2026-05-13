@@ -2,7 +2,17 @@
 
 ## What This Is
 
-A personal private system bootstrap and configuration automation project using a symlink-based dotfiles approach. Manages developer machine setup (macOS MBP 2022, Linux LEMP9 server) by symlinking configs from this repo into `~/`.
+A personal system bootstrap and configuration automation project using a symlink-based dotfiles approach. Manages developer machine setup (macOS MBP 2022, Linux LEMP9 server) by symlinking configs from this repo into `~/`.
+
+## Privacy Warning
+
+**This repo is PUBLIC on GitHub.** It is intentionally public so others can learn from and adopt these configurations.
+
+Do NOT commit:
+- Credentials, API keys, tokens, or secrets of any kind
+- Personal identifiers (email addresses, usernames, account IDs)
+- Hostnames, IPs, or network topology details
+- Anything private or sensitive — when in doubt, leave it out
 
 Commit directly to `main` — no feature branches or PRs unless explicitly requested.
 
