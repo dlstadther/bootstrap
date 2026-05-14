@@ -18,3 +18,14 @@ ensure_window() {
 # admin: always-on services and tools
 ensure_window "admin" "agentsview" "$HOME"               "agentsview update && agentsview serve"
 ensure_window "admin" "middleman"  "$HOME/code/middleman" "git pull origin main && make install && middleman"
+
+# bootstrap: repo workspace — left pane (60%) + top-right + bottom-right
+BOOTSTRAP_DIR="$HOME/code/bootstrap"
+if ! tmux has-session -t "bootstrap" 2>/dev/null; then
+  tmux new-session  -d  -s "bootstrap" -n "main" -c "$BOOTSTRAP_DIR"
+  tmux send-keys    -t  "bootstrap:main.0" "git pull origin main && claude agents" Enter
+  tmux split-window -h  -p 40 -t "bootstrap:main.0" -c "$BOOTSTRAP_DIR"
+  tmux send-keys    -t  "bootstrap:main.1" "ls -al" Enter
+  tmux split-window -v  -t "bootstrap:main.1" -c "$BOOTSTRAP_DIR"
+  tmux send-keys    -t  "bootstrap:main.2" "lazygit" Enter
+fi
