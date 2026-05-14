@@ -25,7 +25,7 @@ ensure_window "admin" "middleman"  "$HOME/code/middleman" "git pull origin main 
 BOOTSTRAP_DIR="$HOME/code/bootstrap"
 if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   tmux new-session  -d  -s "bootstrap" -n "main" -c "$BOOTSTRAP_DIR"
-  tmux send-keys    -t  "bootstrap:main" "claude agents"
+  tmux send-keys    -t  "bootstrap:main" "claude agents --cwd \$(pwd)"
   tmux split-window -h  -p 40 -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
   tmux send-keys    -t  "bootstrap:main" "git pull origin main && ls -al && bd ready" Enter
   tmux split-window -v  -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
