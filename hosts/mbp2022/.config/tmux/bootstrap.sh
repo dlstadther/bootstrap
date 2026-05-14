@@ -30,4 +30,5 @@ if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   tmux send-keys    -t  "bootstrap:main" "ls -al" Enter
   tmux split-window -v  -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
   tmux send-keys    -t  "bootstrap:main" "lazygit" Enter
+  tmux select-pane  -t  "bootstrap:main" -L
 fi
