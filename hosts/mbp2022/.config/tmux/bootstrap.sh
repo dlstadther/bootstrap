@@ -20,12 +20,14 @@ ensure_window "admin" "agentsview" "$HOME"               "agentsview update && a
 ensure_window "admin" "middleman"  "$HOME/code/middleman" "git pull origin main && make install && middleman"
 
 # bootstrap: repo workspace — left pane (60%) + top-right + bottom-right
+# Pane indices are avoided intentionally: split-window activates the new pane,
+# so send-keys to the window (no pane spec) always hits the right target.
 BOOTSTRAP_DIR="$HOME/code/bootstrap"
 if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   tmux new-session  -d  -s "bootstrap" -n "main" -c "$BOOTSTRAP_DIR"
-  tmux send-keys    -t  "bootstrap:main.0" "git pull origin main && claude agents" Enter
-  tmux split-window -h  -p 40 -t "bootstrap:main.0" -c "$BOOTSTRAP_DIR"
-  tmux send-keys    -t  "bootstrap:main.1" "ls -al" Enter
-  tmux split-window -v  -t "bootstrap:main.1" -c "$BOOTSTRAP_DIR"
-  tmux send-keys    -t  "bootstrap:main.2" "lazygit" Enter
+  tmux send-keys    -t  "bootstrap:main" "git pull origin main && claude agents" Enter
+  tmux split-window -h  -p 40 -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
+  tmux send-keys    -t  "bootstrap:main" "ls -al" Enter
+  tmux split-window -v  -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
+  tmux send-keys    -t  "bootstrap:main" "lazygit" Enter
 fi
