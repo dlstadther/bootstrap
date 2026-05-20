@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)"
+    ]
+  },
   "hooks": {
     "PreCompact": [
       {
