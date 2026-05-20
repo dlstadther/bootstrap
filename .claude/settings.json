@@ -18,6 +18,17 @@
         "matcher": ""
       }
     ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PAYLOAD=$(cat); echo \"$PAYLOAD\" > ~/.claude/notif-probe.json; MSG=$(echo \"$PAYLOAD\" | jq -r '.message // .notification // .title // \"Needs input\"' 2>/dev/null || echo 'Needs input'); DIR=$(basename \"$PWD\"); if [ -n \"$TMUX\" ]; then TARGET=$(tmux display-message -p '#{session_name}:#{window_index}'); terminal-notifier -title 'Claude Code' -message \"$DIR — $MSG\" -execute \"tmux switch-client -t '$TARGET'\" -sound default 2>/dev/null; else terminal-notifier -title 'Claude Code' -message \"$DIR — $MSG\" -sound default 2>/dev/null; fi"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
