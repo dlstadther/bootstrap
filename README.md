@@ -68,6 +68,71 @@ make init-tmux
 
 ---
 
+## Daily Use
+
+### tmux
+
+**Session shortcuts** (defined in `.zsh/tmux.zsh`):
+
+| Alias | Command | Description |
+|---|---|---|
+| `t` | `tmux attach` | Attach to most recent session |
+| `ta <name>` | `tmux attach -t <name>` | Attach to named session |
+| `tl` | `tmux list-sessions` | List all sessions |
+| `tn <name>` | `tmux new-session -s <name>` | Create named session |
+| `tk <name>` | `tmux kill-session -t <name>` | Kill named session |
+| `td` | `tmux detach` | Detach from current session |
+
+**Key bindings** (prefix = `Ctrl+b`):
+
+| Binding | Action |
+|---|---|
+| `prefix + \|` | Split pane horizontally |
+| `prefix + -` | Split pane vertically |
+| `prefix + h/j/k/l` | Navigate panes (vim-style) |
+| `prefix + H/J/K/L` | Resize panes |
+| `prefix + o` | Fuzzy session picker (tmux-sessionx) |
+| `prefix + C-c` | New session |
+| `prefix + x` | Kill current pane |
+| `prefix + r` | Reload tmux config |
+
+**Session persistence** (tmux-resurrect + tmux-continuum):
+
+Sessions auto-save every 15 minutes. On a fresh tmux start, the last session restores automatically. To force a restore manually:
+
+```shell
+tmux-restore        # from inside a running tmux session
+# or: prefix + Ctrl+r
+```
+
+**Configured sessions** (`~/.config/tmux/bootstrap.sh`):
+
+`tmux-bootstrap` reads `~/.config/tmux/bootstrap.sh` to create your standard named sessions. This file is not tracked in the repo. After first install, create it and define your sessions:
+
+```shell
+# One-time setup: create personal session bootstrap
+cp ~/.config/tmux/bootstrap.example.sh ~/.config/tmux/bootstrap.sh
+$EDITOR ~/.config/tmux/bootstrap.sh
+
+# Then on each login (or after a reboot):
+tmux new-session -d -s main   # start tmux if not running
+tmux-start                    # restore sessions + run bootstrap
+```
+
+---
+
+### tmux-notify
+
+Sends a macOS notification when a long-running command finishes. The trigger threshold is 5 seconds (set via `@tnotify-sleep-duration` in `tmux.conf`).
+
+- Clicking the notification focuses the correct Ghostty window and switches to the tmux session/window/pane where the command ran
+- Falls back to `osascript` if `terminal-notifier` is unavailable
+- The patch (`scripts/patch-tmux-notify.sh`) is applied automatically by `make init-tmux` and must be re-applied after plugin updates (`prefix + U` → `make init-tmux`)
+
+No configuration needed day-to-day — it activates automatically for any command that runs longer than the threshold.
+
+---
+
 ## Adding a New Machine
 
 1. Find the hostname: `hostname -s`
