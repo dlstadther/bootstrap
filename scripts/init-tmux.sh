@@ -13,8 +13,13 @@ fi
 
 echo "Installing tmux plugins..."
 "$TPM_DIR/bin/install_plugins"
-echo "Plugins installed."
+echo "Updating tmux plugins..."
+"$TPM_DIR/bin/update_plugins" all
+echo "Plugins up to date."
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "Applying tmux plugin patches..."
 bash "$SCRIPT_DIR/patch-tmux-notify.sh"
+
+echo "Reloading tmux config (if server is running)..."
+tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null && echo "Config reloaded." || echo "No tmux server running — reload manually with prefix+r."
