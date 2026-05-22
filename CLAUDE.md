@@ -25,6 +25,11 @@ make bootstrap        # dotfiles + macOS defaults (fresh machine)
 make macos-defaults   # macOS defaults only
 ```
 
+**tmux plugins (install, update, patch, reload):**
+```shell
+make init-tmux
+```
+
 **Brewfile management:**
 ```shell
 make brew-install   # install packages from dotfiles/.Brewfile

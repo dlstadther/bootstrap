@@ -29,7 +29,7 @@ make brew-install     # install packages from dotfiles/.Brewfile
 make init-tmux
 ```
 
-Then start a tmux session and press `prefix + I` (capital i) to install all plugins defined in `.tmux.conf`. Re-running `make init-tmux` will pull the latest TPM instead of re-cloning.
+Installs/updates TPM, installs and updates all plugins, applies local patches, and reloads the tmux config if a server is running.
 
 ---
 
@@ -45,12 +45,10 @@ make brew-sync        # review drift between live brew state and dotfiles/.Brewf
 make brew-install     # install any newly added packages
 ```
 
-To update tmux plugins after changes to `.tmux.conf`:
+To install or update tmux plugins after changes to `.tmux.conf`:
 
 ```shell
-# Inside a tmux session:
-prefix + I    # install new plugins
-prefix + U    # update existing plugins
+make init-tmux
 ```
 
 ---
@@ -62,7 +60,7 @@ prefix + U    # update existing plugins
 | `make install` | Symlink all dotfiles into `~/` |
 | `make bootstrap` | Full machine setup: dotfiles + macOS defaults |
 | `make macos-defaults` | Apply macOS system defaults (Finder, Dock, keyboard, etc.) |
-| `make init-tmux` | Install TPM (or pull latest if already present) |
+| `make init-tmux` | Install/update TPM + all plugins, apply patches, reload config |
 | `make diff` | Show uncommitted changes to dotfiles |
 | `make brew-install` | Install packages from `dotfiles/.Brewfile` |
 | `make brew-sync` | Show drift between live brew state and `dotfiles/.Brewfile` |
@@ -88,6 +86,7 @@ hosts/
 scripts/
   install.sh     # idempotent symlink installer
   macos-defaults.sh  # macOS system preference defaults
-  init-tmux.sh   # TPM bootstrap
+  init-tmux.sh   # TPM + plugin install/update + local patches
+  patch-tmux-notify.sh  # replaces osascript with terminal-notifier in tmux-notify
 Makefile         # convenience targets
 ```
