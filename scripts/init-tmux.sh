@@ -14,3 +14,7 @@ fi
 echo "Installing tmux plugins..."
 "$TPM_DIR/bin/install_plugins"
 echo "Plugins installed."
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo "Applying tmux plugin patches..."
+bash "$SCRIPT_DIR/patch-tmux-notify.sh"
