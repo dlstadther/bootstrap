@@ -1,4 +1,4 @@
-.PHONY: install bootstrap macos-defaults diff brew-install brew-sync brew-dump init-tmux
+.PHONY: install bootstrap macos-defaults audit diff brew-install brew-sync brew-dump init-tmux
 
 # Symlink shared dotfiles and host-specific overrides into ~/
 install:
@@ -10,6 +10,10 @@ bootstrap: install macos-defaults
 # Apply preferred macOS system defaults (Finder, Dock, keyboard)
 macos-defaults:
 	./scripts/macos-defaults.sh
+
+# Audit gap between repo and current machine (dotfiles + brew)
+audit:
+	HOMEBREW_NO_AUTO_UPDATE=1 ./scripts/audit.sh
 
 diff:
 	git diff
