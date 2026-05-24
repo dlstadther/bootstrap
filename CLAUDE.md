@@ -80,9 +80,10 @@ cd ../<repo>-<task>
 
 # ... make changes, commit ...
 
-# Merge back locally and clean up
+# Merge back, push, then clean up
 cd ../<repo>
 git merge <task>
+git push
 git worktree remove ../<repo>-<task>
 git branch -d <task>
 ```
