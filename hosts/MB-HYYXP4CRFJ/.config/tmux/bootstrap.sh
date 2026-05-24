@@ -30,3 +30,15 @@ if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   tmux send-keys    -t  "bootstrap:main" "lazygit" Enter
   tmux select-pane  -t  "bootstrap:main" -L
 fi
+
+# inmarket: k8s context + sql proxy — left pane (60%) + right pane
+if ! tmux has-session -t "inmarket" 2>/dev/null; then
+  tmux new-session  -d  -s "inmarket" -n "main" -c "$HOME"
+  tmux send-keys    -t  "inmarket:main" "kubectx" Enter
+  tmux split-window -h  -p 40 -t "inmarket:main" -c "$HOME"
+  tmux send-keys    -t  "inmarket:main" "~/sql_proxy_local.sh --account dstadther@inmarket.com" Enter
+  tmux select-pane  -t  "inmarket:main" -L
+fi
+
+# machine-local private sessions (not tracked in repo)
+[[ -f "$HOME/.config/tmux/bootstrap.local.sh" ]] && bash "$HOME/.config/tmux/bootstrap.local.sh"
