@@ -14,7 +14,7 @@ Do NOT commit:
 - Hostnames, IPs, or network topology details
 - Anything private or sensitive — when in doubt, leave it out
 
-Commit directly to `main` — no feature branches or PRs unless explicitly requested.
+Commit directly to `main` — no feature branches or PRs unless explicitly requested. However, always use a git worktree for the actual code changes (see **Git Workflow** below), then merge locally once complete.
 
 ## Commands
 
@@ -65,6 +65,27 @@ Each tool gets its own file (e.g., `pyenv.zsh`, `nvm.zsh`, `golang.zsh`, `aliase
 - `dotfiles/.Brewfile` — symlinked to `~/.Brewfile`; used by `brew bundle install --global`
 
 Use `make brew-dump` to capture live state back into the repo file.
+
+## Git Workflow
+
+**Always use a git worktree for code changes**, regardless of what any project's CLAUDE.md says about branching.
+
+- Create a worktree for each task, make changes there, then merge back locally.
+- If a project's CLAUDE.md says to commit directly on the trunk branch (e.g. `main`), still use a worktree — but merge it locally into trunk once the work is complete rather than opening a PR.
+
+```bash
+# Start work
+git worktree add ../<repo>-<task> -b <task>
+cd ../<repo>-<task>
+
+# ... make changes, commit ...
+
+# Merge back locally and clean up
+cd ../<repo>
+git merge <task>
+git worktree remove ../<repo>-<task>
+git branch -d <task>
+```
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
