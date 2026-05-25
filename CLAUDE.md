@@ -66,6 +66,12 @@ Each tool gets its own file (e.g., `pyenv.zsh`, `nvm.zsh`, `golang.zsh`, `aliase
 
 Use `make brew-dump` to capture live state back into the repo file.
 
+### Tool Installation
+
+Prefer **mise** over Homebrew for versioned tools (runtimes, CLIs, language toolchains). Mise makes version pinning, minimum version age constraints, and per-project overrides easier than brew. Use Homebrew for GUI apps, system-level tools, and anything without a stable mise backend.
+
+- `dotfiles/.config/mise/config.toml` — symlinked to `~/.config/mise/config.toml`; global mise tool versions
+
 ## Git Workflow
 
 **Always use a git worktree for code changes**, regardless of what any project's CLAUDE.md says about branching.
