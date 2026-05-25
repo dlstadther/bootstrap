@@ -1,0 +1,15 @@
+[tools]
+bun           = "1"
+go            = "1.26"
+golangci-lint = "2"
+helm          = "4"
+java          = ["temurin-21", "temurin-17"]
+jq            = "1"
+just          = "1"
+kubectl       = "1.31"
+node          = ["20", "24"]
+python        = "3.12"
+rust          = "latest"
+terraform     = "1.5"
+terragrunt    = "1"
+uv            = "latest"
