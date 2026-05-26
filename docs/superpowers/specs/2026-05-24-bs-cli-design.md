@@ -92,6 +92,8 @@ install: build-bs
 
 `install` gains `build-bs` as a prerequisite — one `make install` sets up both the symlinked dotfiles and the binary.
 
+`~/.local/bin` is already exported via `dotfiles/.zsh/0_path.zsh`, so the binary is on `$PATH` immediately after install with no further changes needed.
+
 ## Testing
 
 `internal/` packages expose plain Go functions. Tests call them directly — no Cobra involved, no CLI subprocess overhead.
@@ -135,3 +137,14 @@ Logic lives in `internal/tmux/`. Design of the workspace layout is detailed when
 - `init-tmux.sh` — tmux plugin setup, stays in bash/make
 
 These are machine setup operations that run at the same time as the binary build/install. There is no benefit to wrapping them in the CLI.
+
+## Cleanup (on completion)
+
+Once all initial subcommands are implemented and verified, delete the scripts they supersede:
+
+| File | Superseded by |
+|---|---|
+| `scripts/audit.sh` | `bs audit` |
+| `dotfiles/.config/tmux/templates/workspace.sh` | `bs tmux add` |
+
+The `make audit` target (if present) should also be removed from the Makefile at that point.
