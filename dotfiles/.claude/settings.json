@@ -202,7 +202,8 @@
       }
     }
   },
+  "tui": "fullscreen",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
-  "tui": "fullscreen"
+  "skipDangerousModePermissionPrompt": true
 }
