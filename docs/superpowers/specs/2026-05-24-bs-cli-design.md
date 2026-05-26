@@ -17,8 +17,8 @@ Go is available via mise (see mise migration issue).
 ## Project Layout
 
 ```
-bs/                              # top-level directory, own go.mod
-├── go.mod                       # module: github.com/dlstadther/bootstrap/bs
+cli/                             # top-level directory, own go.mod
+├── go.mod                       # module: github.com/dlstadther/bootstrap/cli
 ├── main.go                      # entry point, wires root command
 ├── cmd/
 │   ├── root.go                  # root Cobra command, global flags, top-level help
@@ -76,15 +76,15 @@ This makes it work with zero config on machines that use the standard path, with
 ## Makefile Integration
 
 ```makefile
-BS_LDFLAGS = -X bs/internal/version.CommitHash=$(shell git rev-parse HEAD) \
-             -X bs/internal/version.BuildTime=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
-             -X bs/internal/version.RepoPath=$(HOME)/code/bootstrap
+BS_LDFLAGS = -X cli/internal/version.CommitHash=$(shell git rev-parse HEAD) \
+             -X cli/internal/version.BuildTime=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
+             -X cli/internal/version.RepoPath=$(HOME)/code/bootstrap
 
 build-bs:
-	cd bs && go build -ldflags "$(BS_LDFLAGS)" -o ~/.local/bin/bs .
+	cd cli && go build -ldflags "$(BS_LDFLAGS)" -o ~/.local/bin/bs .
 
 test-bs:
-	cd bs && go test ./...
+	cd cli && go test ./...
 
 install: build-bs
 	./scripts/install.sh
