@@ -16,7 +16,7 @@ ensure_window() {
 }
 
 # admin: always-on services and tools
-ensure_window "admin" "agentsview" "$HOME"               "agentsview update && agentsview serve"
+ensure_window "admin" "agentsview" "$HOME"               "agentsview update --yes && agentsview serve --no-browser"
 ensure_window "admin" "middleman"  "$HOME/code/middleman" "git pull origin main && make install && middleman"
 
 # bootstrap: repo workspace — left pane (60%) + top-right + bottom-right
