@@ -1,0 +1,115 @@
+package tmux_test
+
+import (
+	"errors"
+	"strings"
+	"testing"
+
+	"github.com/dlstadther/bootstrap/cli/internal/tmux"
+)
+
+type callRecord struct {
+	cmd  string
+	args []string
+}
+
+type fakeExec struct {
+	calls   []callRecord
+	results map[string]string // keyed by first arg after cmd, e.g. "has-session" -> output
+	errs    map[string]error
+}
+
+func newFake() *fakeExec {
+	return &fakeExec{results: map[string]string{}, errs: map[string]error{}}
+}
+
+func (f *fakeExec) Run(cmd string, args ...string) (string, error) {
+	f.calls = append(f.calls, callRecord{cmd: cmd, args: args})
+	key := cmd
+	if len(args) > 0 {
+		key = cmd + " " + args[0]
+	}
+	return f.results[key], f.errs[key]
+}
+
+func TestAdd_MissingCWD(t *testing.T) {
+	exec := newFake()
+	err := tmux.Add(tmux.AddOptions{Agent: "claude"}, exec)
+	if err == nil || !strings.Contains(err.Error(), "--cwd") {
+		t.Fatalf("expected --cwd error, got %v", err)
+	}
+}
+
+func TestAdd_InvalidAgent(t *testing.T) {
+	exec := newFake()
+	err := tmux.Add(tmux.AddOptions{CWD: "/some/path", Agent: "badagent"}, exec)
+	if err == nil || !strings.Contains(err.Error(), "invalid agent") {
+		t.Fatalf("expected invalid agent error, got %v", err)
+	}
+}
+
+func TestAdd_TmuxNotRunning(t *testing.T) {
+	exec := newFake()
+	exec.errs["tmux info"] = errors.New("no server running")
+	err := tmux.Add(tmux.AddOptions{CWD: "/some/path", Agent: "claude"}, exec)
+	if err == nil || !strings.Contains(err.Error(), "tmux is not running") {
+		t.Fatalf("expected tmux not running error, got %v", err)
+	}
+}
+
+func TestAdd_NewSession(t *testing.T) {
+	exec := newFake()
+	// tmux info succeeds (tmux is running)
+	// has-session fails → no existing session
+	exec.errs["tmux has-session"] = errors.New("no session")
+
+	err := tmux.Add(tmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify new-session was called
+	found := false
+	for _, c := range exec.calls {
+		if c.cmd == "tmux" && len(c.args) > 0 && c.args[0] == "new-session" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("expected new-session call, not found")
+	}
+}
+
+func TestAdd_ExistingSession(t *testing.T) {
+	exec := newFake()
+	// has-session succeeds → session exists
+	// list-windows returns no matching window
+	exec.results["tmux list-windows"] = "other-window\n"
+
+	err := tmux.Add(tmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	found := false
+	for _, c := range exec.calls {
+		if c.cmd == "tmux" && len(c.args) > 0 && c.args[0] == "new-window" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("expected new-window call, not found")
+	}
+}
+
+func TestAllowedAgents(t *testing.T) {
+	expected := []string{"claude", "codex", "gemini", "opencode", "pi"}
+	if len(tmux.AllowedAgents) != len(expected) {
+		t.Fatalf("expected %d agents, got %d", len(expected), len(tmux.AllowedAgents))
+	}
+	for i, a := range expected {
+		if tmux.AllowedAgents[i] != a {
+			t.Errorf("agent[%d]: want %s got %s", i, a, tmux.AllowedAgents[i])
+		}
+	}
+}

@@ -1,0 +1,19 @@
+package brew
+
+import (
+	"path/filepath"
+
+	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
+	igit "github.com/dlstadther/bootstrap/cli/internal/git"
+	"github.com/spf13/cobra"
+)
+
+var dumpCmd = &cobra.Command{
+	Use:   "dump",
+	Short: "Write live brew state back to the repo Brewfile",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		repoPath := igit.RepoPath()
+		brewfile := filepath.Join(repoPath, "dotfiles", ".Brewfile")
+		return ibrew.Dump(brewfile, &realExecutor{})
+	},
+}

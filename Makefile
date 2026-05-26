@@ -1,7 +1,20 @@
-.PHONY: install bootstrap macos-defaults audit diff brew-install brew-sync brew-dump init-tmux
+.PHONY: install bootstrap macos-defaults audit diff brew-install brew-sync brew-dump init-tmux build-bs test-bs
+
+BS_LDFLAGS = \
+	-X github.com/dlstadther/bootstrap/cli/internal/version.CommitHash=$(shell git rev-parse HEAD) \
+	-X github.com/dlstadther/bootstrap/cli/internal/version.BuildTime=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
+	-X github.com/dlstadther/bootstrap/cli/internal/version.RepoPath=$(HOME)/code/bootstrap
+
+# Build the bs binary and install it to ~/.local/bin/bs
+build-bs:
+	cd cli && go build -ldflags "$(BS_LDFLAGS)" -o ~/.local/bin/bs .
+
+# Run bs CLI unit tests
+test-bs:
+	cd cli && go test ./...
 
 # Symlink shared dotfiles and host-specific overrides into ~/
-install:
+install: build-bs
 	./scripts/install.sh
 
 # Full machine setup: dotfiles + macOS defaults
