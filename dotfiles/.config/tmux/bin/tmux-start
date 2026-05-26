@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 if ! tmux info &>/dev/null; then
-  echo "error: tmux is not running." >&2
-  echo "  Start tmux first: tmux new-session -d -s main" >&2
-  exit 1
+  echo "==> tmux not running. Starting a detached session..."
+  tmux new-session -d -s main
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
