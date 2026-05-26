@@ -6,12 +6,18 @@ ensure_window() {
   local session="$1" window="$2" dir="$3" cmd="$4"
   if ! tmux has-session -t "$session" 2>/dev/null; then
     tmux new-session -d -s "$session" -n "$window" -c "$dir"
-    [[ -n "$cmd" ]] && tmux send-keys -t "$session:$window" "$cmd" Enter
+    if [[ -n "$cmd" ]]; then
+      sleep 1
+      tmux send-keys -t "$session:$window" "$cmd" Enter
+    fi
     return
   fi
   if ! tmux list-windows -t "$session" -F "#{window_name}" 2>/dev/null | grep -qx "$window"; then
     tmux new-window -t "$session" -n "$window" -c "$dir"
-    [[ -n "$cmd" ]] && tmux send-keys -t "$session:$window" "$cmd" Enter
+    if [[ -n "$cmd" ]]; then
+      sleep 1
+      tmux send-keys -t "$session:$window" "$cmd" Enter
+    fi
   fi
 }
 
@@ -25,6 +31,7 @@ ensure_window "admin" "middleman"  "$HOME/code/middleman" "git pull origin main 
 BOOTSTRAP_DIR="$HOME/code/bootstrap"
 if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   tmux new-session  -d  -s "bootstrap" -n "main" -c "$BOOTSTRAP_DIR"
+  sleep 1
   tmux send-keys    -t  "bootstrap:main" "claude agents --cwd $BOOTSTRAP_DIR"
   tmux split-window -h  -p 40 -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
   tmux send-keys    -t  "bootstrap:main" "git pull origin main && ls -al && bd ready" Enter
