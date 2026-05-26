@@ -76,4 +76,13 @@ To start sessions:
 tmux-start    # restore saved sessions + run bootstrap
 ```
 
-See [`hosts/`](../hosts/) for machine-specific session templates (e.g., `workspace.sh`).
+## Agent Workspaces
+
+Open a focused development workspace in the current tmux session:
+
+```shell
+bs tmux add --cwd ~/code/myproject
+bs tmux add --cwd ~/code/myproject --name feature-x --agent codex
+```
+
+Creates a 4-pane layout: left pane stages the agent command (no Enter — stays in your control), top-right runs `git pull && bd ready`, bottom-right opens lazygit.

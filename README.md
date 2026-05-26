@@ -28,31 +28,47 @@ make init-tmux        # install TPM + all tmux plugins
 
 ```shell
 git pull --rebase
-make install          # pick up new dotfiles
-make brew-sync        # review drift between live brew state and dotfiles/.Brewfile
+make install          # rebuild bs binary + pick up new dotfiles
+bs audit              # review dotfile symlink and brew drift
+```
+
+## bs CLI
+
+`bs` is the unified CLI for ongoing machine and dotfile management. Built and installed via `make install`.
+
+```shell
+bs help               # list all commands
+bs version            # show installed vs repo commit hash
+bs audit              # check dotfile symlinks + brew drift
+bs brew sync          # show drift between live brew state and .Brewfile
+bs brew dump          # write live brew state back to .Brewfile
+bs brew install       # install packages from .Brewfile
+bs tmux add --cwd <path> [--name <name>] [--agent claude]
+                      # open an agent workspace in tmux
 ```
 
 ## Scripts
 
-Automation lives in [`scripts/`](scripts/):
+Setup automation lives in [`scripts/`](scripts/):
 
 | Script | Purpose |
 |---|---|
 | `install.sh` | Idempotent symlink installer — backs up conflicts, skips correct symlinks |
 | `macos-defaults.sh` | Apply macOS system defaults (Finder, Dock, keyboard) |
 | `init-tmux.sh` | Install/update TPM and plugins, apply patches, reload config |
-| `audit.sh` | Show drift between repo and current machine |
 
 ## Make Targets
 
 | Target | Description |
 |---|---|
-| `make install` | Symlink all dotfiles into `~/` |
+| `make install` | Build `bs`, then symlink all dotfiles into `~/` |
 | `make bootstrap` | Full setup: dotfiles + macOS defaults |
 | `make init-tmux` | Install/update TPM + plugins |
 | `make brew-install` | Install packages from `dotfiles/.Brewfile` |
 | `make brew-sync` | Show drift between live brew state and `dotfiles/.Brewfile` |
 | `make brew-dump` | Write live brew state back to `dotfiles/.Brewfile` |
+| `make build-bs` | Build the `bs` binary only |
+| `make test-bs` | Run `bs` CLI unit tests |
 
 See the [`Makefile`](Makefile) for all targets.
 
@@ -69,7 +85,8 @@ See the [`Makefile`](Makefile) for all targets.
 dotfiles/        # shared configs, mirrors ~/
 hosts/
   <hostname>/    # machine-specific overrides (detected via hostname -s)
-scripts/         # install, macos-defaults, init-tmux, audit
+scripts/         # install, macos-defaults, init-tmux
+cli/             # bs CLI source (Go)
 docs/            # detailed documentation
 Makefile
 ```

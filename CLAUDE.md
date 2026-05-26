@@ -18,23 +18,27 @@ Commit directly to `main` — no feature branches or PRs unless explicitly reque
 
 ## Commands
 
-**Install dotfiles (symlink into ~/):**
+**Install dotfiles and build bs binary:**
 ```shell
-make install          # symlink dotfiles only
+make install          # build bs + symlink dotfiles
 make bootstrap        # dotfiles + macOS defaults (fresh machine)
 make macos-defaults   # macOS defaults only
+```
+
+**bs CLI (machine and dotfile management):**
+```shell
+bs help               # list all commands
+bs version            # show installed vs repo commit hash
+bs audit              # check dotfile symlinks + brew drift
+bs brew sync          # show drift between live brew state and .Brewfile
+bs brew dump          # write live brew state back to .Brewfile
+bs brew install       # install packages from .Brewfile
+bs tmux add --cwd <path> [--name <name>] [--agent claude]
 ```
 
 **tmux plugins (install, update, patch, reload):**
 ```shell
 make init-tmux
-```
-
-**Brewfile management:**
-```shell
-make brew-install   # install packages from dotfiles/.Brewfile
-make brew-sync      # show drift between live brew state and dotfiles/.Brewfile
-make brew-dump      # write live brew state back to dotfiles/.Brewfile (~/.Brewfile)
 ```
 
 **Quick Zsh-only copy (no symlinks):**
@@ -49,6 +53,7 @@ cp -r ./dotfiles/.zsh* ~/
 - `dotfiles/` — shared config files mirroring `~/`; `scripts/install.sh` symlinks each file into place
 - `hosts/<machine>/` — machine-specific overrides; applied after shared dotfiles (detected via `hostname -s`)
 - `scripts/` — automation scripts (`install.sh`, `macos-defaults.sh`, `init-tmux.sh`)
+- `cli/` — `bs` CLI source (Go + Cobra); built to `~/.local/bin/bs` by `make install`
 - `Makefile` — convenience targets for install and Brewfile management
 
 ### Zsh Configuration
@@ -64,7 +69,7 @@ Each tool gets its own file (e.g., `pyenv.zsh`, `nvm.zsh`, `golang.zsh`, `aliase
 
 - `dotfiles/.Brewfile` — symlinked to `~/.Brewfile`; used by `brew bundle install --global`
 
-Use `make brew-dump` to capture live state back into the repo file.
+Use `bs brew dump` (or `make brew-dump`) to capture live state back into the repo file.
 
 ### Tool Installation
 

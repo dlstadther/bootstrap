@@ -1,4 +1,4 @@
-.PHONY: install bootstrap macos-defaults audit diff brew-install brew-sync brew-dump init-tmux build-bs test-bs
+.PHONY: install bootstrap macos-defaults diff brew-install brew-sync brew-dump init-tmux build-bs test-bs
 
 BS_LDFLAGS = \
 	-X github.com/dlstadther/bootstrap/cli/internal/version.CommitHash=$(shell git rev-parse HEAD) \
@@ -23,10 +23,6 @@ bootstrap: install macos-defaults
 # Apply preferred macOS system defaults (Finder, Dock, keyboard)
 macos-defaults:
 	./scripts/macos-defaults.sh
-
-# Audit gap between repo and current machine (dotfiles + brew)
-audit:
-	HOMEBREW_NO_AUTO_UPDATE=1 ./scripts/audit.sh
 
 diff:
 	git diff
