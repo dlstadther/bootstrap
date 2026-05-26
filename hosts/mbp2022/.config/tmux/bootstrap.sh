@@ -34,8 +34,10 @@ if ! tmux has-session -t "bootstrap" 2>/dev/null; then
   sleep 1
   tmux send-keys    -t  "bootstrap:main" "claude agents --cwd $BOOTSTRAP_DIR"
   tmux split-window -h  -p 40 -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
+  sleep 1
   tmux send-keys    -t  "bootstrap:main" "git pull origin main && ls -al && bd ready" Enter
   tmux split-window -v  -t "bootstrap:main" -c "$BOOTSTRAP_DIR"
+  sleep 1
   tmux send-keys    -t  "bootstrap:main" "lazygit" Enter
   tmux select-pane  -t  "bootstrap:main" -L
 fi
