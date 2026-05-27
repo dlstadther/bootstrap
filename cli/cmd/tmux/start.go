@@ -41,12 +41,14 @@ By default, tmux-resurrect restore runs before creating sessions.`,
 		}
 
 		sessionsDir := filepath.Join(home, ".config", "tmux", "sessions")
+		localSessionsDir := filepath.Join(home, ".config", "tmux", "sessions.local")
 		resurrectPath := findResurrectScript(home)
 
 		return itmux.Start(itmux.StartOptions{
 			NoRestore:        startNoRestore,
 			Override:         startOverride,
 			SessionsDir:      sessionsDir,
+			LocalSessionsDir: localSessionsDir,
 			ResurrectPath:    resurrectPath,
 			AfterRestoreWait: 2 * time.Second,
 		}, &realExecutor{})

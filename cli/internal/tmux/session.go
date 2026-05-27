@@ -37,6 +37,7 @@ type StartOptions struct {
 	NoRestore        bool
 	Override         bool
 	SessionsDir      string
+	LocalSessionsDir string // optional; loaded after SessionsDir (like bootstrap.local.sh)
 	ResurrectPath    string
 	AfterRestoreWait time.Duration
 }
@@ -104,6 +105,13 @@ func Start(opts StartOptions, exec Executor) error {
 	sessions, err := LoadSessions(opts.SessionsDir)
 	if err != nil {
 		return fmt.Errorf("load sessions: %w", err)
+	}
+	if opts.LocalSessionsDir != "" {
+		local, err := LoadSessions(opts.LocalSessionsDir)
+		if err != nil {
+			return fmt.Errorf("load local sessions: %w", err)
+		}
+		sessions = append(sessions, local...)
 	}
 
 	if opts.Override {

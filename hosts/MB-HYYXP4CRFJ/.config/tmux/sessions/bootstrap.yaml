@@ -4,7 +4,7 @@ windows:
   - main:
       layout: main-vertical
       panes:
-        - git pull origin main && ls -al && bd ready
-        - lazygit
         - command: "claude agents --cwd ~/code/bootstrap"
           no_enter: true
+        - git pull origin main && ls -al && bd ready
+        - lazygit
