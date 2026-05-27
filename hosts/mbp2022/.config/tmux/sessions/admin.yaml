@@ -1,0 +1,8 @@
+name: admin
+root: ~
+windows:
+  - agentsview: agentsview update --yes && agentsview serve --no-browser
+  - middleman:
+      root: ~/code/middleman
+      panes:
+        - git pull origin main && make install && middleman

@@ -1,20 +1,2 @@
 #!/usr/bin/env bash
-
-if ! tmux info &>/dev/null; then
-  echo "==> tmux not running. Starting a detached session..."
-  tmux new-session -d -s main
-fi
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-echo "==> Step 1: Restoring sessions..."
-"$SCRIPT_DIR/tmux-restore"
-
-sleep 2
-
-echo ""
-echo "==> Step 2: Running bootstrap..."
-"$SCRIPT_DIR/tmux-bootstrap"
-
-echo ""
-echo "All done. Attach with: tmux attach"
+exec bs tmux start "$@"

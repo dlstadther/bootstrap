@@ -1,0 +1,8 @@
+name: inmarket
+root: ~
+windows:
+  - main:
+      layout: even-horizontal
+      panes:
+        - kubectx
+        - ~/sql_proxy_local.sh --account dstadther@inmarket.com

@@ -1,18 +1,2 @@
 #!/usr/bin/env bash
-
-if ! tmux info &>/dev/null; then
-  echo "error: tmux is not running. Start tmux first." >&2
-  exit 1
-fi
-
-BOOTSTRAP="$HOME/.config/tmux/bootstrap.sh"
-
-if [[ ! -f "$BOOTSTRAP" ]]; then
-  echo "error: $BOOTSTRAP not found." >&2
-  echo "  Copy bootstrap.example.sh to bootstrap.sh and fill it in." >&2
-  exit 1
-fi
-
-echo "Running bootstrap..."
-bash "$BOOTSTRAP"
-echo "Bootstrap complete."
+exec bs tmux start --no-restore "$@"
