@@ -349,3 +349,41 @@ func TestStart_WithRestore_ResurrectMissing_ReturnsError(t *testing.T) {
 		t.Error("expected error when resurrect script is missing")
 	}
 }
+
+func TestStart_SkipsExistingSession(t *testing.T) {
+	exec := newFake()
+	// Session "bootstrap" exists — has-session succeeds (no error, returns "")
+	exec.results["tmux has-session"] = ""
+
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "bootstrap.yaml"), []byte(`
+name: bootstrap
+root: ~/code/bootstrap
+windows:
+  - main:
+      layout: main-vertical
+      panes:
+        - command: "claude agents"
+          no_enter: true
+        - git status
+`), 0o644)
+
+	err := tmux.Start(tmux.StartOptions{
+		NoRestore:   true,
+		SessionsDir: dir,
+	}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, c := range exec.calls {
+		if c.cmd == "tmux" && len(c.args) > 0 {
+			if c.args[0] == "split-window" {
+				t.Errorf("should not call split-window when session already exists; got call: %v", c.args)
+			}
+			if c.args[0] == "send-keys" {
+				t.Errorf("should not call send-keys when session already exists; got call: %v", c.args)
+			}
+		}
+	}
+}

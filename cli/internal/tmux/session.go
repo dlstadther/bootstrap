@@ -132,6 +132,12 @@ func Start(opts StartOptions, exec Executor) error {
 }
 
 func createSessionFromConfig(s SessionConfig, exec Executor) error {
+	// If the session already exists, leave it untouched.
+	// tmux-resurrect may have restored its layout — adding panes would create duplicates.
+	if sessionExists(s.Name, exec) {
+		return nil
+	}
+
 	for i, w := range s.Windows {
 		root := coalesce(w.Root, s.Root)
 		if i == 0 {
