@@ -17,11 +17,12 @@ root: ~/code/bootstrap
 windows:
   - main:
       layout: main-vertical
+      main_pane_percent: 60
       panes:
-        - git pull origin main && bd ready
-        - lazygit
         - command: "claude agents --cwd ~/code/bootstrap"
           no_enter: true
+        - git pull origin main && ls -al && bd ready
+        - lazygit
 `
 
 func TestParseSession_Name(t *testing.T) {
@@ -76,11 +77,11 @@ func TestParseSession_PaneCommands(t *testing.T) {
 	if len(panes) != 3 {
 		t.Fatalf("panes: want 3, got %d", len(panes))
 	}
-	if panes[0].Command != "git pull origin main && bd ready" {
-		t.Errorf("pane[0]: want 'git pull...', got %q", panes[0].Command)
+	if panes[0].Command != "claude agents --cwd ~/code/bootstrap" {
+		t.Errorf("pane[0]: want claude command, got %q", panes[0].Command)
 	}
-	if panes[0].NoEnter {
-		t.Error("pane[0]: no_enter should be false")
+	if !panes[0].NoEnter {
+		t.Error("pane[0]: no_enter should be true")
 	}
 }
 
@@ -89,12 +90,12 @@ func TestParseSession_PaneNoEnter(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pane := s.Windows[0].Panes[2]
+	pane := s.Windows[0].Panes[0]
 	if pane.Command != "claude agents --cwd ~/code/bootstrap" {
-		t.Errorf("pane[2] command: got %q", pane.Command)
+		t.Errorf("pane[0] command: got %q", pane.Command)
 	}
 	if !pane.NoEnter {
-		t.Error("pane[2]: no_enter should be true")
+		t.Error("pane[0]: no_enter should be true")
 	}
 }
 
