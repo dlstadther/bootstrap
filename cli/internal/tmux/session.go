@@ -171,12 +171,14 @@ func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, e
 				exec.Run("tmux", "select-layout", "-t", target, w.Layout) //nolint:errcheck
 			}
 		}
-		paneTarget := fmt.Sprintf("%s.%d", target, i)
+		// Target the active pane in the window — after split-window the new pane
+		// is always active, so this correctly follows pane creation order without
+		// hardcoding numeric indices (which break with pane-base-index != 0).
 		if p.Command != "" {
 			if p.NoEnter {
-				exec.Run("tmux", "send-keys", "-t", paneTarget, p.Command) //nolint:errcheck
+				exec.Run("tmux", "send-keys", "-t", target, p.Command) //nolint:errcheck
 			} else {
-				exec.Run("tmux", "send-keys", "-t", paneTarget, p.Command, "Enter") //nolint:errcheck
+				exec.Run("tmux", "send-keys", "-t", target, p.Command, "Enter") //nolint:errcheck
 			}
 		}
 	}
