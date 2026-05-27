@@ -99,6 +99,16 @@ func TestParseSession_PaneNoEnter(t *testing.T) {
 	}
 }
 
+func TestParseSession_MainPanePercent(t *testing.T) {
+	s, err := tmux.ParseSession([]byte(basicYAML))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Windows[0].MainPanePercent != 60 {
+		t.Errorf("main_pane_percent: want 60, got %d", s.Windows[0].MainPanePercent)
+	}
+}
+
 const singlePaneYAML = `
 name: admin
 windows:

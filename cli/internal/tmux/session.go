@@ -20,10 +20,11 @@ type SessionConfig struct {
 
 // WindowConfig represents a single tmux window within a session.
 type WindowConfig struct {
-	Name   string
-	Root   string
-	Layout string
-	Panes  []PaneConfig
+	Name            string
+	Root            string
+	Layout          string
+	MainPanePercent int // if > 0, set main-pane-width to this % after applying layout (tmux >= 3.1)
+	Panes           []PaneConfig
 }
 
 // PaneConfig represents a single pane within a window.
@@ -199,15 +200,17 @@ func parseWindowNode(node *yaml.Node) (WindowConfig, error) {
 		wc.Panes = []PaneConfig{{Command: valueNode.Value}}
 	case yaml.MappingNode:
 		var detail struct {
-			Root   string      `yaml:"root"`
-			Layout string      `yaml:"layout"`
-			Panes  []yaml.Node `yaml:"panes"`
+			Root            string      `yaml:"root"`
+			Layout          string      `yaml:"layout"`
+			MainPanePercent int         `yaml:"main_pane_percent"`
+			Panes           []yaml.Node `yaml:"panes"`
 		}
 		if err := valueNode.Decode(&detail); err != nil {
 			return WindowConfig{}, err
 		}
 		wc.Root = detail.Root
 		wc.Layout = detail.Layout
+		wc.MainPanePercent = detail.MainPanePercent
 		for i := range detail.Panes {
 			pc, err := parsePaneNode(&detail.Panes[i])
 			if err != nil {
