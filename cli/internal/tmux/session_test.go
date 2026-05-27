@@ -387,3 +387,45 @@ windows:
 		}
 	}
 }
+
+func TestStart_AppliesMainPaneWidth(t *testing.T) {
+	exec := newFake()
+	// no existing sessions
+	exec.errs["tmux has-session"] = errFake
+
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "work.yaml"), []byte(`
+name: work
+root: ~/code/work
+windows:
+  - main:
+      layout: main-vertical
+      main_pane_percent: 60
+      panes:
+        - git status
+        - lazygit
+`), 0o644)
+
+	err := tmux.Start(tmux.StartOptions{
+		NoRestore:   true,
+		SessionsDir: dir,
+	}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	found := false
+	for _, c := range exec.calls {
+		if c.cmd != "tmux" || len(c.args) < 2 || c.args[0] != "set-window-option" {
+			continue
+		}
+		for i, arg := range c.args {
+			if arg == "main-pane-width" && i+1 < len(c.args) && c.args[i+1] == "60%" {
+				found = true
+			}
+		}
+	}
+	if !found {
+		t.Error("expected set-window-option main-pane-width 60% to be called")
+	}
+}

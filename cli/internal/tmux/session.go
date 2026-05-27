@@ -189,6 +189,14 @@ func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, e
 			}
 		}
 	}
+
+	// Apply main pane size constraint after all panes are created.
+	// Uses percentage syntax — requires tmux >= 3.1.
+	if w.Layout != "" && w.MainPanePercent > 0 {
+		exec.Run("tmux", "set-window-option", "-t", target, "main-pane-width", fmt.Sprintf("%d%%", w.MainPanePercent)) //nolint:errcheck
+		exec.Run("tmux", "select-layout", "-t", target, w.Layout)                                                       //nolint:errcheck
+	}
+
 	return nil
 }
 
