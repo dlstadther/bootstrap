@@ -6,7 +6,7 @@ Firmware and Via keymap configurations for the Ploopy Adept Trackball (Madromys 
 
 `ploopyco_madromys_rev1_001_viam.uf2` — Via-compatible firmware for Rev1 hardware.
 
-To flash: hold the button on the underside of the device while plugging in USB, then drag the `.uf2` file onto the drive that appears.
+To flash: hold **Button 1** while plugging in USB, then drag the `.uf2` file onto the drive that appears.
 
 ## Button Layout Convention
 
@@ -37,7 +37,7 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 ```
  +------------+--------+--------+------------+
  |            |        |        |            |
- |    Back    |  Fwd   | Cust2  |   MCtrl    |
+ |    Back    |  Fwd   | DragMo |   MCtrl    |
  |            +--------+--------+            |
  +------+-----+                 +-----+------+
  |      |                             |      |
@@ -51,7 +51,7 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 | B1     | Lower-left        | KC_MS_BTN1         | LClick |
 | B2     | Upper-left        | KC_WWW_BACK        | Back   |
 | B3     | Upper-center-left | KC_WWW_FORWARD     | Fwd    |
-| B4     | Upper-center-right| CUSTOM(2)          | Cust2  | <!-- TODO: identify keycode label -->
+| B4     | Upper-center-right| CUSTOM(2)          | DragMo |
 | B5     | Upper-right       | 0xc1               | MCtrl  |
 | B6     | Lower-right       | KC_MS_BTN2         | RClick |
 
@@ -104,7 +104,7 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 | KC_WWW_FORWARD | Fwd    | Browser forward                  |
 | CUSTOM(0)      | DPI+   | Increase DPI                     |
 | CUSTOM(1)      | DragSc | Toggle drag scroll               |
-| CUSTOM(2)      | Cust2  | Unknown custom action            |
+| CUSTOM(2)      | DragMo | Momentary drag scroll (hold to scroll instead of moving cursor) |
 | CUSTOM(3)      | Cust3  | Unknown custom action            |
 | 0xc1           | MCtrl  | Mission Control (macOS)          |
 | KC_TRNS        | ▽      | Transparent (pass to lower layer)|

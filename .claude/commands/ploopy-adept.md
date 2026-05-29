@@ -120,7 +120,7 @@ Use this format when adding a layout to `ploopy/adept/README.md`:
 | KC_WWW_FORWARD | Fwd    | Browser forward                   |
 | CUSTOM(0)      | DPI+   | Increase DPI                      |
 | CUSTOM(1)      | DragSc | Toggle drag scroll                |
-| CUSTOM(2)      | Cust2  | Unknown custom action             |
+| CUSTOM(2)      | DragMo | Momentary drag scroll (hold to scroll instead of moving cursor) |
 | CUSTOM(3)      | Cust3  | Unknown custom action             |
 | 0xc1           | MCtrl  | Mission Control (macOS)           |
 | KC_TRNS        | ▽      | Transparent (pass to lower layer) |
