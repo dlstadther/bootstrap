@@ -116,7 +116,7 @@
       "Bash(bd supersede*)",
       "Bash(bd vc*)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "auto"
   },
   "model": "sonnet",
   "hooks": {
