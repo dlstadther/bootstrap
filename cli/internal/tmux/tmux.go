@@ -110,18 +110,15 @@ func windowExists(session, name string, exec Executor) bool {
 func createPanes(session, window, cwd, agent string, exec Executor) error {
 	target := session + ":" + window
 
-	// Split right column (~40%)
+	// Split right column (~40%) — new right pane is now active
 	if _, err := exec.Run("tmux", "split-window", "-h", "-p", "40", "-t", target, "-c", cwd); err != nil {
 		return fmt.Errorf("split-window horizontal: %w", err)
 	}
 
-	// Top-right: git pull + ls + bd ready
-	if _, err := exec.Run("tmux", "split-window", "-v", "-t", target, "-c", cwd); err != nil {
-		return fmt.Errorf("split-window vertical (top-right): %w", err)
-	}
-	_, _ = exec.Run("tmux", "send-keys", "-t", target, "git pull origin main && ls -al && bd ready", "Enter")
+	// Top-right: ls + bd ready — send directly to the active right pane
+	_, _ = exec.Run("tmux", "send-keys", "-t", target, "ls -al && bd ready", "Enter")
 
-	// Bottom-right: lazygit
+	// Bottom-right: lazygit — one vertical split of the right pane
 	if _, err := exec.Run("tmux", "split-window", "-v", "-t", target, "-c", cwd); err != nil {
 		return fmt.Errorf("split-window vertical (bottom-right): %w", err)
 	}
