@@ -30,9 +30,9 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 
 | Field     | Value |
 |-----------|-------|
-| Rotation  | TBD   |
-| Direction | TBD   |
-| DPI       | TBD   |
+| Rotation  | 0°    |
+| Direction | None  |
+| DPI       | 1600  |
 
 ```
  +------------+--------+--------+------------+
@@ -51,7 +51,7 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 | B1     | Lower-left        | KC_MS_BTN1         | LClick |
 | B2     | Upper-left        | KC_WWW_BACK        | Back   |
 | B3     | Upper-center-left | KC_WWW_FORWARD     | Fwd    |
-| B4     | Upper-center-right| CUSTOM(2)          | Cust2  |
+| B4     | Upper-center-right| CUSTOM(2)          | Cust2  | <!-- TODO: identify keycode label -->
 | B5     | Upper-right       | 0xc1               | MCtrl  |
 | B6     | Lower-right       | KC_MS_BTN2         | RClick |
 
@@ -61,20 +61,20 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 
 | Field     | Value |
 |-----------|-------|
-| Rotation  | TBD   |
-| Direction | TBD   |
-| DPI       | TBD   |
+| Rotation  | 90°   |
+| Direction | CCW   |
+| DPI       | 1600  |
 
 ```
- +------------+--------+--------+------------+
- |            |        |        |            |
- |   LClick   | DragSc |  Back  |    Fwd     |
- |            +--------+--------+            |
- +------+-----+                 +-----+------+
- |      |                             |      |
- |RClick|          ( O )              |MCtrl |
- |      |                             |      |
- +------+-----------------------------+------+
+ +--------+--------+
+ |  Fwd   |        |
+ +--------+  MCtrl |
+ |  Back  |        |
+ +--------+  ( O ) |
+ | DragSc |        |
+ +--------+--------+
+ | LClick | RClick |
+ +--------+--------+
 ```
 
 | Button | Position           | Keycode        | Label  |
@@ -87,6 +87,12 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 | B6     | Lower-right        | 0xc1           | MCtrl  |
 
 ---
+
+## Resources
+
+- [VIA](https://usevia.app/) — standard keymap configuration
+- [VIA (Plodah build)](https://via.plodah.uk/) — Plodah's fork with Ploopy extras
+- [plodah/ploopy_viamenus](https://github.com/plodah/ploopy_viamenus) — Plodah's firmware additions
 
 ## Common Keycodes
 

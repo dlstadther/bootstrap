@@ -51,40 +51,34 @@ Cell widths: B2/B5 = 12 chars, B3/B4 = 8 chars, B1/B6 = 6 chars. Center gap = 29
 
 ### 90° CCW — top of device points left (`rotation > 15`)
 
-The original top row (B2–B5) now runs down the left side; original bottom (B1, B6) is on the right.
+B2–B5 run down the left column (B5 at top); B6 is upper-right, B1 is lower-right.
 
 ```
- +--------+------+
- |        |      |
- |  [B5]  |      |
- +--------+ [B6] |
- |  [B4]  |      |
- +--------+      |
- |        |  (O) |
- |  [B3]  |      |
- +--------+      |
- |  [B2]  |      |
- +--------+ [B1] |
- |        |      |
- +--------+------+
+ +--------+--------+
+ |  [B5]  |  [B6]  |
+ +--------+        |
+ |  [B4]  |  ( O ) |
+ +--------+        |
+ |  [B3]  |        |
+ +--------+--------+
+ |  [B2]  |  [B1]  |
+ +--------+--------+
 ```
 
 ### 90° CW — top of device points right (`rotation < -15`)
 
-The original top row (B2–B5) now runs down the right side; original bottom (B1, B6) is on the left.
+B2–B5 run down the right column (B2 at top); B1 is upper-left, B6 is lower-left.
 
 ```
- +------+--------+
- |      |        |
- | [B1] |  [B2]  |
- |      +--------+
- |  (O) |  [B3]  |
- |      +--------+
- |      |  [B4]  |
- | [B6] +--------+
- |      |  [B5]  |
- |      |        |
- +------+--------+
+ +--------+--------+
+ |  [B1]  |  [B2]  |
+ |        +--------+
+ |  ( O ) |  [B3]  |
+ |        +--------+
+ |        |  [B4]  |
+ +--------+--------+
+ |  [B6]  |  [B5]  |
+ +--------+--------+
 ```
 
 ---
