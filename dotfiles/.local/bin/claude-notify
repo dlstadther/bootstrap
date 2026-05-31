@@ -9,10 +9,12 @@ hook_event=$(echo "$payload" | jq -r '.hook_event_name // "unknown"')
 message=$(echo "$payload" | jq -r '.message // ""')
 cwd_project=$(echo "$payload" | jq -r '.cwd // ""' | xargs basename 2>/dev/null || true)
 
-# Capture tmux target at hook-fire time
+# Capture tmux target and client at hook-fire time
 tmux_target=""
+tmux_client=""
 if [[ -n "${TMUX_PANE:-}" ]]; then
     tmux_target=$(tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
+    tmux_client=$(tmux display-message -p '#{client_name}' 2>/dev/null || true)
 fi
 
 # Build notification fields
@@ -29,9 +31,9 @@ fi
 [[ ${#message} -gt 120 ]] && message="${message:0:120}…"
 [[ -z "$message" ]] && message="Session event"
 
-# Click action: bring Ghostty to front and switch to the right tmux pane
-if [[ -n "$tmux_target" ]]; then
-    execute="osascript -e 'tell application \"Ghostty\" to activate' && tmux switch-client -t '$tmux_target'"
+# Click action: activate Ghostty, then switch the specific tmux client to the right pane
+if [[ -n "$tmux_target" && -n "$tmux_client" ]]; then
+    execute="osascript -e 'tell application \"Ghostty\" to activate' && tmux switch-client -c '$tmux_client' -t '$tmux_target'"
 else
     execute="osascript -e 'tell application \"Ghostty\" to activate'"
 fi
