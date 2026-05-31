@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Sends macOS notifications for Claude Code hook events (Stop, Notification).
+# Wired as a hook in ~/.claude/settings.json; reads JSON payload from stdin.
+
+payload=$(cat)
+
+session_id=$(echo "$payload" | jq -r '.session_id // "unknown"')
+hook_event=$(echo "$payload" | jq -r '.hook_event_name // "unknown"')
+message=$(echo "$payload" | jq -r '.message // ""')
+
+# Capture tmux target at hook-fire time
+tmux_target=""
+if [[ -n "${TMUX_PANE:-}" ]]; then
+    tmux_target=$(tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
+fi
+
+# Build notification fields
+if [[ -n "$tmux_target" ]]; then
+    title="Claude Code — $tmux_target"
+else
+    title="Claude Code"
+fi
+
+[[ ${#message} -gt 120 ]] && message="${message:0:120}…"
+[[ -z "$message" ]] && message="Session event"
+
+# Click action: bring Ghostty to front and switch to the right tmux pane
+if [[ -n "$tmux_target" ]]; then
+    execute="osascript -e 'tell application \"Ghostty\" to activate' && tmux switch-client -t '$tmux_target'"
+else
+    execute="osascript -e 'tell application \"Ghostty\" to activate'"
+fi
+
+terminal-notifier \
+    -title "$title" \
+    -subtitle "$hook_event" \
+    -message "$message" \
+    -execute "$execute" \
+    -group "claude-${session_id}" \
+    -sound default \
+    2>/dev/null || true
