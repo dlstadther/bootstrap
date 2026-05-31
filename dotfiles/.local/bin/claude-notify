@@ -7,6 +7,7 @@ payload=$(cat)
 session_id=$(echo "$payload" | jq -r '.session_id // "unknown"')
 hook_event=$(echo "$payload" | jq -r '.hook_event_name // "unknown"')
 message=$(echo "$payload" | jq -r '.message // ""')
+cwd_project=$(echo "$payload" | jq -r '.cwd // ""' | xargs basename 2>/dev/null || true)
 
 # Capture tmux target at hook-fire time
 tmux_target=""
@@ -15,7 +16,11 @@ if [[ -n "${TMUX_PANE:-}" ]]; then
 fi
 
 # Build notification fields
-if [[ -n "$tmux_target" ]]; then
+if [[ -n "$cwd_project" && -n "$tmux_target" ]]; then
+    title="Claude Code — $cwd_project [$tmux_target]"
+elif [[ -n "$cwd_project" ]]; then
+    title="Claude Code — $cwd_project"
+elif [[ -n "$tmux_target" ]]; then
     title="Claude Code — $tmux_target"
 else
     title="Claude Code"
