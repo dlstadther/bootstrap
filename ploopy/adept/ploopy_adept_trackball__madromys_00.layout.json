@@ -5,8 +5,8 @@
   "layers": [
     [
       "KC_MS_BTN1",
-      "KC_WWW_BACK",
-      "KC_WWW_FORWARD",
+      "KC_MS_BTN4",
+      "KC_MS_BTN5",
       "CUSTOM(2)",
       "0xc1",
       "KC_MS_BTN2"
