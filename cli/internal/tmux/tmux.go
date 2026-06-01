@@ -110,6 +110,11 @@ func windowExists(session, name string, exec Executor) bool {
 func createPanes(session, window, cwd, agent string, exec Executor) error {
 	target := session + ":" + window
 
+	// Capture the left pane's ID before any splits. Using the pane ID (e.g. %42)
+	// is immune to pane-base-index, unlike hardcoded .0 which breaks when
+	// pane-base-index = 1 (a common setting).
+	leftPaneID, _ := exec.Run("tmux", "display-message", "-t", target, "-p", "#{pane_id}")
+
 	// Split right column (~40%) — new right pane is now active
 	if _, err := exec.Run("tmux", "split-window", "-h", "-p", "40", "-t", target, "-c", cwd); err != nil {
 		return fmt.Errorf("split-window horizontal: %w", err)
@@ -124,9 +129,14 @@ func createPanes(session, window, cwd, agent string, exec Executor) error {
 	}
 	_, _ = exec.Run("tmux", "send-keys", "-t", target, "lazygit", "Enter")
 
-	// Left pane: stage agent (no Enter — user stays in control)
-	_, _ = exec.Run("tmux", "select-pane", "-t", target+".0")
-	_, _ = exec.Run("tmux", "send-keys", "-t", target+".0", agent, "")
+	// Left pane: stage agent (no Enter — user stays in control).
+	// Fall back to target (active pane) if display-message didn't return an ID.
+	leftTarget := leftPaneID
+	if leftTarget == "" {
+		leftTarget = target
+	}
+	_, _ = exec.Run("tmux", "select-pane", "-t", leftTarget)
+	_, _ = exec.Run("tmux", "send-keys", "-t", leftTarget, agent, "")
 
 	return nil
 }
