@@ -388,6 +388,56 @@ windows:
 	}
 }
 
+func TestReset_KillsServerAndRebuildsSessions(t *testing.T) {
+	exec := newFake()
+	exec.errs["tmux has-session"] = errFake // no sessions after kill
+
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "work.yaml"), []byte("name: work\nwindows:\n  - main: zsh\n"), 0o644)
+
+	err := tmux.Reset(tmux.ResetOptions{SessionsDir: dir}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	killed, created := false, false
+	for _, c := range exec.calls {
+		if c.cmd == "tmux" && len(c.args) > 0 {
+			switch c.args[0] {
+			case "kill-server":
+				killed = true
+			case "new-session":
+				created = true
+			}
+		}
+	}
+	if !killed {
+		t.Error("expected kill-server call")
+	}
+	if !created {
+		t.Error("expected new-session call after reset")
+	}
+}
+
+func TestReset_SkipsResurrect(t *testing.T) {
+	exec := newFake()
+	exec.errs["tmux has-session"] = errFake
+
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "work.yaml"), []byte("name: work\nwindows:\n  - main: zsh\n"), 0o644)
+
+	err := tmux.Reset(tmux.ResetOptions{SessionsDir: dir}, exec)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, c := range exec.calls {
+		if c.cmd == "tmux" && len(c.args) > 0 && c.args[0] == "run-shell" {
+			t.Error("Reset should never invoke resurrect")
+		}
+	}
+}
+
 func TestStart_AppliesMainPaneWidth(t *testing.T) {
 	exec := newFake()
 	// no existing sessions

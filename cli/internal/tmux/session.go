@@ -293,6 +293,23 @@ func parseSessionNode(doc *yaml.Node) (*SessionConfig, error) {
 	return s, nil
 }
 
+// ResetOptions configures bs tmux reset behavior.
+type ResetOptions struct {
+	SessionsDir      string
+	LocalSessionsDir string
+}
+
+// Reset kills the tmux server and rebuilds sessions from YAML configs.
+// Resurrect restore is intentionally skipped — this is a clean-slate rebuild.
+func Reset(opts ResetOptions, exec Executor) error {
+	exec.Run("tmux", "kill-server") //nolint:errcheck — ignore if server wasn't running
+	return Start(StartOptions{
+		NoRestore:        true,
+		SessionsDir:      opts.SessionsDir,
+		LocalSessionsDir: opts.LocalSessionsDir,
+	}, exec)
+}
+
 func coalesce(a, b string) string {
 	if a != "" {
 		return a
