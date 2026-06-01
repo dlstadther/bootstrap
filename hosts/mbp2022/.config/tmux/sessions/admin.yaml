@@ -5,4 +5,4 @@ windows:
   - middleman:
       root: ~/code/middleman
       panes:
-        - git pull origin main && make install && middleman
+        - git pull origin main && mise install && make install && middleman
