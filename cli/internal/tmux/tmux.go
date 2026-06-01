@@ -135,8 +135,12 @@ func createPanes(session, window, cwd, agent string, exec Executor) error {
 	if leftTarget == "" {
 		leftTarget = target
 	}
+	agentCmd := agent
+	if agent == "claude" {
+		agentCmd = fmt.Sprintf("claude agents --cwd %s", cwd)
+	}
 	_, _ = exec.Run("tmux", "select-pane", "-t", leftTarget)
-	_, _ = exec.Run("tmux", "send-keys", "-t", leftTarget, agent, "")
+	_, _ = exec.Run("tmux", "send-keys", "-t", leftTarget, agentCmd, "")
 
 	return nil
 }

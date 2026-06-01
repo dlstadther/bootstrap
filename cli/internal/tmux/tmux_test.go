@@ -118,9 +118,9 @@ func TestAdd_AgentStagedUsingPaneID(t *testing.T) {
 		if c.cmd != "tmux" || len(c.args) < 3 || c.args[0] != "send-keys" {
 			continue
 		}
-		// Find the send-keys call whose value is "claude" (no Enter = staging)
+		// Find the send-keys call whose value is the expanded claude command (no Enter = staging)
 		for i, arg := range c.args {
-			if arg == "claude" && i+1 < len(c.args) && c.args[i+1] == "" {
+			if arg == "claude agents --cwd /code/myproject" && i+1 < len(c.args) && c.args[i+1] == "" {
 				// The -t arg should be the pane ID, not session:window.0
 				for j, a := range c.args {
 					if a == "-t" && j+1 < len(c.args) {
@@ -153,7 +153,7 @@ func TestAdd_AgentStagedFallsBackWhenNoPaneID(t *testing.T) {
 			continue
 		}
 		for i, arg := range c.args {
-			if arg == "claude" && i+1 < len(c.args) && c.args[i+1] == "" {
+			if arg == "claude agents --cwd /code/myproject" && i+1 < len(c.args) && c.args[i+1] == "" {
 				for j, a := range c.args {
 					if a == "-t" && j+1 < len(c.args) {
 						if c.args[j+1] == "myproject:myproject" {
