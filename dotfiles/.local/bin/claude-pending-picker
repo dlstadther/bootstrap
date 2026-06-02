@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# tmux popup: browse and act on pending Claude notifications
+# flag files live in ~/.local/share/claude-pending/<session_name>
+
+set -euo pipefail
+
+PENDING_DIR="${HOME}/.local/share/claude-pending"
+
+prune_stale() {
+    [[ -d "$PENDING_DIR" ]] || return 0
+    local active
+    active=$(tmux ls -F '#{session_name}' 2>/dev/null || true)
+    for flag in "${PENDING_DIR}"/*; do
+        [[ -f "$flag" ]] || continue
+        local s
+        s=$(basename "$flag")
+        echo "$active" | grep -qx "$s" || rm -f "$flag"
+    done
+}
+
+build_list() {
+    [[ -d "$PENDING_DIR" ]] || return 0
+    local now
+    now=$(date +%s)
+    for flag in "${PENDING_DIR}"/*; do
+        [[ -f "$flag" ]] || continue
+        local session project target ts elapsed elapsed_str
+        session=$(basename "$flag")
+        project=$(jq -r '.project // "unknown"' "$flag" 2>/dev/null)
+        target=$(jq -r '.target // ""' "$flag" 2>/dev/null)
+        ts=$(jq -r '.timestamp // 0' "$flag" 2>/dev/null)
+        elapsed=$(( now - ts ))
+        if (( elapsed < 60 )); then
+            elapsed_str="${elapsed}s ago"
+        elif (( elapsed < 3600 )); then
+            elapsed_str="$(( elapsed / 60 ))m ago"
+        else
+            elapsed_str="$(( elapsed / 3600 ))h $(( (elapsed % 3600) / 60 ))m ago"
+        fi
+        printf '%-10s\t%-30s\t%s\t%s\n' "$elapsed_str" "$project" "$session" "$target"
+    done
+}
+
+if [[ "${1:-}" == "--list" ]]; then
+    build_list
+    exit 0
+fi
+
+prune_stale
+
+list=$(build_list)
+
+if [[ -z "$list" ]]; then
+    printf '\n  no pending sessions\n\n'
+    sleep 2
+    exit 0
+fi
+
+selected=$(printf '%s' "$list" | fzf \
+    --delimiter $'\t' \
+    --with-nth '1,2' \
+    --no-sort \
+    --ansi \
+    --header $'  Enter: switch  d: dismiss  D: dismiss all  Esc: close' \
+    --preview "tmux capture-pane -t {4} -p -e 2>/dev/null | tail -40 || echo '(no preview)'" \
+    --preview-window 'right:55%:wrap' \
+    --bind "d:execute-silent(rm -f \"${PENDING_DIR}/{3}\")+reload(\"$0\" --list)" \
+    --bind "D:execute-silent(find \"${PENDING_DIR}\" -maxdepth 1 -type f -delete)+abort" \
+    --bind 'esc:abort' \
+    --bind 'q:abort' \
+    || true)
+
+if [[ -n "$selected" ]]; then
+    session=$(printf '%s' "$selected" | cut -f3)
+    rm -f "${PENDING_DIR}/${session}"
+    tmux switch-client -t "$session"
+fi
