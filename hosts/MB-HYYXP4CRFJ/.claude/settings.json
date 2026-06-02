@@ -146,31 +146,15 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "agentsmith@dlstadther-agentsmith": true,
     "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "github@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "wasteland@gastownhall-marketplace": true
-  },
-  "extraKnownMarketplaces": {
-    "dlstadther-agentsmith": {
-      "source": {
-        "source": "directory",
-        "path": "/Users/dlstadther/code/agentsmith"
-      }
-    },
-    "gastownhall-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "gastownhall/marketplace"
-      }
-    }
+    "team-update-report@inmarket-skills": true
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "agentPushNotifEnabled": true
 }
