@@ -22,10 +22,16 @@ link_file() {
     mv "$target" "$backup"
     echo "backed up $target → $backup"
     # Prune old backups, keep newest 3
-    while IFS= read -r old_backup; do
-      rm -- "$old_backup"
-      echo "pruned old backup $old_backup"
-    done < <(find "$(dirname "$target")" -maxdepth 1 -name "$(basename "$target").bak.*" 2>/dev/null | sort | head -n -3)
+    local bak_dir bak_base bak_count
+    bak_dir="$(dirname "$target")"
+    bak_base="$(basename "$target")"
+    bak_count=$(find "$bak_dir" -maxdepth 1 -name "${bak_base}.bak.*" 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$bak_count" -gt 3 ]]; then
+      while IFS= read -r old_backup; do
+        rm -- "$old_backup"
+        echo "pruned old backup $old_backup"
+      done < <(find "$bak_dir" -maxdepth 1 -name "${bak_base}.bak.*" 2>/dev/null | sort | head -n $(( bak_count - 3 )))
+    fi
   fi
 
   mkdir -p "$(dirname "$target")"
