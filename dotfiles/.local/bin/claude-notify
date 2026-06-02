@@ -12,9 +12,20 @@ cwd_project=$(echo "$payload" | jq -r '.cwd // ""' | xargs basename 2>/dev/null 
 # Capture tmux target and client at hook-fire time
 tmux_target=""
 tmux_client=""
+tmux_session=""
 if [[ -n "${TMUX_PANE:-}" ]]; then
     tmux_target=$(tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
     tmux_client=$(tmux display-message -p '#{client_name}' 2>/dev/null || true)
+    tmux_session=$(tmux display-message -p '#{session_name}' 2>/dev/null || true)
+fi
+
+# Write pending-notification flag file so tmux status and popup can read it
+if [[ -n "$tmux_session" ]]; then
+    pending_dir="${HOME}/.local/share/claude-pending"
+    mkdir -p "$pending_dir"
+    printf '{"project":"%s","target":"%s","timestamp":%s}\n' \
+        "$cwd_project" "$tmux_target" "$(date +%s)" \
+        > "${pending_dir}/${tmux_session}"
 fi
 
 # Build notification fields
