@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Lists tmux sessions with pending Claude notifications.
+# Reads flag files from ~/.local/share/claude-pending/ and emits one line per session:
+#   <session_name>\t<project>\t<target>\t<timestamp>
+# Shared by popup pickers and status-line scripts.
+
+pending_dir="${HOME}/.local/share/claude-pending"
+[[ -d "$pending_dir" ]] || exit 0
+
+for flag in "${pending_dir}"/*; do
+    [[ -f "$flag" ]] || continue
+    session=$(basename "$flag")
+    project=$(jq -r '.project // ""' "$flag" 2>/dev/null)
+    target=$(jq -r '.target // ""' "$flag" 2>/dev/null)
+    timestamp=$(jq -r '.timestamp // ""' "$flag" 2>/dev/null)
+    printf '%s\t%s\t%s\t%s\n' "$session" "$project" "$target" "$timestamp"
+done
