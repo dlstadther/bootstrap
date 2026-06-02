@@ -52,6 +52,3 @@ If `beads` is not installed or not available on the system, skip this step entir
 - Do not save ephemeral task details, git history summaries, or anything derivable from the code.
 - Before recalling a memory that names a file or function, verify it still exists.
 
-## General Development Notes
-
-- When generating code that uses a third-party library (not stdlib), consult the Context7 MCP for up-to-date docs first. Skip Context7 for standard language features or well-known builtins.

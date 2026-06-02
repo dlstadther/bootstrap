@@ -150,6 +150,7 @@
     "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
+    "context7@claude-plugins-official": false,
     "github@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
