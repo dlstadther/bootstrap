@@ -1,4 +1,6 @@
-.PHONY: install bootstrap macos-defaults diff brew-install brew-sync brew-dump init-tmux build-bs test-bs
+.PHONY: install bootstrap macos-defaults diff diff-host brew-install brew-sync brew-dump init-tmux build-bs test-bs
+
+HOST ?= $(shell hostname -s)
 
 BS_LDFLAGS = \
 	-X github.com/dlstadther/bootstrap/cli/internal/version.CommitHash=$(shell git rev-parse HEAD) \
@@ -26,6 +28,21 @@ macos-defaults:
 
 diff:
 	git diff
+
+# Compare host-specific files against their dotfiles counterparts
+# Usage: make diff-host [HOST=<hostname>]
+diff-host:
+	@found=0; \
+	for f in $$(find hosts/$(HOST) -type f 2>/dev/null); do \
+	  rel=$${f#hosts/$(HOST)/}; \
+	  base="dotfiles/$$rel"; \
+	  if [[ -f "$$base" ]]; then \
+	    found=1; \
+	    echo "=== $$rel ==="; \
+	    diff -u "$$base" "$$f" || true; \
+	  fi; \
+	done; \
+	if [[ $$found -eq 0 ]]; then echo "No overlapping files found for host: $(HOST)"; fi
 
 brew-install:
 	brew update
