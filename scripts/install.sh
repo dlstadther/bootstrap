@@ -21,6 +21,11 @@ link_file() {
     local backup="${target}.bak.$(date +%Y%m%d%H%M%S)"
     mv "$target" "$backup"
     echo "backed up $target → $backup"
+    # Prune old backups, keep newest 3
+    while IFS= read -r old_backup; do
+      rm -- "$old_backup"
+      echo "pruned old backup $old_backup"
+    done < <(find "$(dirname "$target")" -maxdepth 1 -name "$(basename "$target").bak.*" 2>/dev/null | sort | head -n -3)
   fi
 
   mkdir -p "$(dirname "$target")"
