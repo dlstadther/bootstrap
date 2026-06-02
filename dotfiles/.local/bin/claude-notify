@@ -9,14 +9,32 @@ hook_event=$(echo "$payload" | jq -r '.hook_event_name // "unknown"')
 message=$(echo "$payload" | jq -r '.message // ""')
 cwd_project=$(echo "$payload" | jq -r '.cwd // ""' | xargs basename 2>/dev/null || true)
 
-# Capture tmux target and client at hook-fire time
+# Capture tmux target and client at hook-fire time.
+# TMUX_PANE is not always inherited by hook subprocesses, so fall back to
+# walking the process tree to find which pane owns the claude process.
 tmux_target=""
 tmux_client=""
 tmux_session=""
 if [[ -n "${TMUX_PANE:-}" ]]; then
-    tmux_target=$(tmux display-message -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
-    tmux_client=$(tmux display-message -p '#{client_name}' 2>/dev/null || true)
-    tmux_session=$(tmux display-message -p '#{session_name}' 2>/dev/null || true)
+    tmux_target=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
+    tmux_client=$(tmux display-message -p -t "$TMUX_PANE" '#{client_name}' 2>/dev/null || true)
+    tmux_session=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}' 2>/dev/null || true)
+fi
+if [[ -z "$tmux_session" ]] && command -v tmux &>/dev/null && tmux ls &>/dev/null 2>&1; then
+    _pid=$$
+    _panes=$(tmux list-panes -a -F '#{pane_pid} #{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
+    while [[ -n "$_pid" && "$_pid" -gt 1 && -n "$_panes" ]]; do
+        _match=$(awk -v p="$_pid" '$1==p{print $2; exit}' <<< "$_panes")
+        if [[ -n "$_match" ]]; then
+            tmux_target="$_match"
+            tmux_session="${_match%%:*}"
+            tmux_client=$(tmux display-message -t "$tmux_target" -p '#{client_name}' 2>/dev/null || true)
+            break
+        fi
+        _pid=$(ps -o ppid= -p "$_pid" 2>/dev/null | tr -d '[:space:]')
+        [[ "$_pid" =~ ^[0-9]+$ ]] || break
+    done
+    unset _pid _panes _match
 fi
 
 # Write pending-notification flag file so tmux status and popup can read it
