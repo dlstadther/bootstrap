@@ -8,6 +8,7 @@ jq            = "1"
 just          = "1"
 kubectl       = "latest"
 node          = ["20", "24"]
+pnpm          = "latest"
 python        = "3.12"
 rust          = "latest"
 terraform     = "latest"

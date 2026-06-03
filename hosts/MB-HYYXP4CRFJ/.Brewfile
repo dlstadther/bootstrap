@@ -1,6 +1,5 @@
 tap "coursier/formulas"
 tap "gastownhall/gascity"
-tap "homebrew/bundle"
 tap "manaflow-ai/cmux"
 
 brew "act"
@@ -68,12 +67,9 @@ vscode "anthropic.claude-code"
 vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
 vscode "dendron.dendron"
-vscode "dendron.dendron-markdown-shortcuts"
-vscode "dendron.dendron-paste-image"
 vscode "docker.docker"
 vscode "eamodio.gitlens"
 vscode "foam.foam-vscode"
-vscode "github.copilot-chat"
 vscode "github.vscode-github-actions"
 vscode "johnpapa.vscode-peacock"
 vscode "ms-azuretools.vscode-containers"
@@ -100,6 +96,5 @@ go "cmd/go"
 go "cmd/gofmt"
 
 npm "corepack"
-npm "pnpm"
 
 uv "tox", with: ["tox-uv"]
