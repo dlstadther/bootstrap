@@ -1,9 +1,0 @@
-{
-  "name": "bootstrap",
-  "cwd": "~/code/bootstrap",
-  "panes": [
-    {"command": "claude agents --cwd ~/code/bootstrap", "no_enter": true},
-    {"split": "right", "command": "git pull origin main && ls -al && bd ready"},
-    {"split": "down", "command": "lazygit"}
-  ]
-}
