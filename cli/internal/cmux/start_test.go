@@ -201,8 +201,10 @@ func TestStart_Override(t *testing.T) {
 
 func TestStart_SplitsCreatedInOrder(t *testing.T) {
 	f := newFake()
-	// Return 3 pane IDs so each pane spec gets an explicit surface target.
 	f.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
+	f.results["cmux list-pane-surfaces pane:1"] = "surface:1"
+	f.results["cmux list-pane-surfaces pane:2"] = "surface:2"
+	f.results["cmux list-pane-surfaces pane:3"] = "surface:3"
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{
 		Name: "myproject",
@@ -233,41 +235,24 @@ func TestStart_SplitsCreatedInOrder(t *testing.T) {
 		t.Error("expected workspace create to include --layout for multi-pane config")
 	}
 
-	// Verify sends don't use --surface (pane refs are not valid surface IDs).
+	// Verify commands are routed to correct surfaces via send --surface.
+	surfaceCmds := map[string]string{}
 	for _, c := range f.calls {
 		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "send" {
-			if indexOf(c.args, "--surface") >= 0 {
-				t.Error("send must not use --surface with pane refs; use focus-pane to route instead")
+			si := indexOf(c.args, "--surface")
+			if si >= 0 && si+1 < len(c.args) {
+				surfaceCmds[c.args[si+1]] = c.args[len(c.args)-1]
 			}
 		}
 	}
-
-	// Verify commands are routed to correct panes via focus-pane + send pairs.
-	paneCmds := map[string]string{}
-	var focused string
-	for _, c := range f.calls {
-		if c.cmd != "cmux" || len(c.args) == 0 {
-			continue
-		}
-		switch c.args[0] {
-		case "focus-pane":
-			if idx := indexOf(c.args, "--pane"); idx >= 0 && idx+1 < len(c.args) {
-				focused = c.args[idx+1]
-			}
-		case "send":
-			if focused != "" {
-				paneCmds[focused] = c.args[len(c.args)-1]
-			}
-		}
+	if surfaceCmds["surface:1"] != "agent" {
+		t.Errorf("expected surface:1 to receive agent, got %q", surfaceCmds["surface:1"])
 	}
-	if paneCmds["pane:1"] != "agent" {
-		t.Errorf("expected pane:1 to receive agent, got %q", paneCmds["pane:1"])
+	if surfaceCmds["surface:2"] != "ls" {
+		t.Errorf("expected surface:2 to receive ls, got %q", surfaceCmds["surface:2"])
 	}
-	if paneCmds["pane:2"] != "ls" {
-		t.Errorf("expected pane:2 to receive ls, got %q", paneCmds["pane:2"])
-	}
-	if paneCmds["pane:3"] != "lazygit" {
-		t.Errorf("expected pane:3 to receive lazygit, got %q", paneCmds["pane:3"])
+	if surfaceCmds["surface:3"] != "lazygit" {
+		t.Errorf("expected surface:3 to receive lazygit, got %q", surfaceCmds["surface:3"])
 	}
 }
 
