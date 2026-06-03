@@ -14,16 +14,13 @@ var resetCmd = &cobra.Command{
 	Short: "Close all cmux workspaces and rebuild from JSON configs",
 	Long: `Closes every open cmux workspace, then rebuilds from JSON configs.
 
-All workspaces are destroyed — including ad-hoc ones not defined in any config
-file. restore-session is intentionally skipped; this is a clean-slate rebuild.
+All workspaces except the calling one are destroyed — including ad-hoc ones not
+defined in any config file. restore-session is intentionally skipped; this is a
+clean-slate rebuild.
 
-Must be run from outside cmux. Running from inside a cmux workspace will close
-the calling terminal before the rebuild can run.`,
+Safe to run from inside cmux: the active workspace is preserved. All other
+workspaces are closed and rebuilt from JSON configs.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if os.Getenv("CMUX_WORKSPACE_ID") != "" {
-			return fmt.Errorf("must be run from outside cmux — closing workspaces would terminate this process")
-		}
-
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return fmt.Errorf("home dir: %w", err)
@@ -32,6 +29,7 @@ the calling terminal before the rebuild can run.`,
 		return icmux.Reset(icmux.ResetOptions{
 			WorkspacesDir:      filepath.Join(home, ".config", "cmux", "workspaces"),
 			LocalWorkspacesDir: filepath.Join(home, ".config", "cmux", "workspaces.local"),
+			SkipWorkspaceID:    os.Getenv("CMUX_WORKSPACE_ID"),
 		}, &realExecutor{})
 	},
 }

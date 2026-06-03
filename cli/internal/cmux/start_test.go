@@ -86,6 +86,9 @@ func TestStart_CmuxNotRunning(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "cmux is not running") {
 		t.Fatalf("expected cmux not running error, got %v", err)
 	}
+	if !strings.Contains(err.Error(), "connection refused") {
+		t.Errorf("expected underlying error detail in message, got %v", err)
+	}
 }
 
 func TestStart_NoRestore(t *testing.T) {
@@ -236,6 +239,34 @@ func TestReset_CmuxNotRunning(t *testing.T) {
 	err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f)
 	if err == nil || !strings.Contains(err.Error(), "cmux is not running") {
 		t.Fatalf("expected cmux not running error, got %v", err)
+	}
+	if !strings.Contains(err.Error(), "connection refused") {
+		t.Errorf("expected underlying error detail in message, got %v", err)
+	}
+}
+
+func TestReset_SkipsCurrentWorkspace(t *testing.T) {
+	f := newFake()
+	f.results["cmux list-workspaces"] = "ws:1 alpha\nws:2 beta"
+
+	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir(), SkipWorkspaceID: "ws:1"}, f); err != nil {
+		t.Fatal(err)
+	}
+
+	closed := map[string]bool{}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
+			wsIdx := indexOf(c.args, "--workspace")
+			if wsIdx >= 0 {
+				closed[c.args[wsIdx+1]] = true
+			}
+		}
+	}
+	if closed["ws:1"] {
+		t.Error("ws:1 should be preserved (SkipWorkspaceID), but was closed")
+	}
+	if !closed["ws:2"] {
+		t.Error("ws:2 should be closed, but was not")
 	}
 }
 

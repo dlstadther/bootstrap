@@ -65,8 +65,12 @@ func LoadWorkspaces(dir string) ([]WorkspaceConfig, error) {
 //  3. Optionally close conflicting workspaces (--override)
 //  4. Create workspaces from JSON configs
 func Start(opts StartOptions, exec Executor) error {
-	if _, err := exec.Run("cmux", "ping"); err != nil {
-		return fmt.Errorf("cmux is not running: ensure cmux is installed and running")
+	if out, err := exec.Run("cmux", "ping"); err != nil {
+		detail := out
+		if detail == "" {
+			detail = err.Error()
+		}
+		return fmt.Errorf("cmux is not running (%s): ensure cmux is installed and running", detail)
 	}
 
 	if !opts.NoRestore {
@@ -141,16 +145,25 @@ func listAllWorkspaceIDs(exec Executor) []string {
 type ResetOptions struct {
 	WorkspacesDir      string
 	LocalWorkspacesDir string
+	SkipWorkspaceID    string // if non-empty, skip closing this workspace (allows running from inside cmux)
 }
 
 // Reset closes all open cmux workspaces and rebuilds from JSON configs.
 // restore-session is intentionally skipped — this is a clean-slate rebuild.
+// If SkipWorkspaceID is set, that workspace is preserved (allows running from inside cmux).
 func Reset(opts ResetOptions, exec Executor) error {
-	if _, err := exec.Run("cmux", "ping"); err != nil {
-		return fmt.Errorf("cmux is not running: ensure cmux is installed and running")
+	if out, err := exec.Run("cmux", "ping"); err != nil {
+		detail := out
+		if detail == "" {
+			detail = err.Error()
+		}
+		return fmt.Errorf("cmux is not running (%s): ensure cmux is installed and running", detail)
 	}
 
 	for _, id := range listAllWorkspaceIDs(exec) {
+		if opts.SkipWorkspaceID != "" && id == opts.SkipWorkspaceID {
+			continue
+		}
 		exec.Run("cmux", "close-workspace", "--workspace", id) //nolint:errcheck
 	}
 
