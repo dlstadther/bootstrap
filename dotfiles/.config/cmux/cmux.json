@@ -7,9 +7,14 @@
   // Remove a setting to fall back to the value saved in Settings.
 
   "app": {
-    "sendAnonymousTelemetry": false,
+    "newWorkspacePlacement": "end",
     "reorderOnNotification": false,
+    "sendAnonymousTelemetry": false,
     "workspaceInheritWorkingDirectory": false
+  },
+
+  "browser": {
+    "interceptTerminalOpenCommandInCmuxBrowser": false
   },
 
   "notifications": {
