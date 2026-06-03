@@ -16,6 +16,15 @@ cwd_project=$(echo "$payload" | jq -r '.cwd // ""' | xargs basename 2>/dev/null 
 tmux_target=""
 tmux_client=""
 tmux_session=""
+
+# DEBUG: log env to file on every hook fire
+{
+    echo "=== $(date) ==="
+    echo "TMUX_PANE=${TMUX_PANE:-<unset>}"
+    echo "TMUX=${TMUX:-<unset>}"
+    echo "hook_event=$hook_event cwd_project=$cwd_project"
+} >> /tmp/claude-notify-debug.log
+
 if [[ -n "${TMUX_PANE:-}" ]]; then
     tmux_target=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)
     tmux_client=$(tmux display-message -p -t "$TMUX_PANE" '#{client_name}' 2>/dev/null || true)

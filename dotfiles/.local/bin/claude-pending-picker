@@ -44,9 +44,11 @@ fi
 
 list=$(build_list)
 
+header=" Claude Pending  $(date '+%H:%M')  pending_dir: ${PENDING_DIR}"
+
 if [[ -z "$list" ]]; then
-    printf '\n  no pending sessions\n\n'
-    sleep 2
+    printf '\n%s\n\n  no pending sessions\n\n' "$header"
+    sleep 3
     exit 0
 fi
 
@@ -55,7 +57,7 @@ selected=$(printf '%s' "$list" | fzf \
     --with-nth '1,2' \
     --no-sort \
     --ansi \
-    --header $'  Enter: switch (dismiss if gone)  d: dismiss  D: dismiss all  Esc: close' \
+    --header " Claude Pending"$'\n'"  Enter: switch (dismiss if gone)  d: dismiss  D: dismiss all  Esc: close" \
     --preview "tmux capture-pane -t {4} -p -e 2>/dev/null | tail -40 || echo '(session no longer active)'" \
     --preview-window 'right:55%:wrap' \
     --bind "d:execute-silent(rm -f \"${PENDING_DIR}/{3}\")+reload(\"$0\" --list)" \
