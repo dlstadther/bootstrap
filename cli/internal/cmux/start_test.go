@@ -201,6 +201,8 @@ func TestStart_Override(t *testing.T) {
 
 func TestStart_SplitsCreatedInOrder(t *testing.T) {
 	f := newFake()
+	// Return 3 pane IDs so each pane spec gets an explicit surface target.
+	f.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{
 		Name: "myproject",
@@ -218,17 +220,37 @@ func TestStart_SplitsCreatedInOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var splits []string
+	// Verify workspace create is called with --layout (not sequential new-split).
+	hasLayout := false
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-split" {
-			splits = append(splits, c.args[1])
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
+			if indexOf(c.args, "--layout") >= 0 {
+				hasLayout = true
+			}
 		}
 	}
-	if len(splits) != 2 {
-		t.Fatalf("expected 2 splits, got %d", len(splits))
+	if !hasLayout {
+		t.Error("expected workspace create to include --layout for multi-pane config")
 	}
-	if splits[0] != "right" || splits[1] != "down" {
-		t.Errorf("expected right+down, got %v", splits)
+
+	// Verify commands reach the right panes via --surface.
+	surfaceCmds := map[string]string{} // surface -> last command sent
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "send" {
+			si := indexOf(c.args, "--surface")
+			if si >= 0 && si+1 < len(c.args) {
+				surfaceCmds[c.args[si+1]] = c.args[len(c.args)-1]
+			}
+		}
+	}
+	if surfaceCmds["pane:1"] != "agent" {
+		t.Errorf("expected pane:1 to receive agent, got %q", surfaceCmds["pane:1"])
+	}
+	if surfaceCmds["pane:2"] != "ls" {
+		t.Errorf("expected pane:2 to receive ls, got %q", surfaceCmds["pane:2"])
+	}
+	if surfaceCmds["pane:3"] != "lazygit" {
+		t.Errorf("expected pane:3 to receive lazygit, got %q", surfaceCmds["pane:3"])
 	}
 }
 
