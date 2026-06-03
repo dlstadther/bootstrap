@@ -208,7 +208,7 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 			}
 			continue
 		}
-		if _, err := exec.Run("cmux", "new-split", p.Split, "--workspace", wsID); err != nil {
+		if _, err := exec.Run("cmux", "new-split", p.Split, "--workspace", wsID, "--focus", "true"); err != nil {
 			return fmt.Errorf("new-split %s: %w", p.Split, err)
 		}
 		if p.Command != "" {
