@@ -329,6 +329,53 @@ func TestReset_RebuildsWorkspaces(t *testing.T) {
 	}
 }
 
+func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
+	f := newFake()
+	// Selected workspace has * prefix; both should be closed.
+	f.results["cmux list-workspaces"] = "* ws:1 alpha\nws:2 beta"
+
+	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
+		t.Fatal(err)
+	}
+
+	closed := map[string]bool{}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
+			wsIdx := indexOf(c.args, "--workspace")
+			if wsIdx >= 0 {
+				closed[c.args[wsIdx+1]] = true
+			}
+		}
+	}
+	if closed["*"] {
+		t.Error("should not attempt to close the literal token *")
+	}
+	if !closed["ws:1"] || !closed["ws:2"] {
+		t.Errorf("expected both ws:1 and ws:2 closed, got %v", closed)
+	}
+}
+
+func TestFindWorkspace_StarPrefix(t *testing.T) {
+	f := newFake()
+	// The selected workspace has a * prefix; findWorkspace should return the ID, not "*".
+	f.results["cmux list-workspaces"] = "* workspace:1 myproject\nworkspace:2 other"
+
+	// Trigger findWorkspace indirectly via Start (workspace already exists => no new-workspace call).
+	dir := t.TempDir()
+	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
+	data, _ := json.Marshal(wc)
+	os.WriteFile(filepath.Join(dir, "myproject.json"), data, 0644)
+
+	if err := cmux.Start(cmux.StartOptions{NoRestore: true, WorkspacesDir: dir}, f); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+			t.Error("new-workspace should not be called: workspace already exists")
+		}
+	}
+}
+
 func TestStart_LocalWorkspacesDir(t *testing.T) {
 	f := newFake()
 
