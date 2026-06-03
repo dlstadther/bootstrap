@@ -230,6 +230,74 @@ func TestStart_SplitsCreatedInOrder(t *testing.T) {
 	}
 }
 
+func TestReset_CmuxNotRunning(t *testing.T) {
+	f := newFake()
+	f.errs["cmux ping"] = errors.New("connection refused")
+	err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f)
+	if err == nil || !strings.Contains(err.Error(), "cmux is not running") {
+		t.Fatalf("expected cmux not running error, got %v", err)
+	}
+}
+
+func TestReset_ClosesAllWorkspaces(t *testing.T) {
+	f := newFake()
+	f.results["cmux list-workspaces"] = "ws:1 alpha\nws:2 beta"
+
+	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
+		t.Fatal(err)
+	}
+
+	closed := map[string]bool{}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
+			wsIdx := indexOf(c.args, "--workspace")
+			if wsIdx >= 0 {
+				closed[c.args[wsIdx+1]] = true
+			}
+		}
+	}
+	if !closed["ws:1"] || !closed["ws:2"] {
+		t.Errorf("expected both ws:1 and ws:2 closed, got %v", closed)
+	}
+}
+
+func TestReset_NoRestore(t *testing.T) {
+	f := newFake()
+	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "restore-session" {
+			t.Error("restore-session must not be called by reset")
+		}
+	}
+}
+
+func TestReset_RebuildsWorkspaces(t *testing.T) {
+	f := newFake()
+	dir := t.TempDir()
+	wc := cmux.WorkspaceConfig{Name: "rebuilt", CWD: "/code/rebuilt"}
+	data, _ := json.Marshal(wc)
+	os.WriteFile(filepath.Join(dir, "rebuilt.json"), data, 0644)
+
+	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: dir}, f); err != nil {
+		t.Fatal(err)
+	}
+
+	found := false
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+			nameIdx := indexOf(c.args, "--name")
+			if nameIdx >= 0 && c.args[nameIdx+1] == "rebuilt" {
+				found = true
+			}
+		}
+	}
+	if !found {
+		t.Error("expected new-workspace call for 'rebuilt' after reset")
+	}
+}
+
 func TestStart_LocalWorkspacesDir(t *testing.T) {
 	f := newFake()
 

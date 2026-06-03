@@ -122,6 +122,45 @@ func findWorkspace(name string, exec Executor) string {
 	return ""
 }
 
+// listAllWorkspaceIDs returns the ref of every open workspace (first token per line).
+func listAllWorkspaceIDs(exec Executor) []string {
+	out, err := exec.Run("cmux", "list-workspaces")
+	if err != nil || out == "" {
+		return nil
+	}
+	var ids []string
+	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+		if fields := strings.Fields(line); len(fields) > 0 {
+			ids = append(ids, fields[0])
+		}
+	}
+	return ids
+}
+
+// ResetOptions configures bs cmux reset behavior.
+type ResetOptions struct {
+	WorkspacesDir      string
+	LocalWorkspacesDir string
+}
+
+// Reset closes all open cmux workspaces and rebuilds from JSON configs.
+// restore-session is intentionally skipped — this is a clean-slate rebuild.
+func Reset(opts ResetOptions, exec Executor) error {
+	if _, err := exec.Run("cmux", "ping"); err != nil {
+		return fmt.Errorf("cmux is not running: ensure cmux is installed and running")
+	}
+
+	for _, id := range listAllWorkspaceIDs(exec) {
+		exec.Run("cmux", "close-workspace", "--workspace", id) //nolint:errcheck
+	}
+
+	return Start(StartOptions{
+		NoRestore:          true,
+		WorkspacesDir:      opts.WorkspacesDir,
+		LocalWorkspacesDir: opts.LocalWorkspacesDir,
+	}, exec)
+}
+
 func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 	// Leave existing workspaces untouched; restore-session may have recreated them.
 	if findWorkspace(wc.Name, exec) != "" {

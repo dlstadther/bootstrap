@@ -20,6 +20,7 @@ var Cmd = &cobra.Command{
 func init() {
 	Cmd.AddCommand(workspaceCmd)
 	Cmd.AddCommand(startCmd)
+	Cmd.AddCommand(resetCmd)
 }
 
 // realExecutor shells out to real commands.
