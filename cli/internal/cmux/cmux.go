@@ -20,10 +20,19 @@ type AddOptions struct {
 	Agent string
 }
 
-// Add creates a new cmux workspace with the 3-pane agent layout:
-//   Left pane:    agent command staged (no Enter)
-//   Top-right:    ls -al && bd ready (executed)
-//   Bottom-right: lazygit (executed)
+// agentLayout is the 3-pane layout for bs cmux add:
+//   Left  60%: agent command staged (no Enter)
+//   Right 40%, split 50/50:
+//     Top-right:    ls -al && bd ready (executed)
+//     Bottom-right: lazygit (executed)
+const agentLayout = `{"direction":"horizontal","split":0.6,"children":[` +
+	`{"pane":{"surfaces":[{"type":"terminal"}]}},` +
+	`{"direction":"vertical","split":0.5,"children":[` +
+	`{"pane":{"surfaces":[{"type":"terminal"}]}},` +
+	`{"pane":{"surfaces":[{"type":"terminal"}]}}` +
+	`]}]}`
+
+// Add creates a new cmux workspace with the 3-pane agent layout.
 func Add(opts AddOptions, exec Executor) error {
 	if opts.CWD == "" {
 		return fmt.Errorf("--cwd is required")
@@ -41,40 +50,39 @@ func Add(opts AddOptions, exec Executor) error {
 		workspaceName = filepath.Base(opts.CWD)
 	}
 
-	// Create workspace; the initial terminal opens at --cwd.
-	wsOut, err := exec.Run("cmux", "workspace", "create", "--name", workspaceName, "--cwd", opts.CWD)
+	wsOut, err := exec.Run("cmux", "workspace", "create", "--name", workspaceName, "--cwd", opts.CWD, "--layout", agentLayout)
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
-	// Output format is "OK <ref>"; strip the status prefix.
 	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
-	// Capture the left pane ID before splitting so we can focus it later.
-	leftPaneID := firstPane(wsID, exec)
-
-	// Split right; --focus true makes the new pane the active surface.
-	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "right", "--focus", "true")...); err != nil {
-		return fmt.Errorf("new-split right: %w", err)
+	paneIDs := listPaneIDs(wsID, exec)
+	pane := func(i int) string {
+		if i < len(paneIDs) {
+			return paneIDs[i]
+		}
+		return ""
 	}
 
-	// Top-right: cd + ls + bd ready (executed).
-	send(exec, wsID, fmt.Sprintf("cd %s && ls -al && bd ready", shellQuote(opts.CWD)))
-	sendKey(exec, wsID, "enter")
-
-	// Split down from right pane; --focus true makes the new pane the active surface.
-	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "down", "--focus", "true")...); err != nil {
-		return fmt.Errorf("new-split down: %w", err)
+	// Top-right (pane 1): cd + ls + bd ready.
+	if id := pane(1); id != "" {
+		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
+			fmt.Sprintf("cd %s && ls -al && bd ready", shellQuote(opts.CWD)))
+		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
 	}
 
-	// Bottom-right: cd + lazygit (executed).
-	send(exec, wsID, fmt.Sprintf("cd %s && lazygit", shellQuote(opts.CWD)))
-	sendKey(exec, wsID, "enter")
-
-	// Focus left pane, then stage agent command (no Enter).
-	if leftPaneID != "" {
-		exec.Run("cmux", withWS(wsID, "focus-pane", "--pane", leftPaneID)...) //nolint:errcheck
+	// Bottom-right (pane 2): cd + lazygit.
+	if id := pane(2); id != "" {
+		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
+			fmt.Sprintf("cd %s && lazygit", shellQuote(opts.CWD)))
+		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
 	}
-	send(exec, wsID, buildAgentCmd(opts.Agent, opts.CWD))
+
+	// Left pane (pane 0): stage agent command (no Enter), then focus it.
+	if id := pane(0); id != "" {
+		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, buildAgentCmd(opts.Agent, opts.CWD)) //nolint:errcheck
+		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID)                                  //nolint:errcheck
+	}
 
 	return nil
 }
@@ -93,42 +101,6 @@ func buildAgentCmd(agent, cwd string) string {
 		return fmt.Sprintf("claude agents --cwd %s", shellQuote(cwd))
 	}
 	return agent
-}
-
-// withWS builds a cmux subcommand args slice, appending --workspace wsID if non-empty.
-func withWS(wsID string, subcmd string, args ...string) []string {
-	result := append([]string{subcmd}, args...)
-	if wsID != "" {
-		result = append(result, "--workspace", wsID)
-	}
-	return result
-}
-
-func send(exec Executor, wsID, text string) {
-	args := []string{"send"}
-	if wsID != "" {
-		args = append(args, "--workspace", wsID)
-	}
-	args = append(args, text)
-	exec.Run("cmux", args...) //nolint:errcheck
-}
-
-func sendKey(exec Executor, wsID, key string) {
-	args := []string{"send-key"}
-	if wsID != "" {
-		args = append(args, "--workspace", wsID)
-	}
-	args = append(args, key)
-	exec.Run("cmux", args...) //nolint:errcheck
-}
-
-// firstPane returns the ref of the first pane in the workspace.
-func firstPane(wsID string, exec Executor) string {
-	ids := listPaneIDs(wsID, exec)
-	if len(ids) == 0 {
-		return ""
-	}
-	return ids[0]
 }
 
 // shellQuote wraps a path in single quotes, escaping any existing single quotes.
