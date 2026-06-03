@@ -66,7 +66,7 @@ selected=$(printf '%s' "$list" | fzf \
     --no-sort \
     --ansi \
     --header " Claude Pending"$'\n'"  Enter: switch (dismiss if gone)  ctrl-d: dismiss  ctrl-x: dismiss all  Esc: close" \
-    --preview "tmux capture-pane -t {4} -p 2>/dev/null | tail -50 || echo '(session no longer active)'" \
+    --preview "tmux capture-pane -t {4} -p -S -500 2>/dev/null | grep -v '^\s*$' | tail -50 || echo '(session no longer active)'" \
     --preview-window 'right:55%:wrap' \
     --bind "ctrl-d:execute-silent($0 --dismiss {3})+reload($0 --list)" \
     --bind "ctrl-x:execute-silent($0 --dismiss-all)+abort" \
