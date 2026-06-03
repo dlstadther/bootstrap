@@ -37,10 +37,20 @@ build_list() {
     done
 }
 
-if [[ "${1:-}" == "--list" ]]; then
-    build_list
-    exit 0
-fi
+case "${1:-}" in
+    --list)
+        build_list
+        exit 0
+        ;;
+    --dismiss)
+        rm -f "${PENDING_DIR}/${2:?missing session}"
+        exit 0
+        ;;
+    --dismiss-all)
+        find "${PENDING_DIR}" -maxdepth 1 -type f -delete 2>/dev/null || true
+        exit 0
+        ;;
+esac
 
 list=$(build_list)
 
@@ -58,8 +68,8 @@ selected=$(printf '%s' "$list" | fzf \
     --header " Claude Pending"$'\n'"  Enter: switch (dismiss if gone)  d: dismiss  D: dismiss all  Esc: close" \
     --preview "tmux capture-pane -t {4} -p 2>/dev/null | tail -50 || echo '(session no longer active)'" \
     --preview-window 'right:55%:wrap' \
-    --bind "d:execute-silent(rm -f \"${PENDING_DIR}/{3}\")+reload(\"$0\" --list)" \
-    --bind "D:execute-silent(find \"${PENDING_DIR}\" -maxdepth 1 -type f -delete)+abort" \
+    --bind "d:execute-silent($0 --dismiss {3})+reload($0 --list)" \
+    --bind "D:execute-silent($0 --dismiss-all)+abort" \
     --bind 'esc:abort' \
     --bind 'q:abort' \
     || true)
