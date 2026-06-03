@@ -22,7 +22,7 @@ type fakeExec struct {
 func newFake() *fakeExec {
 	f := &fakeExec{results: map[string]string{}, errs: map[string]error{}}
 	// cmux ping succeeds by default (cmux is running)
-	f.results["cmux workspace create"] = "workspace:1"
+	f.results["cmux workspace create"] = "OK workspace:1"
 	f.results["cmux list-panes"] = "pane:1"
 	return f
 }

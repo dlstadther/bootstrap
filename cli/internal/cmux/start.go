@@ -24,6 +24,17 @@ type PaneSpec struct {
 	NoEnter bool   `json:"no_enter"` // stage without executing
 }
 
+// workspaceJSON is a single entry from cmux workspace list --json.
+type workspaceJSON struct {
+	Ref   string `json:"ref"`
+	Title string `json:"title"`
+}
+
+// workspaceListJSON is the top-level response from cmux workspace list --json.
+type workspaceListJSON struct {
+	Workspaces []workspaceJSON `json:"workspaces"`
+}
+
 // StartOptions configures bs cmux start behavior.
 type StartOptions struct {
 	NoRestore          bool
@@ -108,48 +119,36 @@ func Start(opts StartOptions, exec Executor) error {
 }
 
 // findWorkspace returns the workspace ref if a workspace named name exists, or "".
-// Output format: optional "* " prefix for the selected workspace, then ID, then name and other fields.
 func findWorkspace(name string, exec Executor) string {
-	out, err := exec.Run("cmux", "workspace", "list")
+	out, err := exec.Run("cmux", "workspace", "list", "--json")
 	if err != nil || out == "" {
 		return ""
 	}
-	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		fields := strings.Fields(line)
-		for _, field := range fields {
-			if field == name {
-				id := fields[0]
-				if id == "*" && len(fields) > 1 {
-					id = fields[1]
-				}
-				return id
-			}
+	var result workspaceListJSON
+	if err := json.Unmarshal([]byte(out), &result); err != nil {
+		return ""
+	}
+	for _, ws := range result.Workspaces {
+		if ws.Title == name {
+			return ws.Ref
 		}
 	}
 	return ""
 }
 
 // listAllWorkspaceIDs returns the ref of every open workspace.
-// Output format: optional "* " prefix for the selected workspace, then ID, then other fields.
 func listAllWorkspaceIDs(exec Executor) []string {
-	out, err := exec.Run("cmux", "workspace", "list")
+	out, err := exec.Run("cmux", "workspace", "list", "--json")
 	if err != nil || out == "" {
 		return nil
 	}
-	var ids []string
-	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		fields := strings.Fields(line)
-		if len(fields) == 0 {
-			continue
-		}
-		id := fields[0]
-		if id == "*" {
-			if len(fields) < 2 {
-				continue
-			}
-			id = fields[1]
-		}
-		ids = append(ids, id)
+	var result workspaceListJSON
+	if err := json.Unmarshal([]byte(out), &result); err != nil {
+		return nil
+	}
+	ids := make([]string, 0, len(result.Workspaces))
+	for _, ws := range result.Workspaces {
+		ids = append(ids, ws.Ref)
 	}
 	return ids
 }
@@ -197,7 +196,8 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
-	wsID := strings.TrimSpace(wsOut)
+	// Output format is "OK <ref>"; strip the status prefix.
+	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
 	initialPaneID := firstPane(wsID, exec)
 

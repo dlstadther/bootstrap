@@ -156,7 +156,7 @@ func TestStart_CreatesWorkspace(t *testing.T) {
 
 func TestStart_SkipsExistingWorkspace(t *testing.T) {
 	f := newFake()
-	f.results["cmux workspace list"] = "workspace:1 myproject"
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"workspace:1","title":"myproject"}]}`
 
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
@@ -175,7 +175,7 @@ func TestStart_SkipsExistingWorkspace(t *testing.T) {
 
 func TestStart_Override(t *testing.T) {
 	f := newFake()
-	f.results["cmux workspace list"] = "workspace:1 myproject"
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"workspace:1","title":"myproject"}]}`
 
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
@@ -246,7 +246,7 @@ func TestReset_CmuxNotRunning(t *testing.T) {
 
 func TestReset_SkipsCurrentWorkspace(t *testing.T) {
 	f := newFake()
-	f.results["cmux workspace list"] = "ws:1 alpha\nws:2 beta"
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"ws:1","title":"alpha"},{"ref":"ws:2","title":"beta"}]}`
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir(), SkipWorkspaceID: "ws:1"}, f); err != nil {
 		t.Fatal(err)
@@ -270,7 +270,7 @@ func TestReset_SkipsCurrentWorkspace(t *testing.T) {
 
 func TestReset_ClosesAllWorkspaces(t *testing.T) {
 	f := newFake()
-	f.results["cmux workspace list"] = "ws:1 alpha\nws:2 beta"
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"ws:1","title":"alpha"},{"ref":"ws:2","title":"beta"}]}`
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
 		t.Fatal(err)
@@ -326,10 +326,10 @@ func TestReset_RebuildsWorkspaces(t *testing.T) {
 	}
 }
 
-func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
+func TestReset_ClosesAllWorkspacesFromJSON(t *testing.T) {
 	f := newFake()
-	// Selected workspace has * prefix; both should be closed.
-	f.results["cmux workspace list"] = "* ws:1 alpha\nws:2 beta"
+	// JSON output has no * prefix; all workspace refs are closed.
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"ws:1","title":"alpha"},{"ref":"ws:2","title":"beta"}]}`
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
 		t.Fatal(err)
@@ -343,18 +343,15 @@ func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
 			}
 		}
 	}
-	if closed["*"] {
-		t.Error("should not attempt to close the literal token *")
-	}
 	if !closed["ws:1"] || !closed["ws:2"] {
 		t.Errorf("expected both ws:1 and ws:2 closed, got %v", closed)
 	}
 }
 
-func TestFindWorkspace_StarPrefix(t *testing.T) {
+func TestFindWorkspace_FindsByTitle(t *testing.T) {
 	f := newFake()
-	// The selected workspace has a * prefix; findWorkspace should return the ID, not "*".
-	f.results["cmux workspace list"] = "* workspace:1 myproject\nworkspace:2 other"
+	// findWorkspace matches by title in JSON output; returns the ref.
+	f.results["cmux workspace list"] = `{"workspaces":[{"ref":"workspace:1","title":"myproject"},{"ref":"workspace:2","title":"other"}]}`
 
 	// Trigger findWorkspace indirectly via Start (workspace already exists => no new-workspace call).
 	dir := t.TempDir()
