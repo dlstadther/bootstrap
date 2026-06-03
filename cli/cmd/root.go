@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/dlstadther/bootstrap/cli/cmd/brew"
+	"github.com/dlstadther/bootstrap/cli/cmd/cmux"
 	"github.com/dlstadther/bootstrap/cli/cmd/tmux"
 	"github.com/spf13/cobra"
 )
@@ -22,5 +23,6 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(auditCmd)
 	rootCmd.AddCommand(brew.Cmd)
+	rootCmd.AddCommand(cmux.Cmd)
 	rootCmd.AddCommand(tmux.Cmd)
 }
