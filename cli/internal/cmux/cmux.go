@@ -42,9 +42,9 @@ func Add(opts AddOptions, exec Executor) error {
 	}
 
 	// Create workspace; the initial terminal opens at --cwd.
-	wsOut, err := exec.Run("cmux", "new-workspace", "--name", workspaceName, "--cwd", opts.CWD)
+	wsOut, err := exec.Run("cmux", "workspace", "create", "--name", workspaceName, "--cwd", opts.CWD)
 	if err != nil {
-		return fmt.Errorf("new-workspace: %w", err)
+		return fmt.Errorf("workspace create: %w", err)
 	}
 	wsID := strings.TrimSpace(wsOut)
 

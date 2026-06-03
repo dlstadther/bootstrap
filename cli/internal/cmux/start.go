@@ -94,7 +94,7 @@ func Start(opts StartOptions, exec Executor) error {
 	if opts.Override {
 		for _, w := range workspaces {
 			if wsRef := findWorkspace(w.Name, exec); wsRef != "" {
-				exec.Run("cmux", "close-workspace", "--workspace", wsRef) //nolint:errcheck
+				exec.Run("cmux", "workspace", "close", wsRef) //nolint:errcheck
 			}
 		}
 	}
@@ -110,7 +110,7 @@ func Start(opts StartOptions, exec Executor) error {
 // findWorkspace returns the workspace ref if a workspace named name exists, or "".
 // Output format: optional "* " prefix for the selected workspace, then ID, then name and other fields.
 func findWorkspace(name string, exec Executor) string {
-	out, err := exec.Run("cmux", "list-workspaces")
+	out, err := exec.Run("cmux", "workspace", "list")
 	if err != nil || out == "" {
 		return ""
 	}
@@ -132,7 +132,7 @@ func findWorkspace(name string, exec Executor) string {
 // listAllWorkspaceIDs returns the ref of every open workspace.
 // Output format: optional "* " prefix for the selected workspace, then ID, then other fields.
 func listAllWorkspaceIDs(exec Executor) []string {
-	out, err := exec.Run("cmux", "list-workspaces")
+	out, err := exec.Run("cmux", "workspace", "list")
 	if err != nil || out == "" {
 		return nil
 	}
@@ -177,7 +177,7 @@ func Reset(opts ResetOptions, exec Executor) error {
 		if opts.SkipWorkspaceID != "" && id == opts.SkipWorkspaceID {
 			continue
 		}
-		exec.Run("cmux", "close-workspace", "--workspace", id) //nolint:errcheck
+		exec.Run("cmux", "workspace", "close", id) //nolint:errcheck
 	}
 
 	return Start(StartOptions{
@@ -193,9 +193,9 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 		return nil
 	}
 
-	wsOut, err := exec.Run("cmux", "new-workspace", "--name", wc.Name, "--cwd", expandHome(wc.CWD))
+	wsOut, err := exec.Run("cmux", "workspace", "create", "--name", wc.Name, "--cwd", expandHome(wc.CWD))
 	if err != nil {
-		return fmt.Errorf("new-workspace: %w", err)
+		return fmt.Errorf("workspace create: %w", err)
 	}
 	wsID := strings.TrimSpace(wsOut)
 

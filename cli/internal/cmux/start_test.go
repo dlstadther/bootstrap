@@ -141,7 +141,7 @@ func TestStart_CreatesWorkspace(t *testing.T) {
 
 	found := false
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
 			found = true
 			nameIdx := indexOf(c.args, "--name")
 			if nameIdx >= 0 && c.args[nameIdx+1] != "myproject" {
@@ -156,7 +156,7 @@ func TestStart_CreatesWorkspace(t *testing.T) {
 
 func TestStart_SkipsExistingWorkspace(t *testing.T) {
 	f := newFake()
-	f.results["cmux list-workspaces"] = "workspace:1 myproject"
+	f.results["cmux workspace list"] = "workspace:1 myproject"
 
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
@@ -167,15 +167,15 @@ func TestStart_SkipsExistingWorkspace(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
-			t.Error("new-workspace should not be called for existing workspace")
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
+			t.Error("workspace create should not be called for existing workspace")
 		}
 	}
 }
 
 func TestStart_Override(t *testing.T) {
 	f := newFake()
-	f.results["cmux list-workspaces"] = "workspace:1 myproject"
+	f.results["cmux workspace list"] = "workspace:1 myproject"
 
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
@@ -188,9 +188,8 @@ func TestStart_Override(t *testing.T) {
 
 	found := false
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
-			wsIdx := indexOf(c.args, "--workspace")
-			if wsIdx >= 0 && c.args[wsIdx+1] == "workspace:1" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "close" {
+			if len(c.args) > 2 && c.args[2] == "workspace:1" {
 				found = true
 			}
 		}
@@ -247,7 +246,7 @@ func TestReset_CmuxNotRunning(t *testing.T) {
 
 func TestReset_SkipsCurrentWorkspace(t *testing.T) {
 	f := newFake()
-	f.results["cmux list-workspaces"] = "ws:1 alpha\nws:2 beta"
+	f.results["cmux workspace list"] = "ws:1 alpha\nws:2 beta"
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir(), SkipWorkspaceID: "ws:1"}, f); err != nil {
 		t.Fatal(err)
@@ -255,10 +254,9 @@ func TestReset_SkipsCurrentWorkspace(t *testing.T) {
 
 	closed := map[string]bool{}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
-			wsIdx := indexOf(c.args, "--workspace")
-			if wsIdx >= 0 {
-				closed[c.args[wsIdx+1]] = true
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "close" {
+			if len(c.args) > 2 {
+				closed[c.args[2]] = true
 			}
 		}
 	}
@@ -272,7 +270,7 @@ func TestReset_SkipsCurrentWorkspace(t *testing.T) {
 
 func TestReset_ClosesAllWorkspaces(t *testing.T) {
 	f := newFake()
-	f.results["cmux list-workspaces"] = "ws:1 alpha\nws:2 beta"
+	f.results["cmux workspace list"] = "ws:1 alpha\nws:2 beta"
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
 		t.Fatal(err)
@@ -280,10 +278,9 @@ func TestReset_ClosesAllWorkspaces(t *testing.T) {
 
 	closed := map[string]bool{}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
-			wsIdx := indexOf(c.args, "--workspace")
-			if wsIdx >= 0 {
-				closed[c.args[wsIdx+1]] = true
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "close" {
+			if len(c.args) > 2 {
+				closed[c.args[2]] = true
 			}
 		}
 	}
@@ -317,7 +314,7 @@ func TestReset_RebuildsWorkspaces(t *testing.T) {
 
 	found := false
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
 			nameIdx := indexOf(c.args, "--name")
 			if nameIdx >= 0 && c.args[nameIdx+1] == "rebuilt" {
 				found = true
@@ -332,7 +329,7 @@ func TestReset_RebuildsWorkspaces(t *testing.T) {
 func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
 	f := newFake()
 	// Selected workspace has * prefix; both should be closed.
-	f.results["cmux list-workspaces"] = "* ws:1 alpha\nws:2 beta"
+	f.results["cmux workspace list"] = "* ws:1 alpha\nws:2 beta"
 
 	if err := cmux.Reset(cmux.ResetOptions{WorkspacesDir: t.TempDir()}, f); err != nil {
 		t.Fatal(err)
@@ -340,10 +337,9 @@ func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
 
 	closed := map[string]bool{}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "close-workspace" {
-			wsIdx := indexOf(c.args, "--workspace")
-			if wsIdx >= 0 {
-				closed[c.args[wsIdx+1]] = true
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "close" {
+			if len(c.args) > 2 {
+				closed[c.args[2]] = true
 			}
 		}
 	}
@@ -358,7 +354,7 @@ func TestReset_ClosesSelectedWorkspaceWithStarPrefix(t *testing.T) {
 func TestFindWorkspace_StarPrefix(t *testing.T) {
 	f := newFake()
 	// The selected workspace has a * prefix; findWorkspace should return the ID, not "*".
-	f.results["cmux list-workspaces"] = "* workspace:1 myproject\nworkspace:2 other"
+	f.results["cmux workspace list"] = "* workspace:1 myproject\nworkspace:2 other"
 
 	// Trigger findWorkspace indirectly via Start (workspace already exists => no new-workspace call).
 	dir := t.TempDir()
@@ -370,8 +366,8 @@ func TestFindWorkspace_StarPrefix(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
-			t.Error("new-workspace should not be called: workspace already exists")
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
+			t.Error("workspace create should not be called: workspace already exists")
 		}
 	}
 }
@@ -400,7 +396,7 @@ func TestStart_LocalWorkspacesDir(t *testing.T) {
 
 	names := map[string]bool{}
 	for _, c := range f.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
 			nameIdx := indexOf(c.args, "--name")
 			if nameIdx >= 0 {
 				names[c.args[nameIdx+1]] = true
