@@ -44,11 +44,9 @@ fi
 
 list=$(build_list)
 
-header=" Claude Pending  $(date '+%H:%M')  pending_dir: ${PENDING_DIR}"
-
 if [[ -z "$list" ]]; then
-    printf '\n%s\n\n  no pending sessions\n\n' "$header"
-    sleep 3
+    printf '\n  Claude Pending  —  no pending sessions\n\n  press any key to close\n'
+    read -rsn1 2>/dev/null || true
     exit 0
 fi
 
@@ -58,7 +56,7 @@ selected=$(printf '%s' "$list" | fzf \
     --no-sort \
     --ansi \
     --header " Claude Pending"$'\n'"  Enter: switch (dismiss if gone)  d: dismiss  D: dismiss all  Esc: close" \
-    --preview "tmux capture-pane -t {4} -p -e 2>/dev/null | tail -40 || echo '(session no longer active)'" \
+    --preview "tmux capture-pane -t {4} -p 2>/dev/null | tail -50 || echo '(session no longer active)'" \
     --preview-window 'right:55%:wrap' \
     --bind "d:execute-silent(rm -f \"${PENDING_DIR}/{3}\")+reload(\"$0\" --list)" \
     --bind "D:execute-silent(find \"${PENDING_DIR}\" -maxdepth 1 -type f -delete)+abort" \
@@ -68,7 +66,8 @@ selected=$(printf '%s' "$list" | fzf \
 
 if [[ -n "$selected" ]]; then
     session=$(printf '%s' "$selected" | cut -f3)
+    target=$(printf '%s' "$selected" | cut -f4)
     status=$(printf '%s' "$selected" | cut -f5)
     rm -f "${PENDING_DIR}/${session}"
-    [[ "$status" == "live" ]] && tmux switch-client -t "$session"
+    [[ "$status" == "live" ]] && tmux switch-client -t "${target:-$session}"
 fi
