@@ -30,7 +30,11 @@ func (r *realExecutor) Run(cmd string, args ...string) (string, error) {
 	c := exec.Command(cmd, args...)
 	// Strip auto-set cmux context vars so programmatic calls aren't scoped to
 	// the calling terminal's workspace/surface when run from inside cmux.
-	c.Env = stripCmuxContext(os.Environ())
+	// CMUX_QUIET=1 suppresses legacy-command deprecation notices that would
+	// otherwise contaminate output we parse (e.g. workspace IDs).
+	env := stripCmuxContext(os.Environ())
+	env = append(env, "CMUX_QUIET=1")
+	c.Env = env
 	out, err := c.CombinedOutput()
 	return strings.TrimSpace(string(out)), err
 }

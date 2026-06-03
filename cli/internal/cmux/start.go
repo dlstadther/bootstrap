@@ -108,25 +108,29 @@ func Start(opts StartOptions, exec Executor) error {
 }
 
 // findWorkspace returns the workspace ref if a workspace named name exists, or "".
-// cmux list-workspaces output is expected to have one workspace per line; the
-// name appears as a whitespace-separated token. Adjust if the actual format differs.
+// Output format: optional "* " prefix for the selected workspace, then ID, then name and other fields.
 func findWorkspace(name string, exec Executor) string {
 	out, err := exec.Run("cmux", "list-workspaces")
 	if err != nil || out == "" {
 		return ""
 	}
 	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		for _, field := range strings.Fields(line) {
+		fields := strings.Fields(line)
+		for _, field := range fields {
 			if field == name {
-				// Return the first field (workspace ref) from the line.
-				return strings.Fields(line)[0]
+				id := fields[0]
+				if id == "*" && len(fields) > 1 {
+					id = fields[1]
+				}
+				return id
 			}
 		}
 	}
 	return ""
 }
 
-// listAllWorkspaceIDs returns the ref of every open workspace (first token per line).
+// listAllWorkspaceIDs returns the ref of every open workspace.
+// Output format: optional "* " prefix for the selected workspace, then ID, then other fields.
 func listAllWorkspaceIDs(exec Executor) []string {
 	out, err := exec.Run("cmux", "list-workspaces")
 	if err != nil || out == "" {
@@ -134,9 +138,18 @@ func listAllWorkspaceIDs(exec Executor) []string {
 	}
 	var ids []string
 	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		if fields := strings.Fields(line); len(fields) > 0 {
-			ids = append(ids, fields[0])
+		fields := strings.Fields(line)
+		if len(fields) == 0 {
+			continue
 		}
+		id := fields[0]
+		if id == "*" {
+			if len(fields) < 2 {
+				continue
+			}
+			id = fields[1]
+		}
+		ids = append(ids, id)
 	}
 	return ids
 }
