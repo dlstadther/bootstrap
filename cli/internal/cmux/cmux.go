@@ -52,8 +52,8 @@ func Add(opts AddOptions, exec Executor) error {
 	// Capture the left pane ID before splitting so we can focus it later.
 	leftPaneID := firstPane(wsID, exec)
 
-	// Split right — new right pane is now the active surface.
-	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "right")...); err != nil {
+	// Split right; --focus true makes the new pane the active surface.
+	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "right", "--focus", "true")...); err != nil {
 		return fmt.Errorf("new-split right: %w", err)
 	}
 
@@ -61,8 +61,8 @@ func Add(opts AddOptions, exec Executor) error {
 	send(exec, wsID, fmt.Sprintf("cd %s && ls -al && bd ready", shellQuote(opts.CWD)))
 	sendKey(exec, wsID, "enter")
 
-	// Split down — new bottom-right pane is now the active surface.
-	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "down")...); err != nil {
+	// Split down from right pane; --focus true makes the new pane the active surface.
+	if _, err := exec.Run("cmux", withWS(wsID, "new-split", "down", "--focus", "true")...); err != nil {
 		return fmt.Errorf("new-split down: %w", err)
 	}
 
