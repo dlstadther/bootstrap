@@ -228,21 +228,29 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 	// Output format is "OK <ref>"; strip the status prefix.
 	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
-	// Get pane IDs in creation order so we can target sends precisely.
+	// Get pane IDs, then resolve each pane's first surface for targeted sends.
+	// send --surface requires surface refs; pane refs are not valid surface IDs.
 	paneIDs := listPaneIDs(wsID, exec)
+	surfaceIDs := listSurfaceIDsForPanes(wsID, paneIDs, exec)
 
 	for i, p := range wc.Panes {
 		if p.Command == "" {
 			continue
 		}
-		// focus-pane accepts pane refs; send --surface needs surface refs (different IDs).
-		if i < len(paneIDs) {
-			exec.Run("cmux", "focus-pane", "--pane", paneIDs[i], "--workspace", wsID) //nolint:errcheck
+		sendArgs := []string{"send", "--workspace", wsID}
+		if i < len(surfaceIDs) && surfaceIDs[i] != "" {
+			sendArgs = append(sendArgs, "--surface", surfaceIDs[i])
 		}
-		exec.Run("cmux", "send", "--workspace", wsID, p.Command) //nolint:errcheck
+		sendArgs = append(sendArgs, p.Command)
+		exec.Run("cmux", sendArgs...) //nolint:errcheck
 
 		if !p.NoEnter {
-			exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
+			keyArgs := []string{"send-key", "--workspace", wsID}
+			if i < len(surfaceIDs) && surfaceIDs[i] != "" {
+				keyArgs = append(keyArgs, "--surface", surfaceIDs[i])
+			}
+			keyArgs = append(keyArgs, "enter")
+			exec.Run("cmux", keyArgs...) //nolint:errcheck
 		}
 	}
 
@@ -306,6 +314,25 @@ func listPaneIDs(wsID string, exec Executor) []string {
 		}
 	}
 	return ids
+}
+
+// listSurfaceIDsForPanes returns the first surface ref for each pane, in pane order.
+// cmux send --surface requires surface refs (surface:N), not pane refs (pane:N).
+func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec Executor) []string {
+	surfaceIDs := make([]string, len(paneIDs))
+	for i, paneID := range paneIDs {
+		out, err := exec.Run("cmux", "list-pane-surfaces", "--workspace", wsID, "--pane", paneID)
+		if err != nil || out == "" {
+			continue
+		}
+		for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+			if id := strings.TrimSpace(line); id != "" {
+				surfaceIDs[i] = id
+				break
+			}
+		}
+	}
+	return surfaceIDs
 }
 
 func expandHome(path string) string {

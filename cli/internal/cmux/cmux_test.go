@@ -24,6 +24,7 @@ func newFake() *fakeExec {
 	// cmux ping succeeds by default (cmux is running)
 	f.results["cmux workspace create"] = "OK workspace:1"
 	f.results["cmux list-panes"] = "pane:1"
+	f.results["cmux list-pane-surfaces pane:1"] = "surface:1"
 	return f
 }
 
@@ -34,6 +35,12 @@ func (f *fakeExec) Run(cmd string, args ...string) (string, error) {
 		key = cmd + " " + args[0]
 		if args[0] == "workspace" && len(args) > 1 {
 			key = key + " " + args[1]
+		}
+		// list-pane-surfaces keys include --pane value for per-pane results.
+		if args[0] == "list-pane-surfaces" {
+			if pi := indexOf(args, "--pane"); pi >= 0 && pi+1 < len(args) {
+				key = key + " " + args[pi+1]
+			}
 		}
 	}
 	return f.results[key], f.errs[key]
@@ -112,6 +119,9 @@ func TestAdd_WorkspaceNameOverride(t *testing.T) {
 func TestAdd_LayoutCreated(t *testing.T) {
 	exec := newFake()
 	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
+	exec.results["cmux list-pane-surfaces pane:1"] = "surface:1"
+	exec.results["cmux list-pane-surfaces pane:2"] = "surface:2"
+	exec.results["cmux list-pane-surfaces pane:3"] = "surface:3"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
@@ -140,19 +150,33 @@ func TestAdd_LayoutCreated(t *testing.T) {
 		}
 	}
 
-	// Verify sends don't use --surface (pane refs are not valid surface IDs).
+	// Verify sends use surface refs (not pane refs) for targeting.
+	surfaceCmds := map[string]string{}
 	for _, c := range exec.calls {
 		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "send" {
-			if indexOf(c.args, "--surface") >= 0 {
-				t.Error("send must not use --surface with pane refs; use focus-pane to route instead")
+			si := indexOf(c.args, "--surface")
+			if si >= 0 && si+1 < len(c.args) {
+				surfaceCmds[c.args[si+1]] = c.args[len(c.args)-1]
 			}
 		}
+	}
+	if !strings.Contains(surfaceCmds["surface:2"], "ls -al") {
+		t.Errorf("expected surface:2 to receive ls command, got %q", surfaceCmds["surface:2"])
+	}
+	if !strings.Contains(surfaceCmds["surface:3"], "lazygit") {
+		t.Errorf("expected surface:3 to receive lazygit, got %q", surfaceCmds["surface:3"])
+	}
+	if !strings.Contains(surfaceCmds["surface:1"], "claude agents") {
+		t.Errorf("expected surface:1 to receive claude agents, got %q", surfaceCmds["surface:1"])
 	}
 }
 
 func TestAdd_ClaudeAgentStaged(t *testing.T) {
 	exec := newFake()
 	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
+	exec.results["cmux list-pane-surfaces pane:1"] = "surface:1"
+	exec.results["cmux list-pane-surfaces pane:2"] = "surface:2"
+	exec.results["cmux list-pane-surfaces pane:3"] = "surface:3"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
@@ -215,6 +239,7 @@ func TestAdd_NonClaudeAgent(t *testing.T) {
 func TestAdd_FocusLeftPane(t *testing.T) {
 	exec := newFake()
 	exec.results["cmux list-panes"] = "pane:42"
+	exec.results["cmux list-pane-surfaces pane:42"] = "surface:99"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)

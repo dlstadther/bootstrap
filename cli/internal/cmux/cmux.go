@@ -57,33 +57,39 @@ func Add(opts AddOptions, exec Executor) error {
 	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
 	paneIDs := listPaneIDs(wsID, exec)
-	pane := func(i int) string {
-		if i < len(paneIDs) {
-			return paneIDs[i]
+	surfaceIDs := listSurfaceIDsForPanes(wsID, paneIDs, exec)
+	surface := func(i int) string {
+		if i < len(surfaceIDs) {
+			return surfaceIDs[i]
 		}
 		return ""
 	}
 
 	// Top-right (pane 1): cd + ls + bd ready.
-	if id := pane(1); id != "" {
-		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
-		exec.Run("cmux", "send", "--workspace", wsID,                     //nolint:errcheck
+	if id := surface(1); id != "" {
+		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
 			fmt.Sprintf("cd %s && ls -al && bd ready", shellQuote(opts.CWD)))
-		exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
+		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
 	}
 
 	// Bottom-right (pane 2): cd + lazygit.
-	if id := pane(2); id != "" {
-		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
-		exec.Run("cmux", "send", "--workspace", wsID,                     //nolint:errcheck
+	if id := surface(2); id != "" {
+		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
 			fmt.Sprintf("cd %s && lazygit", shellQuote(opts.CWD)))
-		exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
+		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
 	}
 
-	// Left pane (pane 0): focus and stage agent command (no Enter).
-	if id := pane(0); id != "" {
-		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
-		exec.Run("cmux", "send", "--workspace", wsID, buildAgentCmd(opts.Agent, opts.CWD)) //nolint:errcheck
+	// Left pane (pane 0): stage agent command (no Enter), then focus it.
+	agentArgs := []string{"send", "--workspace", wsID}
+	if id := surface(0); id != "" {
+		agentArgs = append(agentArgs, "--surface", id)
+	}
+	agentArgs = append(agentArgs, buildAgentCmd(opts.Agent, opts.CWD))
+	exec.Run("cmux", agentArgs...) //nolint:errcheck
+
+	// Focus the left pane so the user lands there to trigger the agent.
+	if len(paneIDs) > 0 {
+		exec.Run("cmux", "focus-pane", "--pane", paneIDs[0], "--workspace", wsID) //nolint:errcheck
 	}
 
 	return nil
