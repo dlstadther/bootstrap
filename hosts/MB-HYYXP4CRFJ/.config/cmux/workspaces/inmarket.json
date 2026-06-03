@@ -1,0 +1,8 @@
+{
+  "name": "inmarket",
+  "cwd": "~",
+  "panes": [
+    {"command": "kubectx"},
+    {"split": "right", "command": "~/sql_proxy_local.sh --account dstadther@inmarket.com"}
+  ]
+}

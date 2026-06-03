@@ -1,0 +1,8 @@
+{
+  "name": "admin",
+  "cwd": "~",
+  "panes": [
+    {"command": "agentsview update && agentsview serve"},
+    {"split": "right", "command": "cd ~/code/middleman && git pull origin main && mise install && make install && middleman"}
+  ]
+}

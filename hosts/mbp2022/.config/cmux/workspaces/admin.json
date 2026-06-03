@@ -1,0 +1,8 @@
+{
+  "name": "admin",
+  "cwd": "~",
+  "panes": [
+    {"command": "agentsview update --yes && agentsview serve --no-browser"},
+    {"split": "right", "command": "cd ~/code/middleman && git pull origin main && mise install && make install && middleman"}
+  ]
+}
