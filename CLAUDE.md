@@ -99,6 +99,14 @@ git worktree remove ../<repo>-<task>
 git branch -d <task>
 ```
 
+## CMUX Reference Material
+
+When working with CMUX (commands, API, configuration, or behavior), **always consult the latest published web documentation** at https://cmux.com/docs/api before answering or making changes.
+
+- **Do NOT rely on training data or memory** for CMUX details. The API and CLI change, and answers reconstructed from memory have repeatedly been wrong.
+- **Fetch the live docs every time.** Use the `find-docs` skill or fetch https://cmux.com/docs/api directly to confirm command names, flags, surface/pane semantics, and request/response shapes before acting.
+- Verify against the docs even when something "looks obvious" — confirm the exact syntax rather than guessing.
+
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker
