@@ -1,8 +1,10 @@
 package cmux
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	osExec "os/exec"
 	"path/filepath"
 
 	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
@@ -32,7 +34,30 @@ will fail because the cmux CLI requires workspace context to reach the daemon.`,
 		return icmux.Reset(icmux.ResetOptions{
 			WorkspacesDir:      filepath.Join(home, ".config", "cmux", "workspaces"),
 			LocalWorkspacesDir: filepath.Join(home, ".config", "cmux", "workspaces.local"),
-			SkipWorkspaceID:    os.Getenv("CMUX_WORKSPACE_ID"),
+			SkipWorkspaceID:    callerWorkspaceRef(),
 		}, &realExecutor{})
 	},
+}
+
+// callerWorkspaceRef returns the workspace ref (e.g. "workspace:2") for the
+// terminal that invoked this command, by calling cmux identify with the current
+// process env (which still has CMUX_WORKSPACE_ID set). Returns "" if not inside
+// cmux or if the ref cannot be determined.
+func callerWorkspaceRef() string {
+	if os.Getenv("CMUX_WORKSPACE_ID") == "" {
+		return ""
+	}
+	out, err := osExec.Command("cmux", "identify").Output()
+	if err != nil {
+		return ""
+	}
+	var result struct {
+		Caller struct {
+			WorkspaceRef string `json:"workspace_ref"`
+		} `json:"caller"`
+	}
+	if err := json.Unmarshal(out, &result); err != nil {
+		return ""
+	}
+	return result.Caller.WorkspaceRef
 }

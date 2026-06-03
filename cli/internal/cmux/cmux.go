@@ -46,7 +46,8 @@ func Add(opts AddOptions, exec Executor) error {
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
-	wsID := strings.TrimSpace(wsOut)
+	// Output format is "OK <ref>"; strip the status prefix.
+	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
 	// Capture the left pane ID before splitting so we can focus it later.
 	leftPaneID := firstPane(wsID, exec)
