@@ -109,34 +109,41 @@ func TestAdd_WorkspaceNameOverride(t *testing.T) {
 	}
 }
 
-func TestAdd_SplitsCreated(t *testing.T) {
+func TestAdd_LayoutCreated(t *testing.T) {
 	exec := newFake()
+	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var splits []string
+	// Verify workspace create is called with --layout (not new-split).
+	layoutFound := false
 	for _, c := range exec.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-split" {
-			if len(c.args) > 1 {
-				splits = append(splits, c.args[1])
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
+			if idx := indexOf(c.args, "--layout"); idx >= 0 {
+				layoutFound = true
+				if !strings.Contains(c.args[idx+1], "horizontal") {
+					t.Errorf("expected layout JSON to contain horizontal split, got %s", c.args[idx+1])
+				}
 			}
 		}
 	}
-	if len(splits) != 2 {
-		t.Fatalf("expected 2 new-split calls, got %d", len(splits))
+	if !layoutFound {
+		t.Error("expected workspace create with --layout flag")
 	}
-	if splits[0] != "right" {
-		t.Errorf("expected first split to be right, got %s", splits[0])
-	}
-	if splits[1] != "down" {
-		t.Errorf("expected second split to be down, got %s", splits[1])
+
+	// Verify no new-split calls are made.
+	for _, c := range exec.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-split" {
+			t.Error("unexpected new-split call; Add should use --layout instead")
+		}
 	}
 }
 
 func TestAdd_ClaudeAgentStaged(t *testing.T) {
 	exec := newFake()
+	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
