@@ -1,6 +1,7 @@
 tap "coursier/formulas"
 tap "gastownhall/gascity"
 tap "homebrew/bundle"
+tap "manaflow-ai/cmux"
 
 brew "act"
 brew "astro"
@@ -46,6 +47,7 @@ brew "gastownhall/gascity/gascity"
 
 cask "aws-vpn-client"
 cask "claudebar"
+cask "cmux"
 cask "dbeaver-community"
 cask "docker-desktop"
 cask "gcloud-cli"
