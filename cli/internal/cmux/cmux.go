@@ -66,22 +66,24 @@ func Add(opts AddOptions, exec Executor) error {
 
 	// Top-right (pane 1): cd + ls + bd ready.
 	if id := pane(1); id != "" {
-		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
+		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
+		exec.Run("cmux", "send", "--workspace", wsID,                     //nolint:errcheck
 			fmt.Sprintf("cd %s && ls -al && bd ready", shellQuote(opts.CWD)))
-		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
+		exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
 	}
 
 	// Bottom-right (pane 2): cd + lazygit.
 	if id := pane(2); id != "" {
-		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, //nolint:errcheck
+		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
+		exec.Run("cmux", "send", "--workspace", wsID,                     //nolint:errcheck
 			fmt.Sprintf("cd %s && lazygit", shellQuote(opts.CWD)))
-		exec.Run("cmux", "send-key", "--workspace", wsID, "--surface", id, "enter") //nolint:errcheck
+		exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
 	}
 
-	// Left pane (pane 0): stage agent command (no Enter), then focus it.
+	// Left pane (pane 0): focus and stage agent command (no Enter).
 	if id := pane(0); id != "" {
-		exec.Run("cmux", "send", "--workspace", wsID, "--surface", id, buildAgentCmd(opts.Agent, opts.CWD)) //nolint:errcheck
-		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID)                                  //nolint:errcheck
+		exec.Run("cmux", "focus-pane", "--pane", id, "--workspace", wsID) //nolint:errcheck
+		exec.Run("cmux", "send", "--workspace", wsID, buildAgentCmd(opts.Agent, opts.CWD)) //nolint:errcheck
 	}
 
 	return nil

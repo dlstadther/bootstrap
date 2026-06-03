@@ -233,24 +233,41 @@ func TestStart_SplitsCreatedInOrder(t *testing.T) {
 		t.Error("expected workspace create to include --layout for multi-pane config")
 	}
 
-	// Verify commands reach the right panes via --surface.
-	surfaceCmds := map[string]string{} // surface -> last command sent
+	// Verify sends don't use --surface (pane refs are not valid surface IDs).
 	for _, c := range f.calls {
 		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "send" {
-			si := indexOf(c.args, "--surface")
-			if si >= 0 && si+1 < len(c.args) {
-				surfaceCmds[c.args[si+1]] = c.args[len(c.args)-1]
+			if indexOf(c.args, "--surface") >= 0 {
+				t.Error("send must not use --surface with pane refs; use focus-pane to route instead")
 			}
 		}
 	}
-	if surfaceCmds["pane:1"] != "agent" {
-		t.Errorf("expected pane:1 to receive agent, got %q", surfaceCmds["pane:1"])
+
+	// Verify commands are routed to correct panes via focus-pane + send pairs.
+	paneCmds := map[string]string{}
+	var focused string
+	for _, c := range f.calls {
+		if c.cmd != "cmux" || len(c.args) == 0 {
+			continue
+		}
+		switch c.args[0] {
+		case "focus-pane":
+			if idx := indexOf(c.args, "--pane"); idx >= 0 && idx+1 < len(c.args) {
+				focused = c.args[idx+1]
+			}
+		case "send":
+			if focused != "" {
+				paneCmds[focused] = c.args[len(c.args)-1]
+			}
+		}
 	}
-	if surfaceCmds["pane:2"] != "ls" {
-		t.Errorf("expected pane:2 to receive ls, got %q", surfaceCmds["pane:2"])
+	if paneCmds["pane:1"] != "agent" {
+		t.Errorf("expected pane:1 to receive agent, got %q", paneCmds["pane:1"])
 	}
-	if surfaceCmds["pane:3"] != "lazygit" {
-		t.Errorf("expected pane:3 to receive lazygit, got %q", surfaceCmds["pane:3"])
+	if paneCmds["pane:2"] != "ls" {
+		t.Errorf("expected pane:2 to receive ls, got %q", paneCmds["pane:2"])
+	}
+	if paneCmds["pane:3"] != "lazygit" {
+		t.Errorf("expected pane:3 to receive lazygit, got %q", paneCmds["pane:3"])
 	}
 }
 

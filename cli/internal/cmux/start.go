@@ -235,20 +235,14 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 		if p.Command == "" {
 			continue
 		}
-		sendArgs := []string{"send", "--workspace", wsID}
+		// focus-pane accepts pane refs; send --surface needs surface refs (different IDs).
 		if i < len(paneIDs) {
-			sendArgs = append(sendArgs, "--surface", paneIDs[i])
+			exec.Run("cmux", "focus-pane", "--pane", paneIDs[i], "--workspace", wsID) //nolint:errcheck
 		}
-		sendArgs = append(sendArgs, p.Command)
-		exec.Run("cmux", sendArgs...) //nolint:errcheck
+		exec.Run("cmux", "send", "--workspace", wsID, p.Command) //nolint:errcheck
 
 		if !p.NoEnter {
-			keyArgs := []string{"send-key", "--workspace", wsID}
-			if i < len(paneIDs) {
-				keyArgs = append(keyArgs, "--surface", paneIDs[i])
-			}
-			keyArgs = append(keyArgs, "enter")
-			exec.Run("cmux", keyArgs...) //nolint:errcheck
+			exec.Run("cmux", "send-key", "--workspace", wsID, "enter") //nolint:errcheck
 		}
 	}
 

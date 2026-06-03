@@ -139,6 +139,15 @@ func TestAdd_LayoutCreated(t *testing.T) {
 			t.Error("unexpected new-split call; Add should use --layout instead")
 		}
 	}
+
+	// Verify sends don't use --surface (pane refs are not valid surface IDs).
+	for _, c := range exec.calls {
+		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "send" {
+			if indexOf(c.args, "--surface") >= 0 {
+				t.Error("send must not use --surface with pane refs; use focus-pane to route instead")
+			}
+		}
+	}
 }
 
 func TestAdd_ClaudeAgentStaged(t *testing.T) {
