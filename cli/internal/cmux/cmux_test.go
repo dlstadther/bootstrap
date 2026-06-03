@@ -22,7 +22,7 @@ type fakeExec struct {
 func newFake() *fakeExec {
 	f := &fakeExec{results: map[string]string{}, errs: map[string]error{}}
 	// cmux ping succeeds by default (cmux is running)
-	f.results["cmux new-workspace"] = "workspace:1"
+	f.results["cmux workspace create"] = "workspace:1"
 	f.results["cmux list-panes"] = "pane:1"
 	return f
 }
@@ -32,6 +32,9 @@ func (f *fakeExec) Run(cmd string, args ...string) (string, error) {
 	key := cmd
 	if len(args) > 0 {
 		key = cmd + " " + args[0]
+		if args[0] == "workspace" && len(args) > 1 {
+			key = key + " " + args[1]
+		}
 	}
 	return f.results[key], f.errs[key]
 }
@@ -70,7 +73,7 @@ func TestAdd_NewWorkspace(t *testing.T) {
 
 	found := false
 	for _, c := range exec.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
 			found = true
 			// Verify --name defaults to basename of CWD
 			nameIdx := indexOf(c.args, "--name")
@@ -97,7 +100,7 @@ func TestAdd_WorkspaceNameOverride(t *testing.T) {
 	}
 
 	for _, c := range exec.calls {
-		if c.cmd == "cmux" && len(c.args) > 0 && c.args[0] == "new-workspace" {
+		if c.cmd == "cmux" && len(c.args) > 1 && c.args[0] == "workspace" && c.args[1] == "create" {
 			nameIdx := indexOf(c.args, "--name")
 			if nameIdx >= 0 && c.args[nameIdx+1] != "custom" {
 				t.Errorf("expected --name custom, got %s", c.args[nameIdx+1])
