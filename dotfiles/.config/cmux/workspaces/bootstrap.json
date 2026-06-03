@@ -3,7 +3,7 @@
   "cwd": "~/code/bootstrap",
   "panes": [
     {"command": "claude agents --cwd ~/code/bootstrap", "no_enter": true},
-    {"split": "right", "command": "git pull origin main && ls -al && bd ready"},
+    {"split": "right", "size_percent": 40, "command": "git pull origin main && ls -al && bd ready"},
     {"split": "down", "command": "lazygit"}
   ]
 }

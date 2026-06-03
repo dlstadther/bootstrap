@@ -122,21 +122,13 @@ func sendKey(exec Executor, wsID, key string) {
 	exec.Run("cmux", args...) //nolint:errcheck
 }
 
-// firstPane returns the ref of the first pane in the workspace by parsing list-panes output.
+// firstPane returns the ref of the first pane in the workspace.
 func firstPane(wsID string, exec Executor) string {
-	args := []string{"list-panes"}
-	if wsID != "" {
-		args = append(args, "--workspace", wsID)
-	}
-	out, err := exec.Run("cmux", args...)
-	if err != nil || out == "" {
+	ids := listPaneIDs(wsID, exec)
+	if len(ids) == 0 {
 		return ""
 	}
-	lines := strings.Split(strings.TrimSpace(out), "\n")
-	if len(lines) == 0 {
-		return ""
-	}
-	return strings.TrimSpace(lines[0])
+	return ids[0]
 }
 
 // shellQuote wraps a path in single quotes, escaping any existing single quotes.

@@ -19,9 +19,10 @@ type WorkspaceConfig struct {
 // The first pane (index 0) is the workspace's initial pane.
 // Subsequent panes must specify a Split direction.
 type PaneSpec struct {
-	Command string `json:"command"`
-	Split   string `json:"split"`    // "right" | "down" | "left" | "up"; empty for first pane
-	NoEnter bool   `json:"no_enter"` // stage without executing
+	Command     string `json:"command"`
+	Split       string `json:"split"`        // "right" | "down" | "left" | "up"; empty for first pane
+	NoEnter     bool   `json:"no_enter"`     // stage without executing
+	SizePercent int    `json:"size_percent"` // percentage this pane occupies (0 = 50% default)
 }
 
 // workspaceJSON is a single entry from cmux workspace list --json.
@@ -33,6 +34,24 @@ type workspaceJSON struct {
 // workspaceListJSON is the top-level response from cmux workspace list --json.
 type workspaceListJSON struct {
 	Workspaces []workspaceJSON `json:"workspaces"`
+}
+
+// layoutSurface is a terminal surface entry in a cmux layout.
+type layoutSurface struct {
+	Type string `json:"type"`
+}
+
+// layoutPane wraps a list of surfaces in a pane node.
+type layoutPane struct {
+	Surfaces []layoutSurface `json:"surfaces"`
+}
+
+// layoutNode is a node in the cmux layout tree: either a leaf pane or a split.
+type layoutNode struct {
+	Pane      *layoutPane  `json:"pane,omitempty"`
+	Direction string       `json:"direction,omitempty"`
+	Split     float64      `json:"split,omitempty"`
+	Children  []layoutNode `json:"children,omitempty"`
 }
 
 // StartOptions configures bs cmux start behavior.
@@ -192,42 +211,107 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 		return nil
 	}
 
-	wsOut, err := exec.Run("cmux", "workspace", "create", "--name", wc.Name, "--cwd", expandHome(wc.CWD))
+	args := []string{"workspace", "create", "--name", wc.Name, "--cwd", expandHome(wc.CWD)}
+	if len(wc.Panes) > 1 {
+		layout := buildLayout(wc.Panes, 0)
+		data, err := json.Marshal(layout)
+		if err != nil {
+			return fmt.Errorf("build layout: %w", err)
+		}
+		args = append(args, "--layout", string(data))
+	}
+
+	wsOut, err := exec.Run("cmux", args...)
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
 	// Output format is "OK <ref>"; strip the status prefix.
 	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
 
-	initialPaneID := firstPane(wsID, exec)
+	// Get pane IDs in creation order so we can target sends precisely.
+	paneIDs := listPaneIDs(wsID, exec)
 
 	for i, p := range wc.Panes {
-		if i == 0 {
-			if p.Command != "" {
-				sendToPane(exec, wsID, p.Command, p.NoEnter)
-			}
+		if p.Command == "" {
 			continue
 		}
-		if _, err := exec.Run("cmux", "new-split", p.Split, "--workspace", wsID, "--focus", "true"); err != nil {
-			return fmt.Errorf("new-split %s: %w", p.Split, err)
+		sendArgs := []string{"send", "--workspace", wsID}
+		if i < len(paneIDs) {
+			sendArgs = append(sendArgs, "--surface", paneIDs[i])
 		}
-		if p.Command != "" {
-			sendToPane(exec, wsID, p.Command, p.NoEnter)
+		sendArgs = append(sendArgs, p.Command)
+		exec.Run("cmux", sendArgs...) //nolint:errcheck
+
+		if !p.NoEnter {
+			keyArgs := []string{"send-key", "--workspace", wsID}
+			if i < len(paneIDs) {
+				keyArgs = append(keyArgs, "--surface", paneIDs[i])
+			}
+			keyArgs = append(keyArgs, "enter")
+			exec.Run("cmux", keyArgs...) //nolint:errcheck
 		}
 	}
 
-	if initialPaneID != "" {
-		exec.Run("cmux", "focus-pane", "--pane", initialPaneID, "--workspace", wsID) //nolint:errcheck
+	// Return focus to the first (initial) pane.
+	if len(paneIDs) > 0 {
+		exec.Run("cmux", "focus-pane", "--pane", paneIDs[0], "--workspace", wsID) //nolint:errcheck
 	}
 
 	return nil
 }
 
-func sendToPane(exec Executor, wsID, text string, noEnter bool) {
-	send(exec, wsID, text)
-	if !noEnter {
-		sendKey(exec, wsID, "enter")
+// buildLayout recursively constructs a cmux layout tree from pane specs.
+// Each split pane (index > 0) extends from the previous pane's position,
+// mirroring the sequential split model. Only "right" and "down" are common;
+// "left" and "up" place the new pane as the first child.
+func buildLayout(panes []PaneSpec, idx int) layoutNode {
+	leaf := layoutNode{Pane: &layoutPane{Surfaces: []layoutSurface{{Type: "terminal"}}}}
+	if idx >= len(panes)-1 {
+		return leaf
 	}
+
+	next := panes[idx+1]
+	var direction string
+	switch next.Split {
+	case "right", "left":
+		direction = "horizontal"
+	default: // "down", "up"
+		direction = "vertical"
+	}
+
+	// split is the fraction given to the FIRST child.
+	split := 0.5
+	if sp := next.SizePercent; sp > 0 && sp < 100 {
+		if next.Split == "right" || next.Split == "down" {
+			// New pane is the second child; first child gets the remainder.
+			split = 1.0 - float64(sp)/100.0
+		} else {
+			// New pane is the first child; it gets sp%.
+			split = float64(sp) / 100.0
+		}
+	}
+
+	rest := buildLayout(panes, idx+1)
+
+	if next.Split == "left" || next.Split == "up" {
+		return layoutNode{Direction: direction, Split: split, Children: []layoutNode{rest, leaf}}
+	}
+	return layoutNode{Direction: direction, Split: split, Children: []layoutNode{leaf, rest}}
+}
+
+// listPaneIDs returns the ordered refs of all panes in a workspace.
+func listPaneIDs(wsID string, exec Executor) []string {
+	out, err := exec.Run("cmux", "list-panes", "--workspace", wsID)
+	if err != nil || out == "" {
+		return nil
+	}
+	var ids []string
+	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+		if id := strings.TrimSpace(line); id != "" {
+			ids = append(ids, id)
+		}
+	}
+	return ids
 }
 
 func expandHome(path string) string {
