@@ -23,8 +23,8 @@ func newFake() *fakeExec {
 	f := &fakeExec{results: map[string]string{}, errs: map[string]error{}}
 	// cmux ping succeeds by default (cmux is running)
 	f.results["cmux workspace create"] = "OK workspace:1"
-	f.results["cmux list-panes"] = "pane:1"
-	f.results["cmux list-pane-surfaces pane:1"] = "surface:1"
+	f.results["cmux list-panes"] = "* pane:1  [1 surface]  [focused]"
+	f.results["cmux list-pane-surfaces pane:1"] = "* surface:1  Terminal  [selected]"
 	return f
 }
 
@@ -118,10 +118,10 @@ func TestAdd_WorkspaceNameOverride(t *testing.T) {
 
 func TestAdd_LayoutCreated(t *testing.T) {
 	exec := newFake()
-	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
-	exec.results["cmux list-pane-surfaces pane:1"] = "surface:1"
-	exec.results["cmux list-pane-surfaces pane:2"] = "surface:2"
-	exec.results["cmux list-pane-surfaces pane:3"] = "surface:3"
+	exec.results["cmux list-panes"] = "* pane:1  [1 surface]  [focused]\n  pane:2  [1 surface]\n  pane:3  [1 surface]"
+	exec.results["cmux list-pane-surfaces pane:1"] = "* surface:1  Terminal  [selected]"
+	exec.results["cmux list-pane-surfaces pane:2"] = "* surface:2  Terminal  [selected]"
+	exec.results["cmux list-pane-surfaces pane:3"] = "* surface:3  Terminal  [selected]"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
@@ -173,10 +173,10 @@ func TestAdd_LayoutCreated(t *testing.T) {
 
 func TestAdd_ClaudeAgentStaged(t *testing.T) {
 	exec := newFake()
-	exec.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
-	exec.results["cmux list-pane-surfaces pane:1"] = "surface:1"
-	exec.results["cmux list-pane-surfaces pane:2"] = "surface:2"
-	exec.results["cmux list-pane-surfaces pane:3"] = "surface:3"
+	exec.results["cmux list-panes"] = "* pane:1  [1 surface]  [focused]\n  pane:2  [1 surface]\n  pane:3  [1 surface]"
+	exec.results["cmux list-pane-surfaces pane:1"] = "* surface:1  Terminal  [selected]"
+	exec.results["cmux list-pane-surfaces pane:2"] = "* surface:2  Terminal  [selected]"
+	exec.results["cmux list-pane-surfaces pane:3"] = "* surface:3  Terminal  [selected]"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)
@@ -238,8 +238,8 @@ func TestAdd_NonClaudeAgent(t *testing.T) {
 
 func TestAdd_FocusLeftPane(t *testing.T) {
 	exec := newFake()
-	exec.results["cmux list-panes"] = "pane:42"
-	exec.results["cmux list-pane-surfaces pane:42"] = "surface:99"
+	exec.results["cmux list-panes"] = "* pane:42  [1 surface]  [focused]"
+	exec.results["cmux list-pane-surfaces pane:42"] = "* surface:99  Terminal  [selected]"
 	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
 	if err != nil {
 		t.Fatal(err)

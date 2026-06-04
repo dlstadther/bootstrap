@@ -201,10 +201,10 @@ func TestStart_Override(t *testing.T) {
 
 func TestStart_SplitsCreatedInOrder(t *testing.T) {
 	f := newFake()
-	f.results["cmux list-panes"] = "pane:1\npane:2\npane:3"
-	f.results["cmux list-pane-surfaces pane:1"] = "surface:1"
-	f.results["cmux list-pane-surfaces pane:2"] = "surface:2"
-	f.results["cmux list-pane-surfaces pane:3"] = "surface:3"
+	f.results["cmux list-panes"] = "* pane:1  [1 surface]  [focused]\n  pane:2  [1 surface]\n  pane:3  [1 surface]"
+	f.results["cmux list-pane-surfaces pane:1"] = "* surface:1  Terminal  [selected]"
+	f.results["cmux list-pane-surfaces pane:2"] = "* surface:2  Terminal  [selected]"
+	f.results["cmux list-pane-surfaces pane:3"] = "* surface:3  Terminal  [selected]"
 	dir := t.TempDir()
 	wc := cmux.WorkspaceConfig{
 		Name: "myproject",

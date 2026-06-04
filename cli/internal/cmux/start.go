@@ -302,6 +302,8 @@ func buildLayout(panes []PaneSpec, idx int) layoutNode {
 }
 
 // listPaneIDs returns the ordered refs of all panes in a workspace.
+// cmux list-panes outputs lines like "* pane:1  [1 surface]  [focused]" or
+// "  pane:2  [1 surface]"; extract the token starting with "pane:".
 func listPaneIDs(wsID string, exec Executor) []string {
 	out, err := exec.Run("cmux", "list-panes", "--workspace", wsID)
 	if err != nil || out == "" {
@@ -309,8 +311,11 @@ func listPaneIDs(wsID string, exec Executor) []string {
 	}
 	var ids []string
 	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		if id := strings.TrimSpace(line); id != "" {
-			ids = append(ids, id)
+		for _, f := range strings.Fields(line) {
+			if strings.HasPrefix(f, "pane:") {
+				ids = append(ids, f)
+				break
+			}
 		}
 	}
 	return ids
@@ -318,6 +323,8 @@ func listPaneIDs(wsID string, exec Executor) []string {
 
 // listSurfaceIDsForPanes returns the first surface ref for each pane, in pane order.
 // cmux send --surface requires surface refs (surface:N), not pane refs (pane:N).
+// cmux list-pane-surfaces outputs lines like "* surface:1  Terminal  [selected]";
+// extract the token starting with "surface:".
 func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec Executor) []string {
 	surfaceIDs := make([]string, len(paneIDs))
 	for i, paneID := range paneIDs {
@@ -326,8 +333,13 @@ func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec Executor) []stri
 			continue
 		}
 		for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-			if id := strings.TrimSpace(line); id != "" {
-				surfaceIDs[i] = id
+			for _, f := range strings.Fields(line) {
+				if strings.HasPrefix(f, "surface:") {
+					surfaceIDs[i] = f
+					break
+				}
+			}
+			if surfaceIDs[i] != "" {
 				break
 			}
 		}
