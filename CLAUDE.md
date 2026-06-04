@@ -130,6 +130,30 @@ bd close <id>         # Complete work
 
 **Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
 
+### Cross-Machine Sync
+
+**On a new machine (fresh clone):** use `bd bootstrap` — NOT `bd init`. Bootstrap clones the dolt DB from the remote. `bd init` creates an independent local history that can never merge with the remote ("no common ancestor").
+
+**Each session:**
+```bash
+bd dolt pull          # pull at session start (if working across machines)
+# ... do work ...
+bd dolt push          # push at session end (before git push)
+git push
+```
+
+**If dolt remote is missing** (symptom: `bd dolt pull` fails with "no remote"):
+```bash
+bd dolt remote add origin "git+ssh://git@github.com/dlstadther/bootstrap.git"
+bd dolt pull
+```
+
+**If histories diverged** (symptom: "no common ancestor"):
+```bash
+rm -rf .beads/embeddeddolt/bootstrap
+bd bootstrap --yes    # re-clone from remote; local-only closed issues are lost
+```
+
 ## Session Completion
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
