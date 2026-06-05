@@ -31,4 +31,5 @@ __pycache__/
 # Claude Code worktrees
 #######################
 .claude/worktrees/
+.worktrees/
 
