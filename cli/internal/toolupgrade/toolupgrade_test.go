@@ -1,6 +1,7 @@
 package toolupgrade_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/dlstadther/bootstrap/cli/internal/toolupgrade"
@@ -18,10 +19,12 @@ type fakeTool struct {
 	upgraded   bool
 }
 
-func (t *fakeTool) Name() string                                          { return t.name }
-func (t *fakeTool) Installed(toolupgrade.Executor) bool                   { return t.installed }
-func (t *fakeTool) CurrentVersion(toolupgrade.Executor) (string, error)   { return t.current, t.currentErr }
-func (t *fakeTool) LatestVersion(toolupgrade.Executor) (string, error)    { return t.latest, t.latestErr }
+func (t *fakeTool) Name() string                        { return t.name }
+func (t *fakeTool) Installed(toolupgrade.Executor) bool { return t.installed }
+func (t *fakeTool) CurrentVersion(toolupgrade.Executor) (string, error) {
+	return t.current, t.currentErr
+}
+func (t *fakeTool) LatestVersion(toolupgrade.Executor) (string, error) { return t.latest, t.latestErr }
 func (t *fakeTool) Upgrade(toolupgrade.Executor) error {
 	if t.upgradeErr != nil {
 		return t.upgradeErr
@@ -40,6 +43,8 @@ func TestEvaluate(t *testing.T) {
 		{"up to date", &fakeTool{name: "x", installed: true, current: "1.0.0", latest: "1.0.0"}, toolupgrade.StateUpToDate},
 		{"update available", &fakeTool{name: "x", installed: true, current: "1.0.0", latest: "1.1.0"}, toolupgrade.StateUpdateAvailable},
 		{"latest unknown", &fakeTool{name: "x", installed: true, current: "1.0.0", latest: ""}, toolupgrade.StateUnknown},
+		{"current version error", &fakeTool{name: "x", installed: true, currentErr: errors.New("cmd failed")}, toolupgrade.StateUnknown},
+		{"latest version error", &fakeTool{name: "x", installed: true, current: "1.0.0", latestErr: errors.New("cmd failed")}, toolupgrade.StateUnknown},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
