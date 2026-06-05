@@ -2,6 +2,15 @@
 // assume are installed but do not manage via Brewfile or mise.
 package toolupgrade
 
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+	"strings"
+	"text/tabwriter"
+)
+
 // Executor runs a command and returns combined output. LookPath reports whether
 // a binary is resolvable on PATH. Both are seams for testing.
 type Executor interface {
@@ -64,4 +73,121 @@ func Evaluate(t Tool, exec Executor) Status {
 		s.State = StateUpdateAvailable
 	}
 	return s
+}
+
+// Options configures a Run.
+type Options struct {
+	Check bool      // print the table and exit; no prompts, no upgrades
+	Out   io.Writer // defaults to os.Stdout if nil
+}
+
+// Decider receives every upgrade candidate and returns the set of tool names the
+// user approved. It MUST collect all answers before returning; Run applies
+// upgrades only after it returns, so no upgrade can run mid-prompt.
+type Decider func(candidates []Status) (approved map[string]bool, err error)
+
+// Run evaluates all tools, prints a status table, and (unless Check) prompts via
+// decider and applies the approved upgrades.
+func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
+	out := opts.Out
+	if out == nil {
+		out = os.Stdout
+	}
+
+	statuses := make([]Status, 0, len(tools))
+	byName := make(map[string]Tool, len(tools))
+	for _, t := range tools {
+		statuses = append(statuses, Evaluate(t, exec))
+		byName[t.Name()] = t
+	}
+	renderTable(out, statuses)
+
+	if opts.Check {
+		return nil
+	}
+
+	var candidates []Status
+	for _, s := range statuses {
+		if s.State == StateUpdateAvailable || s.State == StateUnknown {
+			candidates = append(candidates, s)
+		}
+	}
+	if len(candidates) == 0 {
+		fmt.Fprintln(out, "\nAll tools up to date.")
+		return nil
+	}
+
+	approved, err := decider(candidates)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintln(out)
+	var upgraded, skipped, failed int
+	for _, c := range candidates {
+		if !approved[c.Name] {
+			skipped++
+			continue
+		}
+		fmt.Fprintf(out, "  → %s … ", c.Name)
+		if err := byName[c.Name].Upgrade(exec); err != nil {
+			fmt.Fprintf(out, "FAILED: %v\n", err)
+			failed++
+			continue
+		}
+		fmt.Fprintln(out, "done")
+		upgraded++
+	}
+	fmt.Fprintf(out, "\nSummary: %d upgraded, %d skipped, %d failed.\n", upgraded, skipped, failed)
+	return nil
+}
+
+func renderTable(out io.Writer, statuses []Status) {
+	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(tw, "TOOL\tCURRENT\tLATEST\tSTATUS")
+	for _, s := range statuses {
+		cur := s.Current
+		if cur == "" {
+			cur = "—"
+		}
+		latest := s.Latest
+		if latest == "" {
+			latest = "—"
+		}
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", s.Name, cur, latest, stateLabel(s.State))
+	}
+	tw.Flush()
+}
+
+func stateLabel(st State) string {
+	switch st {
+	case StateUpToDate:
+		return "up to date"
+	case StateUpdateAvailable:
+		return "update available"
+	case StateNotInstalled:
+		return "not installed"
+	default:
+		return "unknown"
+	}
+}
+
+// StdinDecider returns a Decider that asks y/N for each candidate, reading from in
+// and prompting to out. It reads all answers before returning. Empty/EOF ⇒ No.
+func StdinDecider(in io.Reader, out io.Writer) Decider {
+	return func(candidates []Status) (map[string]bool, error) {
+		approved := make(map[string]bool, len(candidates))
+		reader := bufio.NewReader(in)
+		for _, c := range candidates {
+			latest := c.Latest
+			if latest == "" {
+				latest = "?"
+			}
+			fmt.Fprintf(out, "Upgrade %s (%s → %s)? [y/N] ", c.Name, c.Current, latest)
+			line, _ := reader.ReadString('\n')
+			ans := strings.ToLower(strings.TrimSpace(line))
+			approved[c.Name] = ans == "y" || ans == "yes"
+		}
+		return approved, nil
+	}
 }
