@@ -21,6 +21,7 @@ func init() {
 	Cmd.AddCommand(workspaceCmd)
 	Cmd.AddCommand(startCmd)
 	Cmd.AddCommand(resetCmd)
+	Cmd.AddCommand(clearCmd)
 }
 
 // realExecutor shells out to real commands.
