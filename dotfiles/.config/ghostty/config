@@ -49,7 +49,7 @@
 # resize-overlay-duration = 4s 200ms
 
 # shell
-working-directory = ~
+working-directory = home
 
 # admin
 auto-update = download
