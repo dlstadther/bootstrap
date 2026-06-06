@@ -50,6 +50,7 @@
 
 # shell
 working-directory = home
+window-inherit-working-directory = false
 
 # admin
 auto-update = download
