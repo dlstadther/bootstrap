@@ -90,3 +90,7 @@ cli/             # bs CLI source (Go)
 docs/            # detailed documentation
 Makefile
 ```
+
+## Future Improvements
+
+Deferred ideas: [docs/future-improvements.md](docs/future-improvements.md)
