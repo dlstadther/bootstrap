@@ -118,7 +118,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "ccstatusline",
@@ -136,5 +135,6 @@
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "model": "opus[1m]"
 }
