@@ -121,7 +121,9 @@
   "model": "sonnet",
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+    "command": "ccstatusline",
+    "padding": 0,
+    "refreshInterval": 10
   },
   "enabledPlugins": {
     "code-review@claude-plugins-official": true,
