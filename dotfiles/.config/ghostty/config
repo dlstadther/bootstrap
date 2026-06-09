@@ -60,7 +60,7 @@ window-save-state = always
 
 # aesthetics
 theme = Monokai Classic
-background-opacity = 0.85
+background-opacity = 0.95
 background-blur=16
 macos-titlebar-style = tabs
 window-new-tab-position = end
