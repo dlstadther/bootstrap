@@ -118,39 +118,21 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "sonnet",
   "statusLine": {
     "type": "command",
-    "command": "ccstatusline",
+    "command": "~/.local/share/mise/shims/ccstatusline",
     "padding": 0,
     "refreshInterval": 10
   },
   "enabledPlugins": {
-    "agentsmith@dlstadther-agentsmith": true,
     "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "github@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "wasteland@gastownhall-marketplace": true
-  },
-  "extraKnownMarketplaces": {
-    "dlstadther-agentsmith": {
-      "source": {
-        "source": "directory",
-        "path": "/Users/dlstadther/code/agentsmith"
-      }
-    },
-    "gastownhall-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "gastownhall/marketplace"
-      }
-    }
+    "skill-creator@claude-plugins-official": true
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "agentPushNotifEnabled": true
 }

@@ -33,3 +33,11 @@ __pycache__/
 .claude/worktrees/
 .worktrees/
 
+
+#############################
+# Bootstrap: track host-local
+#############################
+# settings.local.json is globally gitignored, but in this repo
+# hosts/<machine>/.claude/settings.local.json is intentionally committed
+!hosts/**/.claude/settings.local.json
+
