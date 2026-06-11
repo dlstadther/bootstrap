@@ -14,7 +14,6 @@ jq            = "1"
 just          = "1"
 kubectl       = "latest"
 node          = ["latest", "20", "24"]
-"go:go.kenn.io/kata/cmd/kata" = "latest"
 "npm:ccstatusline" = "latest"
 "npm:pnpm"    = "latest"
 python        = "3.12"
