@@ -1,3 +1,4 @@
+tap "atlassian/acli"
 tap "coursier/formulas"
 tap "gastownhall/gascity"
 tap "manaflow-ai/cmux"
@@ -41,6 +42,7 @@ brew "xidel"
 brew "yq"
 brew "zoxide"
 brew "zsh"
+brew "atlassian/acli/acli"
 brew "coursier/formulas/coursier"
 brew "gastownhall/gascity/gascity"
 
