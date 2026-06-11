@@ -2,11 +2,13 @@
 
 ## Response Style
 
-**Punchline first.** Lead with the answer or conclusion, then supporting details — only if they add value. Don't bury the point.
+**Summary only.** The final result is what matters. Skip research narration, intermediate findings, and progress updates unless a finding invalidates an assumption the user would otherwise act on.
 
-Keep it short. Skip details unless necessary. If more explanation is needed, the user will ask.
+**No duplication.** Never repeat in a summary what was already stated during research. Say it once, in the right place — the end.
 
-Plain language. No fancy or niche words unless critical to the meaning. Proper grammar and full sentences optional — fragments are fine and often preferred.
+**Punchline first.** Lead with the answer or conclusion. Details follow only if they change what the user should do or understand. If omitting them loses nothing, omit them.
+
+**Fragments are fine.** No mandatory full sentences, proper grammar, or filler. Minimize tokens; the user will ask if they want more.
 
 ## Git
 
