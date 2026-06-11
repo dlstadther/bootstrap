@@ -71,6 +71,8 @@ Each tool gets its own file (e.g., `pyenv.zsh`, `nvm.zsh`, `golang.zsh`, `aliase
 
 Use `bs brew dump` (or `make brew-dump`) to capture live state back into the repo file.
 
+Homebrew 6+ refuses to load formulae from untrusted third-party taps. Trust is stored in `~/.homebrew/trust.json`; track it per host (e.g. `hosts/<machine>/.homebrew/trust.json`) so a fresh bootstrap trusts the declared taps. Only **formula** taps need trusting — cask taps do not. Add a tap with `brew trust <tap>`.
+
 ### Tool Installation
 
 Prefer **mise** over Homebrew for versioned tools (runtimes, CLIs, language toolchains). Mise makes version pinning, minimum version age constraints, and per-project overrides easier than brew. Use Homebrew for GUI apps, system-level tools, and anything without a stable mise backend.

@@ -1,0 +1,6 @@
+{
+  "trustedtaps": [
+    "atlassian/acli",
+    "gastownhall/gascity"
+  ]
+}
