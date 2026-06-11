@@ -1,5 +1,11 @@
+[settings]
+# Don't install "latest"/fuzzy versions released within the last 7 days.
+# Pinned versions bypass this; per-tool overrides take precedence.
+minimum_release_age = "7d"
+
 [tools]
 bun           = "1"
+circleci      = "latest"
 go            = "1.26"
 golangci-lint = "2"
 helm          = "4"
