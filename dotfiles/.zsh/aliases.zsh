@@ -123,6 +123,7 @@ alias gz='tar -zcvf'
 alias stadther="echo Stadther"
 
 # AI
-alias c="cd ~/code"
-alias cc="claude"
+alias c="claude"
+alias ca="claude agents"
+alias cac="claude agents --cwd $(pwd)"
 alias oc="opencode"
