@@ -138,5 +138,19 @@
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "extraKnownMarketplaces": {
+    "dlstadther-agentsmith": {
+      "source": {
+        "source": "github",
+        "repo": "dlstadther/agentsmith"
+      }
+    },
+    "inmarket-skills": {
+      "source": {
+        "source": "github",
+        "repo": "ThinkNear/agent-skills"
+      }
+    }
+  }
 }

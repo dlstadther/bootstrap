@@ -85,21 +85,21 @@ Claude Code plugins are not tracked in dotfiles directly — they live in `~/.cl
 
 **How it works:**
 - `make install-plugins` runs `scripts/install-plugins.sh`
-- The script registers marketplaces, then reads `enabledPlugins` from `~/.claude/settings.json` via `jq` and installs each enabled plugin
-- `claude-plugins-official` (Anthropic's official marketplace) is always registered as the baseline
-- Non-official marketplace sources are declared in `plugin-marketplaces.json` files:
-  - `dotfiles/.claude/plugin-marketplaces.json` — shared across all hosts
-  - `hosts/<machine>/.claude/plugin-marketplaces.json` — host-specific additions
+- The script reads `enabledPlugins` from `~/.claude/settings.json` via `jq` and installs each enabled plugin
+- Non-official marketplace sources are declared in `extraKnownMarketplaces` in the appropriate `settings.json`:
+  - `dotfiles/.claude/settings.json` — shared across all hosts
+  - `hosts/<machine>/.claude/settings.json` — host-specific additions
 
-**`plugin-marketplaces.json` format** — keys are marketplace IDs (for reference), values are the source passed to `claude plugin marketplace add` (GitHub `owner/repo` or absolute local path):
+**`extraKnownMarketplaces` format:**
 ```json
-{
-  "my-marketplace": "owner/repo",
-  "local-marketplace": "/absolute/path/to/dir"
+"extraKnownMarketplaces": {
+  "marketplace-id": {
+    "source": { "source": "github", "repo": "owner/repo" }
+  }
 }
 ```
 
-When adding a new non-official marketplace, add its source to the appropriate `plugin-marketplaces.json` and enable its plugins in the host's `settings.json` `enabledPlugins`.
+When adding a new non-official marketplace, add it to `extraKnownMarketplaces` in the appropriate `settings.json` and enable its plugins in `enabledPlugins`.
 
 ## Git Workflow
 
