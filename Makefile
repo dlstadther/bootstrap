@@ -1,4 +1,4 @@
-.PHONY: install bootstrap macos-defaults diff diff-host brew-install brew-sync brew-dump init-tmux build-bs test-bs install-plugins
+.PHONY: install bootstrap macos-defaults diff diff-host brew-install brew-sync brew-dump init-tmux build-bs test-bs install-plugins sync
 
 HOST ?= $(shell hostname -s)
 
@@ -60,3 +60,6 @@ init-tmux:
 
 install-plugins:
 	./scripts/install-plugins.sh
+
+sync: install
+	bs sync
