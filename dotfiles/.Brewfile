@@ -1,4 +1,3 @@
-tap "coursier/formulas"
 tap "derailed/k9s"
 tap "gastownhall/gascity"
 tap "grishka/grishka"
@@ -31,7 +30,6 @@ brew "tree"
 brew "vim"
 brew "zoxide"
 brew "zsh"
-brew "coursier/formulas/coursier"
 brew "derailed/k9s/k9s"
 brew "gastownhall/gascity/gascity"
 

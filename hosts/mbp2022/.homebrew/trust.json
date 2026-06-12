@@ -1,0 +1,6 @@
+{
+  "trustedformulae": [
+    "derailed/k9s/k9s",
+    "gastownhall/gascity/gascity"
+  ]
+}
