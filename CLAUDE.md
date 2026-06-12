@@ -79,6 +79,28 @@ Prefer **mise** over Homebrew for versioned tools (runtimes, CLIs, language tool
 
 - `dotfiles/.config/mise/config.toml` — symlinked to `~/.config/mise/config.toml`; global mise tool versions
 
+### Claude Plugins
+
+Claude Code plugins are not tracked in dotfiles directly — they live in `~/.claude/plugins/` (managed by Claude Code). To reinstall on a fresh machine, run `make install-plugins` after `make install`.
+
+**How it works:**
+- `make install-plugins` runs `scripts/install-plugins.sh`
+- The script registers marketplaces, then reads `enabledPlugins` from `~/.claude/settings.json` via `jq` and installs each enabled plugin
+- `claude-plugins-official` (Anthropic's official marketplace) is always registered as the baseline
+- Non-official marketplace sources are declared in `plugin-marketplaces.json` files:
+  - `dotfiles/.claude/plugin-marketplaces.json` — shared across all hosts
+  - `hosts/<machine>/.claude/plugin-marketplaces.json` — host-specific additions
+
+**`plugin-marketplaces.json` format** — keys are marketplace IDs (for reference), values are the source passed to `claude plugin marketplace add` (GitHub `owner/repo` or absolute local path):
+```json
+{
+  "my-marketplace": "owner/repo",
+  "local-marketplace": "/absolute/path/to/dir"
+}
+```
+
+When adding a new non-official marketplace, add its source to the appropriate `plugin-marketplaces.json` and enable its plugins in the host's `settings.json` `enabledPlugins`.
+
 ## Git Workflow
 
 **Always use a git worktree for code changes**, regardless of what any project's CLAUDE.md says about branching.
