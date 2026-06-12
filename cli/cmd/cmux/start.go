@@ -25,7 +25,7 @@ Config format:
     "name": "myproject",
     "cwd": "~/code/myproject",
     "panes": [
-      {"command": "claude agents --cwd ~/code/myproject", "no_enter": true},
+      {"command": "cac", "no_enter": true},
       {"split": "right", "command": "ls -al && bd ready"},
       {"split": "down", "command": "lazygit"}
     ]

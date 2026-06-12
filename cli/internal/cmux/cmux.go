@@ -84,7 +84,7 @@ func Add(opts AddOptions, exec Executor) error {
 	if id := surface(0); id != "" {
 		agentArgs = append(agentArgs, "--surface", id)
 	}
-	agentArgs = append(agentArgs, buildAgentCmd(opts.Agent, opts.CWD))
+	agentArgs = append(agentArgs, buildAgentCmd(opts.Agent))
 	exec.Run("cmux", agentArgs...) //nolint:errcheck
 
 	// Focus the left pane so the user lands there to trigger the agent.
@@ -104,9 +104,11 @@ func isValidAgent(agent string) bool {
 	return false
 }
 
-func buildAgentCmd(agent, cwd string) string {
+func buildAgentCmd(agent string) string {
 	if agent == "claude" {
-		return fmt.Sprintf("claude agents --cwd %s", shellQuote(cwd))
+		// cac is the shell alias for `claude agents --cwd $(pwd)`; the pane's
+		// cwd is already the workspace cwd, so $(pwd) resolves correctly.
+		return "cac"
 	}
 	return agent
 }

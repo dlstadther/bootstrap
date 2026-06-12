@@ -166,8 +166,8 @@ func TestAdd_LayoutCreated(t *testing.T) {
 	if !strings.Contains(surfaceCmds["surface:3"], "lazygit") {
 		t.Errorf("expected surface:3 to receive lazygit, got %q", surfaceCmds["surface:3"])
 	}
-	if !strings.Contains(surfaceCmds["surface:1"], "claude agents") {
-		t.Errorf("expected surface:1 to receive claude agents, got %q", surfaceCmds["surface:1"])
+	if !strings.Contains(surfaceCmds["surface:1"], "cac") {
+		t.Errorf("expected surface:1 to receive cac, got %q", surfaceCmds["surface:1"])
 	}
 }
 
@@ -193,8 +193,8 @@ func TestAdd_ClaudeAgentStaged(t *testing.T) {
 		t.Fatal("expected at least one send call")
 	}
 	text := lastSend.args[len(lastSend.args)-1]
-	if !strings.Contains(text, "claude agents") || !strings.Contains(text, "/code/myproject") {
-		t.Errorf("expected staged claude agents command, got %q", text)
+	if text != "cac" {
+		t.Errorf("expected staged cac command, got %q", text)
 	}
 
 	// Verify no send-key enter follows the staged command.
