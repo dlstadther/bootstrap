@@ -27,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(brew.Cmd)
 	rootCmd.AddCommand(claude.Cmd)
 	rootCmd.AddCommand(cmux.Cmd)
+	rootCmd.AddCommand(syncCmd)
 	rootCmd.AddCommand(tmux.Cmd)
 	rootCmd.AddCommand(tool.Cmd)
 }
