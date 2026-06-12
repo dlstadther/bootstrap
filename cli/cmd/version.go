@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -41,10 +44,23 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-// realExecutor shells out to real commands.
+// realExecutor captures combined output; use for commands where output is parsed.
 type realExecutor struct{}
 
 func (r *realExecutor) Run(cmd string, args ...string) (string, error) {
 	out, err := exec.Command(cmd, args...).CombinedOutput()
 	return strings.TrimSpace(string(out)), err
+}
+
+// streamingExecutor streams stdout/stderr to the terminal while also capturing
+// combined output so callers can include it in error messages.
+type streamingExecutor struct{}
+
+func (s *streamingExecutor) Run(cmd string, args ...string) (string, error) {
+	var buf bytes.Buffer
+	c := exec.Command(cmd, args...)
+	c.Stdout = io.MultiWriter(os.Stdout, &buf)
+	c.Stderr = io.MultiWriter(os.Stderr, &buf)
+	err := c.Run()
+	return strings.TrimSpace(buf.String()), err
 }

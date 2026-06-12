@@ -20,7 +20,7 @@ var syncCmd = &cobra.Command{
   2. brew bundle check  — skip install if already satisfied (use --force to override)
   3. claude plugin install — install each enabled plugin from ~/.claude/settings.json`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		exec := &realExecutor{}
+		exec := &streamingExecutor{}
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return fmt.Errorf("home dir: %w", err)
