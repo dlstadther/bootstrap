@@ -46,7 +46,7 @@ diff-host:
 
 brew-install:
 	brew update
-	brew bundle install --global --verbose
+	brew bundle install --global
 
 brew-sync:
 	brew bundle dump --force --file=/tmp/.Brewfile.current

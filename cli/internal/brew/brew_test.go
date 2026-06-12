@@ -2,6 +2,7 @@ package brew_test
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/dlstadther/bootstrap/cli/internal/brew"
@@ -83,6 +84,24 @@ func TestDump(t *testing.T) {
 	})
 }
 
+// sequentialFake returns preset outputs/errors per call index.
+type sequentialFake struct {
+	results []struct {
+		out string
+		err error
+	}
+	idx int
+}
+
+func (s *sequentialFake) Run(_ string, _ ...string) (string, error) {
+	if s.idx >= len(s.results) {
+		return "", nil
+	}
+	r := s.results[s.idx]
+	s.idx++
+	return r.out, r.err
+}
+
 func TestInstall(t *testing.T) {
 	t.Run("runs brew update then bundle install", func(t *testing.T) {
 		exec := newFake()
@@ -99,6 +118,24 @@ func TestInstall(t *testing.T) {
 		exec.errs["brew"] = errors.New("network error")
 		if err := brew.Install(exec); err == nil {
 			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("includes command output in error when bundle install fails", func(t *testing.T) {
+		fake := &sequentialFake{results: []struct {
+			out string
+			err error
+		}{
+			{out: "", err: nil},                                             // brew update succeeds
+			{out: "Error: some-pkg: not found", err: errors.New("exit 1")}, // bundle install fails
+		}}
+		err := brew.Install(fake)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		msg := err.Error()
+		if !strings.Contains(msg, "Error: some-pkg: not found") {
+			t.Errorf("error message missing brew output: %s", msg)
 		}
 	})
 }

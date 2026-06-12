@@ -42,8 +42,11 @@ func Install(exec Executor) error {
 	if err != nil {
 		return fmt.Errorf("brew update: %w", err)
 	}
-	out, err := exec.Run("brew", "bundle", "install", "--global", "--verbose")
+	out, err := exec.Run("brew", "bundle", "install", "--global")
 	if err != nil {
+		if out != "" {
+			return fmt.Errorf("brew bundle install: %w\n%s", err, out)
+		}
 		return fmt.Errorf("brew bundle install: %w", err)
 	}
 	if out != "" {
