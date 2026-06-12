@@ -2,6 +2,7 @@ package sync_test
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	isync "github.com/dlstadther/bootstrap/cli/internal/sync"
@@ -104,6 +105,71 @@ func TestSyncBrew(t *testing.T) {
 		}}
 		if err := isync.SyncBrew(exec, false); err == nil {
 			t.Fatal("expected error, got nil")
+		}
+	})
+}
+
+func writeSettings(t *testing.T, content string) string {
+	t.Helper()
+	f, err := os.CreateTemp(t.TempDir(), "settings*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.WriteString(content); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	return f.Name()
+}
+
+func TestSyncPlugins(t *testing.T) {
+	t.Run("installs only enabled plugins in sorted order", func(t *testing.T) {
+		path := writeSettings(t, `{"enabledPlugins":{"plugin-a":true,"plugin-b":false,"plugin-c":true}}`)
+		exec := &fakeExec{}
+		if err := isync.SyncPlugins(path, exec); err != nil {
+			t.Fatal(err)
+		}
+		if len(exec.calls) != 2 {
+			t.Fatalf("expected 2 calls, got %d: %v", len(exec.calls), exec.calls)
+		}
+		lastName := func(c call) string { return c.args[len(c.args)-1] }
+		if lastName(exec.calls[0]) != "plugin-a" {
+			t.Errorf("first install: want plugin-a, got %v", exec.calls[0].args)
+		}
+		if lastName(exec.calls[1]) != "plugin-c" {
+			t.Errorf("second install: want plugin-c, got %v", exec.calls[1].args)
+		}
+	})
+
+	t.Run("continues on individual failure and returns combined error", func(t *testing.T) {
+		path := writeSettings(t, `{"enabledPlugins":{"plugin-a":true,"plugin-b":true}}`)
+		exec := &fakeExec{responses: []response{
+			{err: errors.New("install failed")},
+			{},
+		}}
+		if err := isync.SyncPlugins(path, exec); err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if len(exec.calls) != 2 {
+			t.Fatalf("expected both plugins attempted, got %d calls", len(exec.calls))
+		}
+	})
+
+	t.Run("returns error when settings file missing", func(t *testing.T) {
+		exec := &fakeExec{}
+		if err := isync.SyncPlugins("/nonexistent/settings.json", exec); err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("no-op when no plugins enabled", func(t *testing.T) {
+		path := writeSettings(t, `{"enabledPlugins":{"plugin-a":false}}`)
+		exec := &fakeExec{}
+		if err := isync.SyncPlugins(path, exec); err != nil {
+			t.Fatal(err)
+		}
+		if len(exec.calls) != 0 {
+			t.Fatalf("expected 0 calls, got %d", len(exec.calls))
 		}
 	})
 }
