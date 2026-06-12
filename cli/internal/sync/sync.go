@@ -32,7 +32,10 @@ func SyncBrew(exec Executor, force bool) error {
 			return nil
 		}
 	}
-	if _, err := exec.Run("brew", "bundle", "install", "--global"); err != nil {
+	if out, err := exec.Run("brew", "bundle", "install", "--global"); err != nil {
+		if out != "" {
+			return fmt.Errorf("brew bundle install: %w\n%s", err, out)
+		}
 		return fmt.Errorf("brew bundle install: %w", err)
 	}
 	return nil

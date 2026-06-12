@@ -3,6 +3,7 @@ package sync_test
 import (
 	"errors"
 	"os"
+	"strings"
 	"testing"
 
 	isync "github.com/dlstadther/bootstrap/cli/internal/sync"
@@ -105,6 +106,20 @@ func TestSyncBrew(t *testing.T) {
 		}}
 		if err := isync.SyncBrew(exec, false); err == nil {
 			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("install failure includes brew output in error", func(t *testing.T) {
+		exec := &fakeExec{responses: []response{
+			{err: errors.New("missing packages")},                                        // check fails
+			{output: "Error: some-pkg: not found", err: errors.New("exit status 1")},    // install fails with output
+		}}
+		err := isync.SyncBrew(exec, false)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Error: some-pkg: not found") {
+			t.Errorf("error missing brew output: %s", err.Error())
 		}
 	})
 }
