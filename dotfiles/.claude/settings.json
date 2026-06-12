@@ -130,7 +130,16 @@
     "claude-md-management@claude-plugins-official": true,
     "github@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "caveman@caveman": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    }
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
