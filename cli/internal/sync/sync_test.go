@@ -53,3 +53,57 @@ func TestSyncMise(t *testing.T) {
 		}
 	})
 }
+
+func TestSyncBrew(t *testing.T) {
+	t.Run("check passes, skips install", func(t *testing.T) {
+		exec := &fakeExec{} // no error = check exits 0
+		if err := isync.SyncBrew(exec, false); err != nil {
+			t.Fatal(err)
+		}
+		if len(exec.calls) != 1 {
+			t.Fatalf("expected 1 call, got %d", len(exec.calls))
+		}
+		if exec.calls[0].args[1] != "check" {
+			t.Errorf("expected bundle check, got %v", exec.calls[0].args)
+		}
+	})
+
+	t.Run("check fails, runs install", func(t *testing.T) {
+		exec := &fakeExec{responses: []response{
+			{err: errors.New("missing packages")}, // check fails
+			{},                                     // install succeeds
+		}}
+		if err := isync.SyncBrew(exec, false); err != nil {
+			t.Fatal(err)
+		}
+		if len(exec.calls) != 2 {
+			t.Fatalf("expected 2 calls, got %d", len(exec.calls))
+		}
+		if exec.calls[1].args[1] != "install" {
+			t.Errorf("expected bundle install, got %v", exec.calls[1].args)
+		}
+	})
+
+	t.Run("force skips check, runs install", func(t *testing.T) {
+		exec := &fakeExec{}
+		if err := isync.SyncBrew(exec, true); err != nil {
+			t.Fatal(err)
+		}
+		if len(exec.calls) != 1 {
+			t.Fatalf("expected 1 call, got %d", len(exec.calls))
+		}
+		if exec.calls[0].args[1] != "install" {
+			t.Errorf("expected bundle install, got %v", exec.calls[0].args)
+		}
+	})
+
+	t.Run("install failure returns error", func(t *testing.T) {
+		exec := &fakeExec{responses: []response{
+			{err: errors.New("missing packages")}, // check fails
+			{err: errors.New("network error")},     // install fails
+		}}
+		if err := isync.SyncBrew(exec, false); err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+}
