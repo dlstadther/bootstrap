@@ -72,7 +72,7 @@ func TestSyncBrew(t *testing.T) {
 	t.Run("check fails, runs install", func(t *testing.T) {
 		exec := &fakeExec{responses: []response{
 			{err: errors.New("missing packages")}, // check fails
-			{},                                     // install succeeds
+			{},                                    // install succeeds
 		}}
 		if err := isync.SyncBrew(exec, false); err != nil {
 			t.Fatal(err)
@@ -101,7 +101,7 @@ func TestSyncBrew(t *testing.T) {
 	t.Run("install failure returns error", func(t *testing.T) {
 		exec := &fakeExec{responses: []response{
 			{err: errors.New("missing packages")}, // check fails
-			{err: errors.New("network error")},     // install fails
+			{err: errors.New("network error")},    // install fails
 		}}
 		if err := isync.SyncBrew(exec, false); err == nil {
 			t.Fatal("expected error, got nil")
