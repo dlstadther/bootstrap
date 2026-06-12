@@ -134,7 +134,17 @@
     "skill-creator@claude-plugins-official": true,
     "caveman@caveman": true,
     "team-update-report@inmarket-skills": true,
-    "circleci-logs@inmarket-skills": true
+    "circleci-logs@inmarket-skills": true,
+    "jira@measurement-reporting-tools": true,
+    "pr-wrapup@measurement-reporting-tools": true
+  },
+  "extraKnownMarketplaces": {
+    "measurement-reporting-tools": {
+      "source": {
+        "source": "github",
+        "repo": "NinthDecimal/measurement_reporting_scripts"
+      }
+    }
   },
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
