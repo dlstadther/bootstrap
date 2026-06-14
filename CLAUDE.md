@@ -30,7 +30,7 @@ make macos-defaults   # macOS defaults only
 bs help               # list all commands
 bs version            # show installed vs repo commit hash
 bs audit              # check dotfile symlinks + brew drift
-bs brew sync          # show drift between live brew state and .Brewfile
+bs brew diff          # show drift between live brew state and .Brewfile
 bs brew dump          # write live brew state back to .Brewfile
 bs brew install       # install packages from .Brewfile
 bs tmux add --cwd <path> [--name <name>] [--agent claude]

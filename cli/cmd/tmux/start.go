@@ -57,7 +57,7 @@ By default, tmux-resurrect restore runs before creating sessions.`,
 
 func init() {
 	startCmd.Flags().BoolVar(&startNoRestore, "no-restore", false, "Skip tmux-resurrect restore step")
-	startCmd.Flags().BoolVar(&startOverride, "override", false, "Kill sessions named in YAML configs before recreating them")
+	startCmd.Flags().BoolVar(&startOverride, "override", false, "Replace sessions named in configs (close existing before recreating)")
 }
 
 func findResurrectScript(home string) string {

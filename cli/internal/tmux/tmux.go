@@ -48,7 +48,7 @@ func Add(opts AddOptions, exec Executor) error {
 			return fmt.Errorf("create session: %w", err)
 		}
 	} else {
-		windowName = resolveWindowName(sessionName, windowName, opts.Name == "", exec)
+		windowName = ensureUniqueWindowName(sessionName, windowName, opts.Name == "", exec)
 		if _, err := exec.Run("tmux", "new-window", "-t", sessionName, "-n", windowName, "-c", opts.CWD); err != nil {
 			return fmt.Errorf("new window: %w", err)
 		}
@@ -81,7 +81,10 @@ func sessionExists(name string, exec Executor) bool {
 	return err == nil
 }
 
-func resolveWindowName(session, base string, autoName bool, exec Executor) string {
+// ensureUniqueWindowName returns base unchanged when the user supplied an
+// explicit name (autoName=false). For auto-named windows it appends -2, -3, …
+// until the name is free, avoiding collisions with existing windows.
+func ensureUniqueWindowName(session, base string, autoName bool, exec Executor) string {
 	if !autoName {
 		return base
 	}

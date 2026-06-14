@@ -272,6 +272,15 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 // Each split pane (index > 0) extends from the previous pane's position,
 // mirroring the sequential split model. Only "right" and "down" are common;
 // "left" and "up" place the new pane as the first child.
+//
+// Split (cmux's fraction) always describes the FIRST child's share, but the new
+// pane lands in a different child slot depending on direction, so SizePercent
+// must be flipped to match:
+//   - "right"/"down": new pane is the SECOND child, so the first child keeps the
+//     remainder → split = 1 - sp.
+//   - "left"/"up":    new pane is the FIRST child, so it gets sp directly →
+//     split = sp.
+// Without this flip, --size-percent would size the wrong pane for left/up.
 func buildLayout(panes []PaneSpec, idx int) layoutNode {
 	leaf := layoutNode{Pane: &layoutPane{Surfaces: []layoutSurface{{Type: "terminal"}}}}
 	if idx >= len(panes)-1 {

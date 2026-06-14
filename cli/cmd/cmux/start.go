@@ -52,5 +52,5 @@ By default, cmux restore-session runs before creating workspaces.`,
 
 func init() {
 	startCmd.Flags().BoolVar(&startNoRestore, "no-restore", false, "Skip cmux restore-session step")
-	startCmd.Flags().BoolVar(&startOverride, "override", false, "Close workspaces named in configs before recreating them")
+	startCmd.Flags().BoolVar(&startOverride, "override", false, "Replace workspaces named in configs (close existing before recreating)")
 }

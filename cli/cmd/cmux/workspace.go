@@ -1,6 +1,9 @@
 package cmux
 
 import (
+	"fmt"
+	"strings"
+
 	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
 	"github.com/spf13/cobra"
 )
@@ -32,6 +35,6 @@ Creates a new workspace with:
 func init() {
 	workspaceCmd.Flags().StringVar(&addCWD, "cwd", "", "Working directory for all panes (required)")
 	workspaceCmd.Flags().StringVar(&addName, "name", "", "Workspace name override (default: basename of --cwd)")
-	workspaceCmd.Flags().StringVar(&addAgent, "agent", "claude", "Agent to stage in left pane (claude|codex|gemini|opencode|pi)")
+	workspaceCmd.Flags().StringVar(&addAgent, "agent", "claude", fmt.Sprintf("Agent to stage in left pane (%s)", strings.Join(icmux.AllowedAgents, "|")))
 	_ = workspaceCmd.MarkFlagRequired("cwd")
 }
