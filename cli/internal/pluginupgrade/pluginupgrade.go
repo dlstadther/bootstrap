@@ -16,13 +16,18 @@ type Executor interface {
 	LookPath(name string) (string, error)
 }
 
-// State is the upgrade status of a plugin.
+// State is the status of a plugin.
+//
+// The claude CLI cannot report the latest available version of a plugin
+// (`claude plugins list` only knows the installed version), so there is no
+// reliable up-to-date/update-available distinction. Every installed plugin is
+// therefore eligible for an update via `claude plugins update`, which always
+// pulls the latest version.
 type State int
 
 const (
-	StateUpToDate State = iota
-	StateUpdateAvailable
-	StateUnknown
+	StateInstalled State = iota // installed; eligible for update
+	StateUnknown                // installed but current version could not be determined
 	StateNotInstalled
 )
 
@@ -30,7 +35,6 @@ const (
 type Status struct {
 	Name    string
 	Current string
-	Latest  string
 	State   State
 }
 
@@ -39,7 +43,6 @@ type Tool interface {
 	Name() string
 	Installed(exec Executor) bool
 	CurrentVersion(exec Executor) (string, error)
-	LatestVersion(exec Executor) (string, error)
 	Upgrade(exec Executor) error
 }
 
@@ -56,19 +59,7 @@ func Evaluate(t Tool, exec Executor) Status {
 		return s
 	}
 	s.Current = cur
-
-	latest, err := t.LatestVersion(exec)
-	if err != nil || latest == "" {
-		s.State = StateUnknown
-		return s
-	}
-	s.Latest = latest
-
-	if cur == latest {
-		s.State = StateUpToDate
-	} else {
-		s.State = StateUpdateAvailable
-	}
+	s.State = StateInstalled
 	return s
 }
 
@@ -103,12 +94,12 @@ func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
 
 	var candidates []Status
 	for _, s := range statuses {
-		if s.State == StateUpdateAvailable || s.State == StateUnknown {
+		if s.State == StateInstalled || s.State == StateUnknown {
 			candidates = append(candidates, s)
 		}
 	}
 	if len(candidates) == 0 {
-		fmt.Fprintln(out, "\nAll plugins up to date.")
+		fmt.Fprintln(out, "\nNo installed plugins to update.")
 		return nil
 	}
 
@@ -139,27 +130,21 @@ func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
 
 func renderTable(out io.Writer, statuses []Status) {
 	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(tw, "PLUGIN\tCURRENT\tLATEST\tSTATUS")
+	fmt.Fprintln(tw, "PLUGIN\tVERSION\tSTATUS")
 	for _, s := range statuses {
 		cur := s.Current
 		if cur == "" {
 			cur = "—"
 		}
-		latest := s.Latest
-		if latest == "" {
-			latest = "—"
-		}
-		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", s.Name, cur, latest, stateLabel(s.State))
+		fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Name, cur, stateLabel(s.State))
 	}
 	tw.Flush()
 }
 
 func stateLabel(st State) string {
 	switch st {
-	case StateUpToDate:
-		return "up to date"
-	case StateUpdateAvailable:
-		return "update available"
+	case StateInstalled:
+		return "installed"
 	case StateNotInstalled:
 		return "not installed"
 	default:
@@ -173,11 +158,11 @@ func StdinDecider(in io.Reader, out io.Writer) Decider {
 		approved := make(map[string]bool, len(candidates))
 		reader := bufio.NewReader(in)
 		for _, c := range candidates {
-			latest := c.Latest
-			if latest == "" {
-				latest = "?"
+			cur := c.Current
+			if cur == "" {
+				cur = "—"
 			}
-			fmt.Fprintf(out, "Upgrade %s (%s → %s)? [y/N] ", c.Name, c.Current, latest)
+			fmt.Fprintf(out, "Update %s (current %s)? [y/N] ", c.Name, cur)
 			line, _ := reader.ReadString('\n')
 			ans := strings.ToLower(strings.TrimSpace(line))
 			approved[c.Name] = ans == "y" || ans == "yes"

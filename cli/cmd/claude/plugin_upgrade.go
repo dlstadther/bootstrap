@@ -14,8 +14,9 @@ var pluginUpgradeCmd = &cobra.Command{
 	Use:   "upgrade",
 	Short: "Check and optionally upgrade Claude Code plugins",
 	Long: `upgrade lists all installed, enabled plugins, prompts yes/no for each
-out-of-date or unknown-version plugin up front, then applies only the approved
-upgrades.
+one up front, then applies only the approved updates. The claude CLI cannot
+report the latest available plugin version, so every installed plugin is
+offered; "claude plugins update" always pulls the latest.
 
 Use --check to print the status table without prompting or upgrading.`,
 	RunE: func(cmd *cobra.Command, args []string) error {

@@ -14,7 +14,6 @@ type Plugin struct {
 func (p Plugin) Name() string                              { return p.name }
 func (p Plugin) Installed(_ Executor) bool                 { return true }
 func (p Plugin) CurrentVersion(_ Executor) (string, error) { return p.version, nil }
-func (p Plugin) LatestVersion(_ Executor) (string, error)  { return "", nil }
 func (p Plugin) Upgrade(exec Executor) error {
 	if _, err := exec.Run("claude", "plugins", "update", p.name); err != nil {
 		return fmt.Errorf("claude plugins update %s: %w", p.name, err)
