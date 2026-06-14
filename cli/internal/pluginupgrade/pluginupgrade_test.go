@@ -40,11 +40,13 @@ type stubTool struct {
 	upgradeErr error
 }
 
-func (t stubTool) Name() string                                            { return t.name }
-func (t stubTool) Installed(_ pluginupgrade.Executor) bool                 { return t.installed }
-func (t stubTool) CurrentVersion(_ pluginupgrade.Executor) (string, error) { return t.current, t.curErr }
-func (t stubTool) LatestVersion(_ pluginupgrade.Executor) (string, error)  { return t.latest, t.latErr }
-func (t stubTool) Upgrade(_ pluginupgrade.Executor) error                  { return t.upgradeErr }
+func (t stubTool) Name() string                            { return t.name }
+func (t stubTool) Installed(_ pluginupgrade.Executor) bool { return t.installed }
+func (t stubTool) CurrentVersion(_ pluginupgrade.Executor) (string, error) {
+	return t.current, t.curErr
+}
+func (t stubTool) LatestVersion(_ pluginupgrade.Executor) (string, error) { return t.latest, t.latErr }
+func (t stubTool) Upgrade(_ pluginupgrade.Executor) error                 { return t.upgradeErr }
 
 func newExec() *stubExec {
 	return &stubExec{outputs: map[string]string{}, errs: map[string]error{}}
@@ -121,6 +123,24 @@ func TestRun_CheckOnly_NoDeciderCall(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), "plug-a") {
 		t.Fatalf("output should contain plugin name, got: %s", out.String())
+	}
+}
+
+type failWriter struct{ err error }
+
+func (f failWriter) Write([]byte) (int, error) { return 0, f.err }
+
+func TestRun_ReturnsWriteError(t *testing.T) {
+	tool := stubTool{name: "plug-a", installed: true, current: "1.0.0", latest: "1.0.0"}
+	decider := pluginupgrade.Decider(func(_ []pluginupgrade.Status) (map[string]bool, error) { return nil, nil })
+	err := pluginupgrade.Run(
+		pluginupgrade.Options{Out: failWriter{err: errors.New("disk full")}},
+		newExec(),
+		[]pluginupgrade.Tool{tool},
+		decider,
+	)
+	if err == nil {
+		t.Fatal("expected write error to surface")
 	}
 }
 

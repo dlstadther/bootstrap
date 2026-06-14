@@ -142,6 +142,19 @@ func TestRunContinuesAfterFailure(t *testing.T) {
 	}
 }
 
+type failWriter struct{ err error }
+
+func (f failWriter) Write([]byte) (int, error) { return 0, f.err }
+
+func TestRunReturnsWriteError(t *testing.T) {
+	a := &fakeTool{name: "a", installed: true, current: "1.0.0", latest: "1.0.0"}
+	decider := func([]toolupgrade.Status) (map[string]bool, error) { return nil, nil }
+	err := toolupgrade.Run(toolupgrade.Options{Out: failWriter{err: errors.New("disk full")}}, nil, []toolupgrade.Tool{a}, decider)
+	if err == nil {
+		t.Fatal("expected write error to surface")
+	}
+}
+
 func TestRunNoCandidatesSkipsDecider(t *testing.T) {
 	a := &fakeTool{name: "a", installed: true, current: "1.0.0", latest: "1.0.0"}
 	called := false

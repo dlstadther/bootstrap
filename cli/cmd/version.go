@@ -29,9 +29,14 @@ var versionCmd = &cobra.Command{
 		hash, err := igit.CurrentHash(repoPath, ex)
 		if err != nil {
 			fmt.Printf("repo:     error reading repo hash: %v\n", err)
+			fmt.Println("          (is git installed and is BOOTSTRAP_REPO a valid repo?)")
 			return nil
 		}
-		dirty, _ := igit.IsDirty(repoPath, ex)
+		dirty, err := igit.IsDirty(repoPath, ex)
+		if err != nil {
+			fmt.Printf("repo:     %s  (error checking dirty state: %v)\n", hash, err)
+			return nil
+		}
 
 		suffix := ""
 		if dirty {
