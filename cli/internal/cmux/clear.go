@@ -3,6 +3,8 @@ package cmux
 import (
 	"encoding/json"
 	"fmt"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 // WorkspaceInfo holds the ref and title of a cmux workspace.
@@ -13,7 +15,7 @@ type WorkspaceInfo struct {
 
 // ListOtherWorkspaces returns all open workspaces except skipRef.
 // Returns an error if cmux is not running.
-func ListOtherWorkspaces(skipRef string, exec Executor) ([]WorkspaceInfo, error) {
+func ListOtherWorkspaces(skipRef string, exec iexec.Executor) ([]WorkspaceInfo, error) {
 	if out, err := exec.Run("cmux", "ping"); err != nil {
 		detail := out
 		if detail == "" {
@@ -42,7 +44,7 @@ func ListOtherWorkspaces(skipRef string, exec Executor) ([]WorkspaceInfo, error)
 }
 
 // ClearWorkspaces closes each workspace in the provided list.
-func ClearWorkspaces(toClose []WorkspaceInfo, exec Executor) {
+func ClearWorkspaces(toClose []WorkspaceInfo, exec iexec.Executor) {
 	for _, ws := range toClose {
 		exec.Run("cmux", "workspace", "close", ws.Ref) //nolint:errcheck
 	}

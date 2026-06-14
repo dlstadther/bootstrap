@@ -3,10 +3,13 @@ package tmux
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/paths"
+
+	"github.com/spf13/cobra"
 
 	itmux "github.com/dlstadther/bootstrap/cli/internal/tmux"
-	"github.com/spf13/cobra"
 )
 
 var resetCmd = &cobra.Command{
@@ -24,17 +27,14 @@ kill-server to terminate this process before the rebuild can run.`,
 			return fmt.Errorf("must be run from outside tmux — kill-server would terminate this process")
 		}
 
-		home, err := os.UserHomeDir()
+		p, err := paths.Load()
 		if err != nil {
-			return fmt.Errorf("home dir: %w", err)
+			return err
 		}
 
-		sessionsDir := filepath.Join(home, ".config", "tmux", "sessions")
-		localSessionsDir := filepath.Join(home, ".config", "tmux", "sessions.local")
-
 		return itmux.Reset(itmux.ResetOptions{
-			SessionsDir:      sessionsDir,
-			LocalSessionsDir: localSessionsDir,
-		}, &realExecutor{})
+			SessionsDir:      p.TmuxSessionsDir,
+			LocalSessionsDir: p.TmuxLocalSessionsDir,
+		}, &iexec.Real{})
 	},
 }

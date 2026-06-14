@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -84,7 +86,7 @@ func LoadSessions(dir string) ([]SessionConfig, error) {
 // 2. Optionally restore via tmux-resurrect
 // 3. Optionally kill conflicting sessions (--override)
 // 4. Create sessions from YAML configs
-func Start(opts StartOptions, exec Executor) error {
+func Start(opts StartOptions, exec iexec.Executor) error {
 	if _, err := exec.Run("tmux", "info"); err != nil {
 		if _, err2 := exec.Run("tmux", "new-session", "-d", "-s", "main"); err2 != nil {
 			return fmt.Errorf("start tmux: %w", err2)
@@ -131,7 +133,7 @@ func Start(opts StartOptions, exec Executor) error {
 	return nil
 }
 
-func createSessionFromConfig(s SessionConfig, exec Executor) error {
+func createSessionFromConfig(s SessionConfig, exec iexec.Executor) error {
 	// If the session already exists, leave it untouched.
 	// tmux-resurrect may have restored its layout — adding panes would create duplicates.
 	if sessionExists(s.Name, exec) {
@@ -165,7 +167,7 @@ func createSessionFromConfig(s SessionConfig, exec Executor) error {
 	return nil
 }
 
-func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, exec Executor) error {
+func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, exec iexec.Executor) error {
 	target := session + ":" + w.Name
 	root := coalesce(w.Root, defaultRoot)
 
@@ -194,7 +196,7 @@ func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, e
 	// Uses percentage syntax — requires tmux >= 3.1.
 	if w.Layout != "" && w.MainPanePercent > 0 {
 		exec.Run("tmux", "set-window-option", "-t", target, "main-pane-width", fmt.Sprintf("%d%%", w.MainPanePercent)) //nolint:errcheck
-		exec.Run("tmux", "select-layout", "-t", target, w.Layout)                                                       //nolint:errcheck
+		exec.Run("tmux", "select-layout", "-t", target, w.Layout)                                                      //nolint:errcheck
 	}
 
 	return nil
@@ -301,7 +303,7 @@ type ResetOptions struct {
 
 // Reset kills the tmux server and rebuilds sessions from YAML configs.
 // Resurrect restore is intentionally skipped — this is a clean-slate rebuild.
-func Reset(opts ResetOptions, exec Executor) error {
+func Reset(opts ResetOptions, exec iexec.Executor) error {
 	exec.Run("tmux", "kill-server") //nolint:errcheck — ignore if server wasn't running
 	return Start(StartOptions{
 		NoRestore:        true,

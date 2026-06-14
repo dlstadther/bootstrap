@@ -6,8 +6,11 @@ import (
 	"os"
 	"strings"
 
-	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/spf13/cobra"
+
+	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
 )
 
 var clearYes bool
@@ -25,7 +28,7 @@ CMUX_WORKSPACE_ID environment variable.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		skipRef := callerWorkspaceRef()
 
-		toClose, err := icmux.ListOtherWorkspaces(skipRef, &realExecutor{})
+		toClose, err := icmux.ListOtherWorkspaces(skipRef, &iexec.CMux{})
 		if err != nil {
 			return err
 		}
@@ -50,7 +53,7 @@ CMUX_WORKSPACE_ID environment variable.`,
 			}
 		}
 
-		icmux.ClearWorkspaces(toClose, &realExecutor{})
+		icmux.ClearWorkspaces(toClose, &iexec.CMux{})
 		fmt.Printf("Closed %d workspace(s).\n", len(toClose))
 		return nil
 	},

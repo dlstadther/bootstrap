@@ -8,13 +8,10 @@ import (
 	"sort"
 	"strings"
 
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
 )
-
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-}
 
 // Options configures the audit run.
 type Options struct {
@@ -23,7 +20,7 @@ type Options struct {
 }
 
 // Run audits dotfile symlinks and brew package drift.
-func Run(opts Options, exec Executor) error {
+func Run(opts Options, exec iexec.Executor) error {
 	if opts.RepoPath == "" {
 		return fmt.Errorf("repo path is not set; run 'make install' or set $BOOTSTRAP_REPO")
 	}
@@ -152,7 +149,7 @@ func linkMatches(target, link, src string) bool {
 	return err1 == nil && err2 == nil && rl == rs
 }
 
-func checkBrew(repoPath string, exec Executor) error {
+func checkBrew(repoPath string, exec iexec.Executor) error {
 	brewfileSrc, err := ibrew.BrewfilePath(repoPath)
 	if err != nil {
 		return err

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/spf13/cobra"
+
+	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
 )
 
 var (
@@ -28,7 +31,7 @@ Creates a new workspace with:
 			Name:  addName,
 			CWD:   addCWD,
 			Agent: addAgent,
-		}, &realExecutor{})
+		}, &iexec.CMux{})
 	},
 }
 

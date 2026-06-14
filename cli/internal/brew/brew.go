@@ -7,12 +7,9 @@ import (
 	osExec "os/exec"
 	"path/filepath"
 	"strings"
-)
 
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-}
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+)
 
 // BrewfilePath returns the active Brewfile path for repoPath.
 // Prefers hosts/<machine>/.Brewfile; falls back to dotfiles/.Brewfile.
@@ -33,7 +30,7 @@ func BrewfilePath(repoPath string) (string, error) {
 
 // Sync shows drift between the live machine state and the repo Brewfile.
 // repoBrewfile is the absolute path to the repo's .Brewfile.
-func Sync(repoBrewfile string, exec Executor) error {
+func Sync(repoBrewfile string, exec iexec.Executor) error {
 	tmp, err := os.CreateTemp("", ".Brewfile.current.*")
 	if err != nil {
 		return fmt.Errorf("create temp file: %w", err)
@@ -64,7 +61,7 @@ func Sync(repoBrewfile string, exec Executor) error {
 }
 
 // Dump writes the live machine brew state back to the repo Brewfile.
-func Dump(repoBrewfile string, exec Executor) error {
+func Dump(repoBrewfile string, exec iexec.Executor) error {
 	_, err := exec.Run("brew", "bundle", "dump", "--force", "--file="+repoBrewfile)
 	if err != nil {
 		return fmt.Errorf("brew bundle dump: %w", err)
@@ -74,7 +71,7 @@ func Dump(repoBrewfile string, exec Executor) error {
 }
 
 // Install installs packages from the repo Brewfile.
-func Install(exec Executor) error {
+func Install(exec iexec.Executor) error {
 	_, err := exec.Run("brew", "update")
 	if err != nil {
 		return fmt.Errorf("brew update: %w", err)

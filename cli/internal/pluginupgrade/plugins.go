@@ -3,6 +3,8 @@ package pluginupgrade
 import (
 	"fmt"
 	"strings"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 // Plugin is an installed, enabled Claude Code plugin.
@@ -11,10 +13,10 @@ type Plugin struct {
 	version string // empty when version reported as "unknown"
 }
 
-func (p Plugin) Name() string                              { return p.name }
-func (p Plugin) Installed(_ Executor) bool                 { return true }
-func (p Plugin) CurrentVersion(_ Executor) (string, error) { return p.version, nil }
-func (p Plugin) Upgrade(exec Executor) error {
+func (p Plugin) Name() string                                            { return p.name }
+func (p Plugin) Installed(_ iexec.LookPathExecutor) bool                 { return true }
+func (p Plugin) CurrentVersion(_ iexec.LookPathExecutor) (string, error) { return p.version, nil }
+func (p Plugin) Upgrade(exec iexec.LookPathExecutor) error {
 	if _, err := exec.Run("claude", "plugins", "update", p.name); err != nil {
 		return fmt.Errorf("claude plugins update %s: %w", p.name, err)
 	}
@@ -22,7 +24,7 @@ func (p Plugin) Upgrade(exec Executor) error {
 }
 
 // Discover runs `claude plugins list` and returns only enabled plugins.
-func Discover(exec Executor) ([]Tool, error) {
+func Discover(exec iexec.LookPathExecutor) ([]Tool, error) {
 	out, err := exec.Run("claude", "plugins", "list")
 	if err != nil {
 		return nil, fmt.Errorf("claude plugins list: %w", err)

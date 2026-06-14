@@ -6,15 +6,12 @@ import (
 	"fmt"
 	"os"
 	"sort"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-}
-
 // SyncMise runs mise install to sync tool versions.
-func SyncMise(exec Executor) error {
+func SyncMise(exec iexec.Executor) error {
 	fmt.Println("syncing mise...")
 	if _, err := exec.Run("mise", "install"); err != nil {
 		return fmt.Errorf("mise install: %w", err)
@@ -24,7 +21,7 @@ func SyncMise(exec Executor) error {
 
 // SyncBrew syncs Homebrew packages. When force is false, it runs brew bundle
 // check first and skips the install if everything is already satisfied.
-func SyncBrew(exec Executor, force bool) error {
+func SyncBrew(exec iexec.Executor, force bool) error {
 	fmt.Println("syncing brew...")
 	if !force {
 		if _, err := exec.Run("brew", "bundle", "check", "--global"); err == nil {
@@ -66,7 +63,7 @@ func readEnabledPlugins(settingsPath string) ([]string, error) {
 
 // SyncPlugins installs all enabled Claude plugins listed in settings.json.
 // Each plugin is installed independently; one failure does not abort the rest.
-func SyncPlugins(settingsPath string, exec Executor) error {
+func SyncPlugins(settingsPath string, exec iexec.Executor) error {
 	fmt.Println("syncing plugins...")
 	plugins, err := readEnabledPlugins(settingsPath)
 	if err != nil {

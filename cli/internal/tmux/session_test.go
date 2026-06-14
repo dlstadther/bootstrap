@@ -315,9 +315,9 @@ func TestStart_WithRestore_InvokesResurrect(t *testing.T) {
 	exec.errs["tmux has-session"] = errFake
 
 	err := tmux.Start(tmux.StartOptions{
-		NoRestore:      false,
-		SessionsDir:    dir,
-		ResurrectPath:  scriptPath,
+		NoRestore:        false,
+		SessionsDir:      dir,
+		ResurrectPath:    scriptPath,
 		AfterRestoreWait: 0, // no sleep in tests
 	}, exec)
 	if err != nil {

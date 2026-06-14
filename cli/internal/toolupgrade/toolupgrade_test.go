@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/dlstadther/bootstrap/cli/internal/toolupgrade"
 )
 
@@ -21,13 +23,15 @@ type fakeTool struct {
 	upgraded   bool
 }
 
-func (t *fakeTool) Name() string                        { return t.name }
-func (t *fakeTool) Installed(toolupgrade.Executor) bool { return t.installed }
-func (t *fakeTool) CurrentVersion(toolupgrade.Executor) (string, error) {
+func (t *fakeTool) Name() string                          { return t.name }
+func (t *fakeTool) Installed(iexec.LookPathExecutor) bool { return t.installed }
+func (t *fakeTool) CurrentVersion(iexec.LookPathExecutor) (string, error) {
 	return t.current, t.currentErr
 }
-func (t *fakeTool) LatestVersion(toolupgrade.Executor) (string, error) { return t.latest, t.latestErr }
-func (t *fakeTool) Upgrade(toolupgrade.Executor) error {
+func (t *fakeTool) LatestVersion(iexec.LookPathExecutor) (string, error) {
+	return t.latest, t.latestErr
+}
+func (t *fakeTool) Upgrade(iexec.LookPathExecutor) error {
 	if t.upgradeErr != nil {
 		return t.upgradeErr
 	}

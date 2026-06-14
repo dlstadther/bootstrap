@@ -3,10 +3,13 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/paths"
+
+	"github.com/spf13/cobra"
 
 	isync "github.com/dlstadther/bootstrap/cli/internal/sync"
-	"github.com/spf13/cobra"
 )
 
 var syncForce bool
@@ -20,12 +23,12 @@ var syncCmd = &cobra.Command{
   2. brew bundle check  — skip install if already satisfied (use --force to override)
   3. claude plugin install — install each enabled plugin from ~/.claude/settings.json`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		exec := &streamingExecutor{}
-		homeDir, err := os.UserHomeDir()
+		exec := &iexec.Streaming{}
+		p, err := paths.Load()
 		if err != nil {
-			return fmt.Errorf("home dir: %w", err)
+			return err
 		}
-		settingsPath := filepath.Join(homeDir, ".claude", "settings.json")
+		settingsPath := p.ClaudeSettings
 
 		var runErr error
 		if err := isync.SyncMise(exec); err != nil {

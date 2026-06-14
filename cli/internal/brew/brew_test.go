@@ -198,7 +198,7 @@ func TestInstall(t *testing.T) {
 			out string
 			err error
 		}{
-			{out: "", err: nil},                                             // brew update succeeds
+			{out: "", err: nil}, // brew update succeeds
 			{out: "Error: some-pkg: not found", err: errors.New("exit 1")}, // bundle install fails
 		}}
 		err := brew.Install(fake)

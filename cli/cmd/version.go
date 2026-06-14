@@ -1,16 +1,13 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os"
-	"os/exec"
-	"strings"
 
+	"github.com/spf13/cobra"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 	igit "github.com/dlstadther/bootstrap/cli/internal/git"
 	"github.com/dlstadther/bootstrap/cli/internal/version"
-	"github.com/spf13/cobra"
 )
 
 var versionCmd = &cobra.Command{
@@ -25,7 +22,7 @@ var versionCmd = &cobra.Command{
 			return nil
 		}
 
-		ex := &realExecutor{}
+		ex := &iexec.Real{}
 		hash, err := igit.CurrentHash(repoPath, ex)
 		if err != nil {
 			fmt.Printf("repo:     error reading repo hash: %v\n", err)
@@ -47,25 +44,4 @@ var versionCmd = &cobra.Command{
 		fmt.Printf("repo:     %s%s\n", hash, suffix)
 		return nil
 	},
-}
-
-// realExecutor captures combined output; use for commands where output is parsed.
-type realExecutor struct{}
-
-func (r *realExecutor) Run(cmd string, args ...string) (string, error) {
-	out, err := exec.Command(cmd, args...).CombinedOutput()
-	return strings.TrimSpace(string(out)), err
-}
-
-// streamingExecutor streams stdout/stderr to the terminal while also capturing
-// combined output so callers can include it in error messages.
-type streamingExecutor struct{}
-
-func (s *streamingExecutor) Run(cmd string, args ...string) (string, error) {
-	var buf bytes.Buffer
-	c := exec.Command(cmd, args...)
-	c.Stdout = io.MultiWriter(os.Stdout, &buf)
-	c.Stderr = io.MultiWriter(os.Stderr, &buf)
-	err := c.Run()
-	return strings.TrimSpace(buf.String()), err
 }

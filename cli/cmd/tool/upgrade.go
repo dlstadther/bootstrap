@@ -3,8 +3,11 @@ package tool
 import (
 	"os"
 
-	"github.com/dlstadther/bootstrap/cli/internal/toolupgrade"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/spf13/cobra"
+
+	"github.com/dlstadther/bootstrap/cli/internal/toolupgrade"
 )
 
 var checkOnly bool
@@ -18,7 +21,7 @@ only the approved upgrades.
 
 Use --check to print the status table without prompting or upgrading.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		executor := &realExecutor{}
+		executor := &iexec.Real{}
 		return toolupgrade.Run(
 			toolupgrade.Options{Check: checkOnly, Out: os.Stdout},
 			executor,

@@ -1,12 +1,12 @@
 package cmux
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/paths"
+
+	"github.com/spf13/cobra"
 
 	icmux "github.com/dlstadther/bootstrap/cli/internal/cmux"
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -36,17 +36,17 @@ main directory, allowing machine-specific overrides.
 
 By default, cmux restore-session runs before creating workspaces.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		home, err := os.UserHomeDir()
+		p, err := paths.Load()
 		if err != nil {
-			return fmt.Errorf("home dir: %w", err)
+			return err
 		}
 
 		return icmux.Start(icmux.StartOptions{
 			NoRestore:          startNoRestore,
 			Override:           startOverride,
-			WorkspacesDir:      filepath.Join(home, ".config", "cmux", "workspaces"),
-			LocalWorkspacesDir: filepath.Join(home, ".config", "cmux", "workspaces.local"),
-		}, &realExecutor{})
+			WorkspacesDir:      p.CmuxWorkspacesDir,
+			LocalWorkspacesDir: p.CmuxLocalWorkspacesDir,
+		}, &iexec.CMux{})
 	},
 }
 

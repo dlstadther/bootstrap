@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 var AllowedAgents = []string{"claude", "codex", "gemini", "opencode", "pi"}
-
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-}
 
 // AddOptions configures a new cmux workspace.
 type AddOptions struct {
@@ -21,10 +18,11 @@ type AddOptions struct {
 }
 
 // agentLayout is the 3-pane layout for bs cmux add:
-//   Left  60%: agent command staged (no Enter)
-//   Right 40%, split 50/50:
-//     Top-right:    ls -al && bd ready (executed)
-//     Bottom-right: lazygit (executed)
+//
+//	Left  60%: agent command staged (no Enter)
+//	Right 40%, split 50/50:
+//	  Top-right:    ls -al && bd ready (executed)
+//	  Bottom-right: lazygit (executed)
 const agentLayout = `{"direction":"horizontal","split":0.6,"children":[` +
 	`{"pane":{"surfaces":[{"type":"terminal"}]}},` +
 	`{"direction":"vertical","split":0.5,"children":[` +
@@ -33,7 +31,7 @@ const agentLayout = `{"direction":"horizontal","split":0.6,"children":[` +
 	`]}]}`
 
 // Add creates a new cmux workspace with the 3-pane agent layout.
-func Add(opts AddOptions, exec Executor) error {
+func Add(opts AddOptions, exec iexec.Executor) error {
 	if opts.CWD == "" {
 		return fmt.Errorf("--cwd is required")
 	}

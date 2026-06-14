@@ -1,9 +1,6 @@
 package tmux
 
 import (
-	"os/exec"
-	"strings"
-
 	"github.com/spf13/cobra"
 )
 
@@ -21,12 +18,4 @@ func init() {
 	Cmd.AddCommand(workspaceCmd)
 	Cmd.AddCommand(startCmd)
 	Cmd.AddCommand(resetCmd)
-}
-
-// realExecutor shells out to real commands.
-type realExecutor struct{}
-
-func (r *realExecutor) Run(cmd string, args ...string) (string, error) {
-	out, err := exec.Command(cmd, args...).CombinedOutput()
-	return strings.TrimSpace(string(out)), err
 }

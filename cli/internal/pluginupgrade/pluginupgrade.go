@@ -9,14 +9,10 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/dlstadther/bootstrap/cli/internal/writeutil"
 )
-
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-	LookPath(name string) (string, error)
-}
 
 // State is the status of a plugin.
 //
@@ -43,13 +39,13 @@ type Status struct {
 // Tool is one managed plugin.
 type Tool interface {
 	Name() string
-	Installed(exec Executor) bool
-	CurrentVersion(exec Executor) (string, error)
-	Upgrade(exec Executor) error
+	Installed(exec iexec.LookPathExecutor) bool
+	CurrentVersion(exec iexec.LookPathExecutor) (string, error)
+	Upgrade(exec iexec.LookPathExecutor) error
 }
 
 // Evaluate determines the Status of a tool.
-func Evaluate(t Tool, exec Executor) Status {
+func Evaluate(t Tool, exec iexec.LookPathExecutor) Status {
 	s := Status{Name: t.Name()}
 	if !t.Installed(exec) {
 		s.State = StateNotInstalled
@@ -76,7 +72,7 @@ type Decider func(candidates []Status) (approved map[string]bool, err error)
 
 // Run evaluates all tools, prints a status table, and (unless Check) prompts
 // via decider and applies approved upgrades.
-func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
+func Run(opts Options, exec iexec.LookPathExecutor, tools []Tool, decider Decider) error {
 	dst := opts.Out
 	if dst == nil {
 		dst = os.Stdout

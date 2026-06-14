@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 var AllowedAgents = []string{"claude", "codex", "gemini", "opencode", "pi"}
-
-// Executor runs a command and returns combined output.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-}
 
 // AddOptions configures a new tmux workspace window.
 type AddOptions struct {
@@ -21,7 +18,7 @@ type AddOptions struct {
 }
 
 // Add creates (or joins) a tmux session and opens a workspace window.
-func Add(opts AddOptions, exec Executor) error {
+func Add(opts AddOptions, exec iexec.Executor) error {
 	if opts.CWD == "" {
 		return fmt.Errorf("--cwd is required")
 	}
@@ -76,7 +73,7 @@ func isValidAgent(agent string) bool {
 	return false
 }
 
-func sessionExists(name string, exec Executor) bool {
+func sessionExists(name string, exec iexec.Executor) bool {
 	_, err := exec.Run("tmux", "has-session", "-t", name)
 	return err == nil
 }
@@ -84,7 +81,7 @@ func sessionExists(name string, exec Executor) bool {
 // ensureUniqueWindowName returns base unchanged when the user supplied an
 // explicit name (autoName=false). For auto-named windows it appends -2, -3, …
 // until the name is free, avoiding collisions with existing windows.
-func ensureUniqueWindowName(session, base string, autoName bool, exec Executor) string {
+func ensureUniqueWindowName(session, base string, autoName bool, exec iexec.Executor) string {
 	if !autoName {
 		return base
 	}
@@ -97,7 +94,7 @@ func ensureUniqueWindowName(session, base string, autoName bool, exec Executor) 
 	return candidate
 }
 
-func windowExists(session, name string, exec Executor) bool {
+func windowExists(session, name string, exec iexec.Executor) bool {
 	out, err := exec.Run("tmux", "list-windows", "-t", session, "-F", "#{window_name}")
 	if err != nil {
 		return false
@@ -110,7 +107,7 @@ func windowExists(session, name string, exec Executor) bool {
 	return false
 }
 
-func createPanes(session, window, cwd, agent string, exec Executor) error {
+func createPanes(session, window, cwd, agent string, exec iexec.Executor) error {
 	target := session + ":" + window
 
 	// Capture the left pane's ID before any splits. Using the pane ID (e.g. %42)

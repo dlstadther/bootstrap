@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dlstadther/bootstrap/cli/internal/pluginupgrade"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/spf13/cobra"
+
+	"github.com/dlstadther/bootstrap/cli/internal/pluginupgrade"
 )
 
 var pluginCheckOnly bool
@@ -20,7 +23,7 @@ offered; "claude plugins update" always pulls the latest.
 
 Use --check to print the status table without prompting or upgrading.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		executor := &realExecutor{}
+		executor := &iexec.Real{}
 		tools, err := pluginupgrade.Discover(executor)
 		if err != nil {
 			return err

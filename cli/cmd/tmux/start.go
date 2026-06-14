@@ -1,13 +1,16 @@
 package tmux
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
-	itmux "github.com/dlstadther/bootstrap/cli/internal/tmux"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/paths"
+
 	"github.com/spf13/cobra"
+
+	itmux "github.com/dlstadther/bootstrap/cli/internal/tmux"
 )
 
 var (
@@ -35,23 +38,19 @@ The config format is compatible with TMUXinator (tmuxinator.github.io):
 
 By default, tmux-resurrect restore runs before creating sessions.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		home, err := os.UserHomeDir()
+		p, err := paths.Load()
 		if err != nil {
-			return fmt.Errorf("home dir: %w", err)
+			return err
 		}
-
-		sessionsDir := filepath.Join(home, ".config", "tmux", "sessions")
-		localSessionsDir := filepath.Join(home, ".config", "tmux", "sessions.local")
-		resurrectPath := findResurrectScript(home)
 
 		return itmux.Start(itmux.StartOptions{
 			NoRestore:        startNoRestore,
 			Override:         startOverride,
-			SessionsDir:      sessionsDir,
-			LocalSessionsDir: localSessionsDir,
-			ResurrectPath:    resurrectPath,
+			SessionsDir:      p.TmuxSessionsDir,
+			LocalSessionsDir: p.TmuxLocalSessionsDir,
+			ResurrectPath:    findResurrectScript(p.Home),
 			AfterRestoreWait: 2 * time.Second,
-		}, &realExecutor{})
+		}, &iexec.Real{})
 	},
 }
 

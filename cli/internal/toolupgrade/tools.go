@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 // Registry returns the ordered set of top-level tools to manage.
@@ -32,7 +34,7 @@ func firstField(s string) string {
 
 // githubLatestTag fetches the latest release tag for owner/repo via the GitHub
 // API and strips a leading "v".
-func githubLatestTag(exec Executor, repo string) (string, error) {
+func githubLatestTag(exec iexec.LookPathExecutor, repo string) (string, error) {
 	out, err := exec.Run("curl", "-fsSL", "https://api.github.com/repos/"+repo+"/releases/latest")
 	if err != nil {
 		return "", err
@@ -50,9 +52,12 @@ func githubLatestTag(exec Executor, repo string) (string, error) {
 
 type brewTool struct{}
 
-func (brewTool) Name() string                 { return "brew" }
-func (brewTool) Installed(exec Executor) bool { _, err := exec.LookPath("brew"); return err == nil }
-func (brewTool) CurrentVersion(exec Executor) (string, error) {
+func (brewTool) Name() string { return "brew" }
+func (brewTool) Installed(exec iexec.LookPathExecutor) bool {
+	_, err := exec.LookPath("brew")
+	return err == nil
+}
+func (brewTool) CurrentVersion(exec iexec.LookPathExecutor) (string, error) {
 	out, err := exec.Run("brew", "--version")
 	if err != nil {
 		return "", err
@@ -64,10 +69,10 @@ func (brewTool) CurrentVersion(exec Executor) (string, error) {
 	}
 	return fields[1], nil
 }
-func (brewTool) LatestVersion(exec Executor) (string, error) {
+func (brewTool) LatestVersion(exec iexec.LookPathExecutor) (string, error) {
 	return githubLatestTag(exec, "Homebrew/brew")
 }
-func (brewTool) Upgrade(exec Executor) error {
+func (brewTool) Upgrade(exec iexec.LookPathExecutor) error {
 	if _, err := exec.Run("brew", "update"); err != nil {
 		return fmt.Errorf("brew update: %w", err)
 	}
@@ -78,9 +83,12 @@ func (brewTool) Upgrade(exec Executor) error {
 
 type claudeTool struct{}
 
-func (claudeTool) Name() string                 { return "claude" }
-func (claudeTool) Installed(exec Executor) bool { _, err := exec.LookPath("claude"); return err == nil }
-func (claudeTool) CurrentVersion(exec Executor) (string, error) {
+func (claudeTool) Name() string { return "claude" }
+func (claudeTool) Installed(exec iexec.LookPathExecutor) bool {
+	_, err := exec.LookPath("claude")
+	return err == nil
+}
+func (claudeTool) CurrentVersion(exec iexec.LookPathExecutor) (string, error) {
 	out, err := exec.Run("claude", "--version")
 	if err != nil {
 		return "", err
@@ -88,11 +96,11 @@ func (claudeTool) CurrentVersion(exec Executor) (string, error) {
 	// "2.1.165 (Claude Code)" → "2.1.165"
 	return firstField(out), nil
 }
-func (claudeTool) LatestVersion(Executor) (string, error) {
+func (claudeTool) LatestVersion(iexec.LookPathExecutor) (string, error) {
 	// No clean pre-check endpoint; `claude update` determines latest on apply.
 	return "", nil
 }
-func (claudeTool) Upgrade(exec Executor) error {
+func (claudeTool) Upgrade(exec iexec.LookPathExecutor) error {
 	if _, err := exec.Run("claude", "update"); err != nil {
 		return fmt.Errorf("claude update: %w", err)
 	}
@@ -104,11 +112,11 @@ func (claudeTool) Upgrade(exec Executor) error {
 type opencodeTool struct{}
 
 func (opencodeTool) Name() string { return "opencode" }
-func (opencodeTool) Installed(exec Executor) bool {
+func (opencodeTool) Installed(exec iexec.LookPathExecutor) bool {
 	_, err := exec.LookPath("opencode")
 	return err == nil
 }
-func (opencodeTool) CurrentVersion(exec Executor) (string, error) {
+func (opencodeTool) CurrentVersion(exec iexec.LookPathExecutor) (string, error) {
 	out, err := exec.Run("opencode", "--version")
 	if err != nil {
 		return "", err
@@ -116,10 +124,10 @@ func (opencodeTool) CurrentVersion(exec Executor) (string, error) {
 	// "1.2.10" → "1.2.10"
 	return firstField(out), nil
 }
-func (opencodeTool) LatestVersion(exec Executor) (string, error) {
+func (opencodeTool) LatestVersion(exec iexec.LookPathExecutor) (string, error) {
 	return githubLatestTag(exec, "sst/opencode")
 }
-func (opencodeTool) Upgrade(exec Executor) error {
+func (opencodeTool) Upgrade(exec iexec.LookPathExecutor) error {
 	if _, err := exec.Run("opencode", "upgrade"); err != nil {
 		return fmt.Errorf("opencode upgrade: %w", err)
 	}

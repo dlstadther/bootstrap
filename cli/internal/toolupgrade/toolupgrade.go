@@ -10,15 +10,10 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/dlstadther/bootstrap/cli/internal/writeutil"
 )
-
-// Executor runs a command and returns combined output. LookPath reports whether
-// a binary is resolvable on PATH. Both are seams for testing.
-type Executor interface {
-	Run(cmd string, args ...string) (string, error)
-	LookPath(name string) (string, error)
-}
 
 // State is the upgrade status of a tool.
 type State int
@@ -41,15 +36,15 @@ type Status struct {
 // Tool is one top-level managed binary.
 type Tool interface {
 	Name() string
-	Installed(exec Executor) bool
-	CurrentVersion(exec Executor) (string, error)
-	LatestVersion(exec Executor) (string, error) // "" + nil means unknown, not an error
-	Upgrade(exec Executor) error                 // idempotent: no-op if already current
+	Installed(exec iexec.LookPathExecutor) bool
+	CurrentVersion(exec iexec.LookPathExecutor) (string, error)
+	LatestVersion(exec iexec.LookPathExecutor) (string, error) // "" + nil means unknown, not an error
+	Upgrade(exec iexec.LookPathExecutor) error                 // idempotent: no-op if already current
 }
 
 // Evaluate determines the Status of a tool. Pure derivation: any error or empty
 // version collapses to StateUnknown rather than failing the run.
-func Evaluate(t Tool, exec Executor) Status {
+func Evaluate(t Tool, exec iexec.LookPathExecutor) Status {
 	s := Status{Name: t.Name()}
 	if !t.Installed(exec) {
 		s.State = StateNotInstalled
@@ -90,7 +85,7 @@ type Decider func(candidates []Status) (approved map[string]bool, err error)
 
 // Run evaluates all tools, prints a status table, and (unless Check) prompts via
 // decider and applies the approved upgrades.
-func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
+func Run(opts Options, exec iexec.LookPathExecutor, tools []Tool, decider Decider) error {
 	dst := opts.Out
 	if dst == nil {
 		dst = os.Stdout

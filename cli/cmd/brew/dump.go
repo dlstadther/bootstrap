@@ -1,9 +1,11 @@
 package brew
 
 import (
-	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
-	igit "github.com/dlstadther/bootstrap/cli/internal/git"
 	"github.com/spf13/cobra"
+
+	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	igit "github.com/dlstadther/bootstrap/cli/internal/git"
 )
 
 var dumpCmd = &cobra.Command{
@@ -15,6 +17,6 @@ var dumpCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return ibrew.Dump(brewfile, &realExecutor{})
+		return ibrew.Dump(brewfile, &iexec.Real{})
 	},
 }

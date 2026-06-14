@@ -1,9 +1,6 @@
 package tool
 
 import (
-	"os/exec"
-	"strings"
-
 	"github.com/spf13/cobra"
 )
 
@@ -18,16 +15,4 @@ var Cmd = &cobra.Command{
 
 func init() {
 	Cmd.AddCommand(upgradeCmd)
-}
-
-// realExecutor shells out to real commands.
-type realExecutor struct{}
-
-func (r *realExecutor) Run(cmd string, args ...string) (string, error) {
-	out, err := exec.Command(cmd, args...).CombinedOutput()
-	return strings.TrimSpace(string(out)), err
-}
-
-func (r *realExecutor) LookPath(name string) (string, error) {
-	return exec.LookPath(name)
 }

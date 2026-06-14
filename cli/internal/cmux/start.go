@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
 )
 
 // WorkspaceConfig defines a cmux workspace to create.
@@ -94,7 +96,7 @@ func LoadWorkspaces(dir string) ([]WorkspaceConfig, error) {
 //  2. Optionally restore via cmux restore-session
 //  3. Optionally close conflicting workspaces (--override)
 //  4. Create workspaces from JSON configs
-func Start(opts StartOptions, exec Executor) error {
+func Start(opts StartOptions, exec iexec.Executor) error {
 	if out, err := exec.Run("cmux", "ping"); err != nil {
 		detail := out
 		if detail == "" {
@@ -138,7 +140,7 @@ func Start(opts StartOptions, exec Executor) error {
 }
 
 // findWorkspace returns the workspace ref if a workspace named name exists, or "".
-func findWorkspace(name string, exec Executor) string {
+func findWorkspace(name string, exec iexec.Executor) string {
 	out, err := exec.Run("cmux", "workspace", "list", "--json")
 	if err != nil || out == "" {
 		return ""
@@ -156,7 +158,7 @@ func findWorkspace(name string, exec Executor) string {
 }
 
 // listAllWorkspaceIDs returns the ref of every open workspace.
-func listAllWorkspaceIDs(exec Executor) []string {
+func listAllWorkspaceIDs(exec iexec.Executor) []string {
 	out, err := exec.Run("cmux", "workspace", "list", "--json")
 	if err != nil || out == "" {
 		return nil
@@ -182,7 +184,7 @@ type ResetOptions struct {
 // Reset closes all open cmux workspaces and rebuilds from JSON configs.
 // restore-session is intentionally skipped — this is a clean-slate rebuild.
 // If SkipWorkspaceID is set, that workspace is preserved (allows running from inside cmux).
-func Reset(opts ResetOptions, exec Executor) error {
+func Reset(opts ResetOptions, exec iexec.Executor) error {
 	if out, err := exec.Run("cmux", "ping"); err != nil {
 		detail := out
 		if detail == "" {
@@ -205,7 +207,7 @@ func Reset(opts ResetOptions, exec Executor) error {
 	}, exec)
 }
 
-func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
+func createWorkspaceFromConfig(wc WorkspaceConfig, exec iexec.Executor) error {
 	// Leave existing workspaces untouched; restore-session may have recreated them.
 	if findWorkspace(wc.Name, exec) != "" {
 		return nil
@@ -280,6 +282,7 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 //     remainder → split = 1 - sp.
 //   - "left"/"up":    new pane is the FIRST child, so it gets sp directly →
 //     split = sp.
+//
 // Without this flip, --size-percent would size the wrong pane for left/up.
 func buildLayout(panes []PaneSpec, idx int) layoutNode {
 	leaf := layoutNode{Pane: &layoutPane{Surfaces: []layoutSurface{{Type: "terminal"}}}}
@@ -319,7 +322,7 @@ func buildLayout(panes []PaneSpec, idx int) layoutNode {
 // listPaneIDs returns the ordered refs of all panes in a workspace.
 // cmux list-panes outputs lines like "* pane:1  [1 surface]  [focused]" or
 // "  pane:2  [1 surface]"; extract the token starting with "pane:".
-func listPaneIDs(wsID string, exec Executor) []string {
+func listPaneIDs(wsID string, exec iexec.Executor) []string {
 	out, err := exec.Run("cmux", "list-panes", "--workspace", wsID)
 	if err != nil || out == "" {
 		return nil
@@ -340,7 +343,7 @@ func listPaneIDs(wsID string, exec Executor) []string {
 // cmux send --surface requires surface refs (surface:N), not pane refs (pane:N).
 // cmux list-pane-surfaces outputs lines like "* surface:1  Terminal  [selected]";
 // extract the token starting with "surface:".
-func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec Executor) []string {
+func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec iexec.Executor) []string {
 	surfaceIDs := make([]string, len(paneIDs))
 	for i, paneID := range paneIDs {
 		out, err := exec.Run("cmux", "list-pane-surfaces", "--workspace", wsID, "--pane", paneID)

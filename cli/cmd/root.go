@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/dlstadther/bootstrap/cli/cmd/brew"
 	"github.com/dlstadther/bootstrap/cli/cmd/claude"
 	"github.com/dlstadther/bootstrap/cli/cmd/cmux"
 	"github.com/dlstadther/bootstrap/cli/cmd/tmux"
 	"github.com/dlstadther/bootstrap/cli/cmd/tool"
-	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	itmux "github.com/dlstadther/bootstrap/cli/internal/tmux"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+
 	"github.com/spf13/cobra"
+
+	itmux "github.com/dlstadther/bootstrap/cli/internal/tmux"
 )
 
 var (
@@ -28,7 +31,7 @@ Creates a new session (or a new window in an existing session) with:
 			Name:  addName,
 			CWD:   addCWD,
 			Agent: addAgent,
-		}, &realExecutor{})
+		}, &iexec.Real{})
 	},
 }
 

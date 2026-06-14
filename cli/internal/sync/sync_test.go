@@ -111,8 +111,8 @@ func TestSyncBrew(t *testing.T) {
 
 	t.Run("install failure includes brew output in error", func(t *testing.T) {
 		exec := &fakeExec{responses: []response{
-			{err: errors.New("missing packages")},                                        // check fails
-			{output: "Error: some-pkg: not found", err: errors.New("exit status 1")},    // install fails with output
+			{err: errors.New("missing packages")},                                    // check fails
+			{output: "Error: some-pkg: not found", err: errors.New("exit status 1")}, // install fails with output
 		}}
 		err := isync.SyncBrew(exec, false)
 		if err == nil {

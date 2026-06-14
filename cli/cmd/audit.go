@@ -1,9 +1,11 @@
 package cmd
 
 import (
-	"github.com/dlstadther/bootstrap/cli/internal/audit"
-	igit "github.com/dlstadther/bootstrap/cli/internal/git"
 	"github.com/spf13/cobra"
+
+	"github.com/dlstadther/bootstrap/cli/internal/audit"
+	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	igit "github.com/dlstadther/bootstrap/cli/internal/git"
 )
 
 var auditAll bool
@@ -15,7 +17,7 @@ var auditCmd = &cobra.Command{
 		return audit.Run(audit.Options{
 			All:      auditAll,
 			RepoPath: igit.RepoPath(),
-		}, &realExecutor{})
+		}, &iexec.Real{})
 	},
 }
 
