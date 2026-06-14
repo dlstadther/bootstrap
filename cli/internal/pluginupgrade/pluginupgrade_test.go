@@ -38,10 +38,12 @@ type stubTool struct {
 	upgradeErr error
 }
 
-func (t stubTool) Name() string                                            { return t.name }
-func (t stubTool) Installed(_ pluginupgrade.Executor) bool                 { return t.installed }
-func (t stubTool) CurrentVersion(_ pluginupgrade.Executor) (string, error) { return t.current, t.curErr }
-func (t stubTool) Upgrade(_ pluginupgrade.Executor) error                  { return t.upgradeErr }
+func (t stubTool) Name() string                            { return t.name }
+func (t stubTool) Installed(_ pluginupgrade.Executor) bool { return t.installed }
+func (t stubTool) CurrentVersion(_ pluginupgrade.Executor) (string, error) {
+	return t.current, t.curErr
+}
+func (t stubTool) Upgrade(_ pluginupgrade.Executor) error { return t.upgradeErr }
 
 func newExec() *stubExec {
 	return &stubExec{outputs: map[string]string{}, errs: map[string]error{}}
