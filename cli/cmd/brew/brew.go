@@ -18,7 +18,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.AddCommand(syncCmd)
+	Cmd.AddCommand(diffCmd)
 	Cmd.AddCommand(dumpCmd)
 	Cmd.AddCommand(installCmd)
 }

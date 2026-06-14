@@ -12,7 +12,12 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "bs",
 	Short: "Bootstrap CLI — dotfile and machine management",
-	Long: `bs is a unified CLI for managing your bootstrap dotfiles and machine configuration.
+	Long: `bs automates personal developer-machine setup: it symlinks dotfiles from the
+bootstrap repo into your home directory and manages Homebrew packages, mise tools,
+Claude plugins, and tmux/cmux agent workspaces.
+
+It is a single-user tool, intended for the owner of the bootstrap repo to keep
+their macOS and Linux machines in sync with version-controlled configuration.
 
 Use 'bs <command> --help' for details on any subcommand.`,
 }
