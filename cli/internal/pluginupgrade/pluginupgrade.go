@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/dlstadther/bootstrap/cli/internal/writeutil"
 )
 
 // Executor runs a command and returns combined output.
@@ -84,10 +86,11 @@ type Decider func(candidates []Status) (approved map[string]bool, err error)
 // Run evaluates all tools, prints a status table, and (unless Check) prompts
 // via decider and applies approved upgrades.
 func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
-	out := opts.Out
-	if out == nil {
-		out = os.Stdout
+	dst := opts.Out
+	if dst == nil {
+		dst = os.Stdout
 	}
+	out := writeutil.New(dst)
 
 	statuses := make([]Status, 0, len(tools))
 	byName := make(map[string]Tool, len(tools))
@@ -95,10 +98,12 @@ func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
 		statuses = append(statuses, Evaluate(t, exec))
 		byName[t.Name()] = t
 	}
-	renderTable(out, statuses)
+	if err := renderTable(out, statuses); err != nil {
+		return err
+	}
 
 	if opts.Check {
-		return nil
+		return out.Err
 	}
 
 	var candidates []Status
@@ -109,7 +114,7 @@ func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
 	}
 	if len(candidates) == 0 {
 		fmt.Fprintln(out, "\nAll plugins up to date.")
-		return nil
+		return out.Err
 	}
 
 	approved, err := decider(candidates)
@@ -134,10 +139,10 @@ func Run(opts Options, exec Executor, tools []Tool, decider Decider) error {
 		upgraded++
 	}
 	fmt.Fprintf(out, "\nSummary: %d upgraded, %d skipped, %d failed.\n", upgraded, skipped, failed)
-	return nil
+	return out.Err
 }
 
-func renderTable(out io.Writer, statuses []Status) {
+func renderTable(out io.Writer, statuses []Status) error {
 	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(tw, "PLUGIN\tCURRENT\tLATEST\tSTATUS")
 	for _, s := range statuses {
@@ -151,7 +156,7 @@ func renderTable(out io.Writer, statuses []Status) {
 		}
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", s.Name, cur, latest, stateLabel(s.State))
 	}
-	tw.Flush()
+	return tw.Flush()
 }
 
 func stateLabel(st State) string {
