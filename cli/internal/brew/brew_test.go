@@ -2,6 +2,8 @@ package brew_test
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -46,11 +48,81 @@ func TestSync(t *testing.T) {
 		}
 	})
 
+	t.Run("uses temp file not hardcoded path", func(t *testing.T) {
+		exec := newFake()
+		if err := brew.Sync("/repo/.Brewfile", exec); err != nil {
+			t.Fatal(err)
+		}
+		// brew dump arg must not be the old hardcoded path
+		for _, c := range exec.calls {
+			for _, a := range c.args {
+				if a == "--file=/tmp/.Brewfile.current" {
+					t.Error("used hardcoded /tmp/.Brewfile.current; expected os.CreateTemp path")
+				}
+			}
+		}
+	})
+
 	t.Run("returns error on brew dump failure", func(t *testing.T) {
 		exec := newFake()
 		exec.errs["brew"] = errors.New("brew not found")
 		if err := brew.Sync("/repo/.Brewfile", exec); err == nil {
 			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("returns error when diff fails with non-exit-code error", func(t *testing.T) {
+		fake := &sequentialFake{results: []struct {
+			out string
+			err error
+		}{
+			{out: "", err: nil},                   // brew dump succeeds
+			{out: "", err: errors.New("diff: -")}, // diff hard-fails (not an ExitError)
+		}}
+		if err := brew.Sync("/repo/.Brewfile", fake); err == nil {
+			t.Fatal("expected error from diff failure, got nil")
+		}
+	})
+}
+
+func TestBrewfilePath(t *testing.T) {
+	machine, err := os.Hostname()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if idx := strings.Index(machine, "."); idx >= 0 {
+		machine = machine[:idx]
+	}
+
+	t.Run("returns host Brewfile when present", func(t *testing.T) {
+		repo := t.TempDir()
+		hostBrewfile := filepath.Join(repo, "hosts", machine, ".Brewfile")
+		if err := os.MkdirAll(filepath.Dir(hostBrewfile), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(hostBrewfile, []byte("brew \"git\"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := brew.BrewfilePath(repo)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got != hostBrewfile {
+			t.Errorf("want %s, got %s", hostBrewfile, got)
+		}
+	})
+
+	t.Run("falls back to dotfiles Brewfile when no host override", func(t *testing.T) {
+		repo := t.TempDir()
+		dotBrewfile := filepath.Join(repo, "dotfiles", ".Brewfile")
+
+		got, err := brew.BrewfilePath(repo)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got != dotBrewfile {
+			t.Errorf("want %s, got %s", dotBrewfile, got)
 		}
 	})
 }
