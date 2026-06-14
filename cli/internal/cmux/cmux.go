@@ -54,7 +54,10 @@ func Add(opts AddOptions, exec Executor) error {
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
-	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
+	wsID, err := parseWorkspaceRef(wsOut)
+	if err != nil {
+		return err
+	}
 
 	paneIDs := listPaneIDs(wsID, exec)
 	surfaceIDs := listSurfaceIDsForPanes(wsID, paneIDs, exec)

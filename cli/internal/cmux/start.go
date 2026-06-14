@@ -211,7 +211,11 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 		return nil
 	}
 
-	args := []string{"workspace", "create", "--name", wc.Name, "--cwd", expandHome(wc.CWD)}
+	cwd, err := expandHome(wc.CWD)
+	if err != nil {
+		return err
+	}
+	args := []string{"workspace", "create", "--name", wc.Name, "--cwd", cwd}
 	if len(wc.Panes) > 1 {
 		layout := buildLayout(wc.Panes, 0)
 		data, err := json.Marshal(layout)
@@ -225,8 +229,10 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec Executor) error {
 	if err != nil {
 		return fmt.Errorf("workspace create: %w", err)
 	}
-	// Output format is "OK <ref>"; strip the status prefix.
-	wsID := strings.TrimPrefix(strings.TrimSpace(wsOut), "OK ")
+	wsID, err := parseWorkspaceRef(wsOut)
+	if err != nil {
+		return err
+	}
 
 	// Get pane IDs, then resolve each pane's first surface for targeted sends.
 	// send --surface requires surface refs; pane refs are not valid surface IDs.
@@ -347,12 +353,24 @@ func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec Executor) []stri
 	return surfaceIDs
 }
 
-func expandHome(path string) string {
+func expandHome(path string) (string, error) {
 	if strings.HasPrefix(path, "~/") {
 		home, err := os.UserHomeDir()
-		if err == nil {
-			return home + path[1:]
+		if err != nil {
+			return "", fmt.Errorf("expand %q: home lookup failed: %w", path, err)
 		}
+		return home + path[1:], nil
 	}
-	return path
+	return path, nil
+}
+
+// parseWorkspaceRef extracts the workspace ref from cmux's "OK <ref>" output.
+// Validates the ref is present; a bare "OK" (no ref) is an error rather than
+// silently yielding "OK" as the id and breaking downstream cmux calls.
+func parseWorkspaceRef(out string) (string, error) {
+	fields := strings.SplitN(strings.TrimSpace(out), " ", 2)
+	if len(fields) != 2 || fields[0] != "OK" || strings.TrimSpace(fields[1]) == "" {
+		return "", fmt.Errorf("unexpected workspace create output: %q", out)
+	}
+	return strings.TrimSpace(fields[1]), nil
 }

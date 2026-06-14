@@ -271,6 +271,21 @@ func TestAllowedAgents(t *testing.T) {
 	}
 }
 
+func TestAdd_BareOKErrors(t *testing.T) {
+	exec := newFake()
+	exec.results["cmux workspace create"] = "OK" // no ref
+
+	err := cmux.Add(cmux.AddOptions{CWD: "/code/myproject", Agent: "claude"}, exec)
+	if err == nil {
+		t.Fatal("expected error on bare 'OK' workspace create output")
+	}
+	for _, c := range exec.calls {
+		if c.cmd == "cmux" && c.args[0] == "list-panes" {
+			t.Error("downstream cmux calls should not run after parse failure")
+		}
+	}
+}
+
 func indexOf(slice []string, s string) int {
 	for i, v := range slice {
 		if v == s {

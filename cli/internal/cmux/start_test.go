@@ -428,3 +428,23 @@ func TestStart_LocalWorkspacesDir(t *testing.T) {
 		t.Errorf("expected both proj-a and proj-b created, got %v", names)
 	}
 }
+
+func TestStart_BareOKErrors(t *testing.T) {
+	f := newFake()
+	f.results["cmux workspace create"] = "OK" // no ref
+
+	dir := t.TempDir()
+	wc := cmux.WorkspaceConfig{Name: "myproject", CWD: "/code/myproject"}
+	data, _ := json.Marshal(wc)
+	os.WriteFile(filepath.Join(dir, "myproject.json"), data, 0644)
+
+	err := cmux.Start(cmux.StartOptions{NoRestore: true, WorkspacesDir: dir}, f)
+	if err == nil {
+		t.Fatal("expected error on bare 'OK' workspace create output")
+	}
+	for _, c := range f.calls {
+		if c.cmd == "cmux" && c.args[0] == "list-panes" {
+			t.Error("downstream cmux calls should not run after parse failure")
+		}
+	}
+}
