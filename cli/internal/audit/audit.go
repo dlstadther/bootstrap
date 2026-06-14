@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
 )
 
 // Executor runs a command and returns combined output.
@@ -55,7 +57,7 @@ func Run(opts Options, exec Executor) error {
 	}
 
 	printSection("Brew package drift")
-	return checkBrew(opts.RepoPath, machine, hostsDir, dotfilesDir, exec)
+	return checkBrew(opts.RepoPath, exec)
 }
 
 func printSection(title string) {
@@ -90,7 +92,10 @@ func checkDir(dir, prefix string, showAll bool) error {
 	}
 
 	for _, src := range entries {
-		rel := src[len(prefix)+1:]
+		rel, ok := relPath(prefix, src)
+		if !ok {
+			continue
+		}
 		target := filepath.Join(home, rel)
 
 		info, statErr := os.Lstat(target)
@@ -107,7 +112,7 @@ func checkDir(dir, prefix string, showAll bool) error {
 			if readErr != nil {
 				return readErr
 			}
-			if link == src {
+			if linkMatches(target, link, src) {
 				if showAll {
 					fmt.Printf("  OK        %s\n", rel)
 				}
@@ -121,11 +126,36 @@ func checkDir(dir, prefix string, showAll bool) error {
 	return nil
 }
 
-func checkBrew(repoPath, machine, hostsDir, dotfilesDir string, exec Executor) error {
-	// Prefer host Brewfile, fall back to shared.
-	brewfileSrc := filepath.Join(hostsDir, machine, ".Brewfile")
-	if _, err := os.Stat(brewfileSrc); os.IsNotExist(err) {
-		brewfileSrc = filepath.Join(dotfilesDir, ".Brewfile")
+// relPath returns src relative to prefix. ok is false when src is not a proper
+// descendant of prefix (guards the slice against root/short paths from WalkDir).
+func relPath(prefix, src string) (rel string, ok bool) {
+	if !strings.HasPrefix(src, prefix) || len(src) <= len(prefix)+1 {
+		return "", false
+	}
+	return src[len(prefix)+1:], true
+}
+
+// linkMatches reports whether a symlink at target with the given Readlink value
+// points at src. link may be relative (resolved against target's directory) or
+// absolute; both are cleaned and, as a fallback, fully resolved before compare.
+func linkMatches(target, link, src string) bool {
+	resolved := link
+	if !filepath.IsAbs(resolved) {
+		resolved = filepath.Join(filepath.Dir(target), resolved)
+	}
+	resolved = filepath.Clean(resolved)
+	if resolved == filepath.Clean(src) {
+		return true
+	}
+	rl, err1 := filepath.EvalSymlinks(resolved)
+	rs, err2 := filepath.EvalSymlinks(src)
+	return err1 == nil && err2 == nil && rl == rs
+}
+
+func checkBrew(repoPath string, exec Executor) error {
+	brewfileSrc, err := ibrew.BrewfilePath(repoPath)
+	if err != nil {
+		return err
 	}
 	if _, err := os.Stat(brewfileSrc); os.IsNotExist(err) {
 		fmt.Println("  no Brewfile found in repo")

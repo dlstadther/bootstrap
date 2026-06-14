@@ -107,6 +107,24 @@ func TestRun_CheckOnly_NoDeciderCall(t *testing.T) {
 	}
 }
 
+type failWriter struct{ err error }
+
+func (f failWriter) Write([]byte) (int, error) { return 0, f.err }
+
+func TestRun_ReturnsWriteError(t *testing.T) {
+	tool := stubTool{name: "plug-a", installed: true, current: "1.0.0"}
+	decider := pluginupgrade.Decider(func(_ []pluginupgrade.Status) (map[string]bool, error) { return nil, nil })
+	err := pluginupgrade.Run(
+		pluginupgrade.Options{Out: failWriter{err: errors.New("disk full")}},
+		newExec(),
+		[]pluginupgrade.Tool{tool},
+		decider,
+	)
+	if err == nil {
+		t.Fatal("expected write error to surface")
+	}
+}
+
 func TestRun_NoInstalledPlugins_NoCandidates(t *testing.T) {
 	var out bytes.Buffer
 	tool := stubTool{name: "plug-a", installed: false}
