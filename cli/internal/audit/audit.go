@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	ibrew "github.com/dlstadther/bootstrap/cli/internal/brew"
 )
 
 // Executor runs a command and returns combined output.
@@ -55,7 +57,7 @@ func Run(opts Options, exec Executor) error {
 	}
 
 	printSection("Brew package drift")
-	return checkBrew(opts.RepoPath, machine, hostsDir, dotfilesDir, exec)
+	return checkBrew(opts.RepoPath, exec)
 }
 
 func printSection(title string) {
@@ -150,11 +152,10 @@ func linkMatches(target, link, src string) bool {
 	return err1 == nil && err2 == nil && rl == rs
 }
 
-func checkBrew(repoPath, machine, hostsDir, dotfilesDir string, exec Executor) error {
-	// Prefer host Brewfile, fall back to shared.
-	brewfileSrc := filepath.Join(hostsDir, machine, ".Brewfile")
-	if _, err := os.Stat(brewfileSrc); os.IsNotExist(err) {
-		brewfileSrc = filepath.Join(dotfilesDir, ".Brewfile")
+func checkBrew(repoPath string, exec Executor) error {
+	brewfileSrc, err := ibrew.BrewfilePath(repoPath)
+	if err != nil {
+		return err
 	}
 	if _, err := os.Stat(brewfileSrc); os.IsNotExist(err) {
 		fmt.Println("  no Brewfile found in repo")
