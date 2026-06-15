@@ -17,6 +17,16 @@ import (
 type Options struct {
 	All      bool   // show OK symlinks in addition to problems
 	RepoPath string // absolute path to the bootstrap repo
+
+	// Hostname resolves the machine name; defaults to os.Hostname when nil.
+	// Injected so tests run without depending on the real host.
+	Hostname func() (string, error)
+	// Home is the home dir symlink targets resolve against; defaults to
+	// os.UserHomeDir when empty.
+	Home string
+	// TempDir is where the transient Brewfile dump is written; defaults to the
+	// system temp dir (os.CreateTemp("")) when empty.
+	TempDir string
 }
 
 // Run audits dotfile symlinks and brew package drift.
@@ -25,7 +35,11 @@ func Run(opts Options, exec iexec.Executor) error {
 		return fmt.Errorf("repo path is not set; run 'make install' or set $BOOTSTRAP_REPO")
 	}
 
-	machine, err := os.Hostname()
+	hostnameFn := opts.Hostname
+	if hostnameFn == nil {
+		hostnameFn = os.Hostname
+	}
+	machine, err := hostnameFn()
 	if err != nil {
 		return fmt.Errorf("hostname: %w", err)
 	}
@@ -34,12 +48,20 @@ func Run(opts Options, exec iexec.Executor) error {
 		machine = machine[:idx]
 	}
 
+	home := opts.Home
+	if home == "" {
+		home, err = os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+	}
+
 	dotfilesDir := filepath.Join(opts.RepoPath, "dotfiles")
 	hostsDir := filepath.Join(opts.RepoPath, "hosts")
 	hostDir := filepath.Join(hostsDir, machine)
 
 	printSection("Shared dotfiles (" + dotfilesDir + ")")
-	if err := checkDir(dotfilesDir, dotfilesDir, opts.All); err != nil {
+	if err := checkDir(home, dotfilesDir, dotfilesDir, opts.All); err != nil {
 		return err
 	}
 
@@ -48,27 +70,22 @@ func Run(opts Options, exec iexec.Executor) error {
 		fmt.Printf("  no host directory for %q (hosts/%s not found)\n", machine, machine)
 	} else {
 		printSection("Host-specific dotfiles (hosts/" + machine + ")")
-		if err := checkDir(hostDir, hostDir, opts.All); err != nil {
+		if err := checkDir(home, hostDir, hostDir, opts.All); err != nil {
 			return err
 		}
 	}
 
 	printSection("Brew package drift")
-	return checkBrew(opts.RepoPath, exec)
+	return checkBrew(opts.RepoPath, opts.TempDir, exec)
 }
 
 func printSection(title string) {
 	fmt.Printf("\n=== %s ===\n", title)
 }
 
-func checkDir(dir, prefix string, showAll bool) error {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
+func checkDir(home, dir, prefix string, showAll bool) error {
 	var entries []string
-	err = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -149,7 +166,7 @@ func linkMatches(target, link, src string) bool {
 	return err1 == nil && err2 == nil && rl == rs
 }
 
-func checkBrew(repoPath string, exec iexec.Executor) error {
+func checkBrew(repoPath, tempDir string, exec iexec.Executor) error {
 	brewfileSrc, err := ibrew.BrewfilePath(repoPath)
 	if err != nil {
 		return err
@@ -159,7 +176,7 @@ func checkBrew(repoPath string, exec iexec.Executor) error {
 		return nil
 	}
 
-	tmp, err := os.CreateTemp("", ".Brewfile.current.*")
+	tmp, err := os.CreateTemp(tempDir, ".Brewfile.current.*")
 	if err != nil {
 		return err
 	}

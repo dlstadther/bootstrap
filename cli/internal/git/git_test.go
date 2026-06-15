@@ -5,7 +5,33 @@ import (
 	"testing"
 
 	"github.com/dlstadther/bootstrap/cli/internal/git"
+	"github.com/dlstadther/bootstrap/cli/internal/version"
 )
+
+func TestRepoPath(t *testing.T) {
+	t.Run("env override wins", func(t *testing.T) {
+		getenv := func(key string) string {
+			if key == "BOOTSTRAP_REPO" {
+				return "/env/repo"
+			}
+			return ""
+		}
+		if got := git.RepoPath(getenv); got != "/env/repo" {
+			t.Errorf("got %q want /env/repo", got)
+		}
+	})
+
+	t.Run("falls back to compiled RepoPath when env empty", func(t *testing.T) {
+		orig := version.RepoPath
+		version.RepoPath = "/compiled/repo"
+		defer func() { version.RepoPath = orig }()
+
+		getenv := func(string) string { return "" }
+		if got := git.RepoPath(getenv); got != "/compiled/repo" {
+			t.Errorf("got %q want /compiled/repo", got)
+		}
+	})
+}
 
 type fakeExec struct {
 	out string

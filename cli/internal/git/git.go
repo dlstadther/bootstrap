@@ -1,7 +1,6 @@
 package git
 
 import (
-	"os"
 	"strings"
 
 	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
@@ -9,10 +8,14 @@ import (
 	"github.com/dlstadther/bootstrap/cli/internal/version"
 )
 
-// RepoPath resolves the bootstrap repo path: $BOOTSTRAP_REPO env var first,
+// EnvGetter looks up an environment variable by key. os.Getenv satisfies it;
+// tests pass a fake to exercise RepoPath without touching the real environment.
+type EnvGetter func(key string) string
+
+// RepoPath resolves the bootstrap repo path: $BOOTSTRAP_REPO (via getenv) first,
 // compiled-in RepoPath as fallback.
-func RepoPath() string {
-	if v := os.Getenv("BOOTSTRAP_REPO"); v != "" {
+func RepoPath(getenv EnvGetter) string {
+	if v := getenv("BOOTSTRAP_REPO"); v != "" {
 		return v
 	}
 	return version.RepoPath
