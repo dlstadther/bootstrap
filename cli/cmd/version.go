@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -25,8 +26,8 @@ var versionCmd = &cobra.Command{
 		ex := &iexec.Real{}
 		hash, err := igit.CurrentHash(repoPath, ex)
 		if err != nil {
-			fmt.Printf("repo:     error reading repo hash: %v\n", err)
-			fmt.Println("          (is git installed and is BOOTSTRAP_REPO a valid repo?)")
+			fmt.Fprintf(os.Stderr, "repo:     error reading repo hash: %v\n", err)
+			fmt.Fprintln(os.Stderr, "          (is git installed and is BOOTSTRAP_REPO a valid repo?)")
 			return nil
 		}
 		dirty, err := igit.IsDirty(repoPath, ex)

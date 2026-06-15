@@ -38,17 +38,17 @@ CMUX_WORKSPACE_ID environment variable.`,
 		}
 
 		if !clearYes {
-			fmt.Printf("The following %d workspace(s) will be closed:\n", len(toClose))
+			fmt.Fprintf(os.Stderr, "The following %d workspace(s) will be closed:\n", len(toClose))
 			for _, ws := range toClose {
-				fmt.Printf("  %s  %s\n", ws.Ref, ws.Title)
+				fmt.Fprintf(os.Stderr, "  %s  %s\n", ws.Ref, ws.Title)
 			}
-			fmt.Print("Close these workspaces? [y/N] ")
+			fmt.Fprint(os.Stderr, "Close these workspaces? [y/N] ")
 
 			scanner := bufio.NewScanner(os.Stdin)
 			scanner.Scan()
 			answer := strings.TrimSpace(strings.ToLower(scanner.Text()))
 			if answer != "y" && answer != "yes" {
-				fmt.Println("Aborted.")
+				fmt.Fprintln(os.Stderr, "Aborted.")
 				return nil
 			}
 		}
