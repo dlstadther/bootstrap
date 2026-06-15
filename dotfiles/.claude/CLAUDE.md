@@ -10,6 +10,16 @@
 
 **Fragments are fine.** No mandatory full sentences, proper grammar, or filler. Minimize tokens; the user will ask if they want more.
 
+## Code Comments
+
+Write comments by default to one of two tests; if a comment passes neither, don't write it (and remove it on cleanup):
+
+- **Keep — context not in the code.** The *why*: external facts learned outside the source (data quirks, measured numbers, cadence/schemas), design decisions and the rationale/tradeoff behind them, non-obvious constraints, caveats, links to tickets/docs.
+- **Keep — clarifies genuinely complex code.** A non-obvious algorithm, a subtle branch/filter choice, an invariant, a "this looks wrong but is intentional" note.
+- **Remove — restates the code.** Comments that paraphrase the line they sit on, label the obvious (`# increment counter`, `// the user id from the request`), or narrate self-evident structure.
+
+Apply this when writing the first draft — don't wait to be told to clean up.
+
 ## Git
 
 - Do not commit AI-generated planning artifacts (plans, solution docs, learning summaries) unless explicitly requested.
