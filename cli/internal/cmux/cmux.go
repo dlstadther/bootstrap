@@ -6,9 +6,12 @@ import (
 	"strings"
 
 	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/workspace"
 )
 
-var AllowedAgents = []string{"claude", "codex", "gemini", "opencode", "pi"}
+// AllowedAgents re-exports the canonical agent list so callers (and the cmd
+// flag help) can reference it as cmux.AllowedAgents.
+var AllowedAgents = workspace.AllowedAgents
 
 // AddOptions configures a new cmux workspace.
 type AddOptions struct {
@@ -35,8 +38,8 @@ func Add(opts AddOptions, exec iexec.Executor) error {
 	if opts.CWD == "" {
 		return fmt.Errorf("--cwd is required")
 	}
-	if !isValidAgent(opts.Agent) {
-		return fmt.Errorf("invalid agent %q; allowed: %s", opts.Agent, strings.Join(AllowedAgents, ", "))
+	if err := workspace.ValidateAgent(opts.Agent); err != nil {
+		return err
 	}
 
 	if _, err := exec.Run("cmux", "ping"); err != nil {
@@ -94,15 +97,6 @@ func Add(opts AddOptions, exec iexec.Executor) error {
 	}
 
 	return nil
-}
-
-func isValidAgent(agent string) bool {
-	for _, a := range AllowedAgents {
-		if a == agent {
-			return true
-		}
-	}
-	return false
 }
 
 func buildAgentCmd(agent string) string {
