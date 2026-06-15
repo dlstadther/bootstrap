@@ -12,7 +12,7 @@ import (
 
 // SyncMise runs mise install to sync tool versions.
 func SyncMise(exec iexec.Executor) error {
-	fmt.Println("syncing mise...")
+	fmt.Fprintln(os.Stderr, "syncing mise...")
 	if _, err := exec.Run("mise", "install"); err != nil {
 		return fmt.Errorf("mise install: %w", err)
 	}
@@ -22,10 +22,10 @@ func SyncMise(exec iexec.Executor) error {
 // SyncBrew syncs Homebrew packages. When force is false, it runs brew bundle
 // check first and skips the install if everything is already satisfied.
 func SyncBrew(exec iexec.Executor, force bool) error {
-	fmt.Println("syncing brew...")
+	fmt.Fprintln(os.Stderr, "syncing brew...")
 	if !force {
 		if _, err := exec.Run("brew", "bundle", "check", "--global"); err == nil {
-			fmt.Println("brew already satisfied — skipping install")
+			fmt.Fprintln(os.Stderr, "brew already satisfied — skipping install")
 			return nil
 		}
 	}
@@ -64,7 +64,7 @@ func readEnabledPlugins(settingsPath string) ([]string, error) {
 // SyncPlugins installs all enabled Claude plugins listed in settings.json.
 // Each plugin is installed independently; one failure does not abort the rest.
 func SyncPlugins(settingsPath string, exec iexec.Executor) error {
-	fmt.Println("syncing plugins...")
+	fmt.Fprintln(os.Stderr, "syncing plugins...")
 	plugins, err := readEnabledPlugins(settingsPath)
 	if err != nil {
 		return err
