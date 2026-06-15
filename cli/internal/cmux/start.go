@@ -3,11 +3,10 @@ package cmux
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 
 	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/workspace"
 )
 
 // WorkspaceConfig defines a cmux workspace to create.
@@ -66,29 +65,86 @@ type StartOptions struct {
 
 // LoadWorkspaces reads all *.json files from dir and parses them as WorkspaceConfigs.
 func LoadWorkspaces(dir string) ([]WorkspaceConfig, error) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	var workspaces []WorkspaceConfig
-	for _, e := range entries {
-		if e.IsDir() || !strings.HasSuffix(e.Name(), ".json") {
-			continue
-		}
-		data, err := os.ReadFile(filepath.Join(dir, e.Name()))
-		if err != nil {
-			return nil, err
-		}
+	return workspace.LoadDir(dir, ".json", func(data []byte, name string) (WorkspaceConfig, error) {
 		var wc WorkspaceConfig
 		if err := json.Unmarshal(data, &wc); err != nil {
-			return nil, fmt.Errorf("parse %s: %w", e.Name(), err)
+			return WorkspaceConfig{}, fmt.Errorf("parse %s: %w", name, err)
 		}
-		workspaces = append(workspaces, wc)
+		return wc, nil
+	})
+}
+
+// loadAll loads the main workspaces dir followed by an optional local override dir.
+func loadAll(dir, localDir string) ([]WorkspaceConfig, error) {
+	workspaces, err := LoadWorkspaces(dir)
+	if err != nil {
+		return nil, fmt.Errorf("load workspaces: %w", err)
+	}
+	if localDir != "" {
+		local, err := LoadWorkspaces(localDir)
+		if err != nil {
+			return nil, fmt.Errorf("load local workspaces: %w", err)
+		}
+		workspaces = append(workspaces, local...)
 	}
 	return workspaces, nil
+}
+
+// startBackend implements workspace.Backend / workspace.ResetBackend for cmux.
+type startBackend struct {
+	exec       iexec.Executor
+	workspaces []WorkspaceConfig
+	skipID     string // reset only: workspace ref to preserve (the caller's own)
+}
+
+func (b *startBackend) EnsureRunning() error {
+	if out, err := b.exec.Run("cmux", "ping"); err != nil {
+		detail := out
+		if detail == "" {
+			detail = err.Error()
+		}
+		return fmt.Errorf("cmux is not running (%s): ensure cmux is installed and running", detail)
+	}
+	return nil
+}
+
+func (b *startBackend) Restore() error {
+	if _, err := b.exec.Run("cmux", "restore-session"); err != nil {
+		return fmt.Errorf("restore-session: %w", err)
+	}
+	return nil
+}
+
+func (b *startBackend) Override() {
+	for _, w := range b.workspaces {
+		if ref := findWorkspace(w.Name, b.exec); ref != "" {
+			b.exec.Run("cmux", "workspace", "close", ref) //nolint:errcheck
+		}
+	}
+}
+
+func (b *startBackend) Create() error {
+	for _, w := range b.workspaces {
+		if err := createWorkspaceFromConfig(w, b.exec); err != nil {
+			return fmt.Errorf("workspace %s: %w", w.Name, err)
+		}
+	}
+	return nil
+}
+
+// TearDown closes every open workspace (except skipID), after confirming cmux is
+// reachable. The clean-slate rebuild then runs via workspace.Start.
+func (b *startBackend) TearDown() error {
+	if err := b.EnsureRunning(); err != nil {
+		return err
+	}
+	for _, id := range listAllWorkspaceIDs(b.exec) {
+		if b.skipID != "" && id == b.skipID {
+			continue
+		}
+		b.exec.Run("cmux", "workspace", "close", id) //nolint:errcheck
+	}
+	return nil
 }
 
 // Start implements the bs cmux start flow:
@@ -97,46 +153,14 @@ func LoadWorkspaces(dir string) ([]WorkspaceConfig, error) {
 //  3. Optionally close conflicting workspaces (--override)
 //  4. Create workspaces from JSON configs
 func Start(opts StartOptions, exec iexec.Executor) error {
-	if out, err := exec.Run("cmux", "ping"); err != nil {
-		detail := out
-		if detail == "" {
-			detail = err.Error()
-		}
-		return fmt.Errorf("cmux is not running (%s): ensure cmux is installed and running", detail)
-	}
-
-	if !opts.NoRestore {
-		if _, err := exec.Run("cmux", "restore-session"); err != nil {
-			return fmt.Errorf("restore-session: %w", err)
-		}
-	}
-
-	workspaces, err := LoadWorkspaces(opts.WorkspacesDir)
+	workspaces, err := loadAll(opts.WorkspacesDir, opts.LocalWorkspacesDir)
 	if err != nil {
-		return fmt.Errorf("load workspaces: %w", err)
+		return err
 	}
-	if opts.LocalWorkspacesDir != "" {
-		local, err := LoadWorkspaces(opts.LocalWorkspacesDir)
-		if err != nil {
-			return fmt.Errorf("load local workspaces: %w", err)
-		}
-		workspaces = append(workspaces, local...)
-	}
-
-	if opts.Override {
-		for _, w := range workspaces {
-			if wsRef := findWorkspace(w.Name, exec); wsRef != "" {
-				exec.Run("cmux", "workspace", "close", wsRef) //nolint:errcheck
-			}
-		}
-	}
-
-	for _, w := range workspaces {
-		if err := createWorkspaceFromConfig(w, exec); err != nil {
-			return fmt.Errorf("workspace %s: %w", w.Name, err)
-		}
-	}
-	return nil
+	return workspace.Start(
+		workspace.StartOptions{NoRestore: opts.NoRestore, Override: opts.Override},
+		&startBackend{exec: exec, workspaces: workspaces},
+	)
 }
 
 // findWorkspace returns the workspace ref if a workspace named name exists, or "".
@@ -185,26 +209,15 @@ type ResetOptions struct {
 // restore-session is intentionally skipped — this is a clean-slate rebuild.
 // If SkipWorkspaceID is set, that workspace is preserved (allows running from inside cmux).
 func Reset(opts ResetOptions, exec iexec.Executor) error {
-	if out, err := exec.Run("cmux", "ping"); err != nil {
-		detail := out
-		if detail == "" {
-			detail = err.Error()
-		}
-		return fmt.Errorf("cmux is not running (%s): ensure cmux is installed and running", detail)
+	workspaces, err := loadAll(opts.WorkspacesDir, opts.LocalWorkspacesDir)
+	if err != nil {
+		return err
 	}
-
-	for _, id := range listAllWorkspaceIDs(exec) {
-		if opts.SkipWorkspaceID != "" && id == opts.SkipWorkspaceID {
-			continue
-		}
-		exec.Run("cmux", "workspace", "close", id) //nolint:errcheck
-	}
-
-	return Start(StartOptions{
-		NoRestore:          true,
-		WorkspacesDir:      opts.WorkspacesDir,
-		LocalWorkspacesDir: opts.LocalWorkspacesDir,
-	}, exec)
+	return workspace.Reset(&startBackend{
+		exec:       exec,
+		workspaces: workspaces,
+		skipID:     opts.SkipWorkspaceID,
+	})
 }
 
 func createWorkspaceFromConfig(wc WorkspaceConfig, exec iexec.Executor) error {
@@ -213,7 +226,7 @@ func createWorkspaceFromConfig(wc WorkspaceConfig, exec iexec.Executor) error {
 		return nil
 	}
 
-	cwd, err := expandHome(wc.CWD)
+	cwd, err := workspace.ExpandHome(wc.CWD)
 	if err != nil {
 		return err
 	}
@@ -363,17 +376,6 @@ func listSurfaceIDsForPanes(wsID string, paneIDs []string, exec iexec.Executor) 
 		}
 	}
 	return surfaceIDs
-}
-
-func expandHome(path string) (string, error) {
-	if strings.HasPrefix(path, "~/") {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return "", fmt.Errorf("expand %q: home lookup failed: %w", path, err)
-		}
-		return home + path[1:], nil
-	}
-	return path, nil
 }
 
 // parseWorkspaceRef extracts the workspace ref from cmux's "OK <ref>" output.

@@ -3,11 +3,10 @@ package tmux
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	iexec "github.com/dlstadther/bootstrap/cli/internal/exec"
+	"github.com/dlstadther/bootstrap/cli/internal/workspace"
 
 	"gopkg.in/yaml.v3"
 )
@@ -56,29 +55,81 @@ func ParseSession(data []byte) (*SessionConfig, error) {
 
 // LoadSessions reads all *.yaml files from dir and parses them as SessionConfigs.
 func LoadSessions(dir string) ([]SessionConfig, error) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	var sessions []SessionConfig
-	for _, e := range entries {
-		if e.IsDir() || !strings.HasSuffix(e.Name(), ".yaml") {
-			continue
-		}
-		data, err := os.ReadFile(filepath.Join(dir, e.Name()))
-		if err != nil {
-			return nil, err
-		}
+	return workspace.LoadDir(dir, ".yaml", func(data []byte, name string) (SessionConfig, error) {
 		s, err := ParseSession(data)
 		if err != nil {
-			return nil, fmt.Errorf("parse %s: %w", e.Name(), err)
+			return SessionConfig{}, fmt.Errorf("parse %s: %w", name, err)
 		}
-		sessions = append(sessions, *s)
+		return *s, nil
+	})
+}
+
+// loadAll loads the main sessions dir followed by an optional local override dir.
+func loadAll(dir, localDir string) ([]SessionConfig, error) {
+	sessions, err := LoadSessions(dir)
+	if err != nil {
+		return nil, fmt.Errorf("load sessions: %w", err)
+	}
+	if localDir != "" {
+		local, err := LoadSessions(localDir)
+		if err != nil {
+			return nil, fmt.Errorf("load local sessions: %w", err)
+		}
+		sessions = append(sessions, local...)
 	}
 	return sessions, nil
+}
+
+// startBackend implements workspace.Backend / workspace.ResetBackend for tmux.
+type startBackend struct {
+	exec             iexec.Executor
+	sessions         []SessionConfig
+	resurrectPath    string
+	afterRestoreWait time.Duration
+}
+
+func (b *startBackend) EnsureRunning() error {
+	if _, err := b.exec.Run("tmux", "info"); err != nil {
+		if _, err2 := b.exec.Run("tmux", "new-session", "-d", "-s", "main"); err2 != nil {
+			return fmt.Errorf("start tmux: %w", err2)
+		}
+	}
+	return nil
+}
+
+func (b *startBackend) Restore() error {
+	if _, err := os.Stat(b.resurrectPath); err != nil {
+		return fmt.Errorf("tmux-resurrect not found at %s", b.resurrectPath)
+	}
+	if _, err := b.exec.Run("tmux", "run-shell", b.resurrectPath); err != nil {
+		return fmt.Errorf("resurrect restore: %w", err)
+	}
+	if b.afterRestoreWait > 0 {
+		time.Sleep(b.afterRestoreWait)
+	}
+	return nil
+}
+
+func (b *startBackend) Override() {
+	for _, s := range b.sessions {
+		if sessionExists(s.Name, b.exec) {
+			b.exec.Run("tmux", "kill-session", "-t", s.Name) //nolint:errcheck
+		}
+	}
+}
+
+func (b *startBackend) Create() error {
+	for _, s := range b.sessions {
+		if err := createSessionFromConfig(s, b.exec); err != nil {
+			return fmt.Errorf("session %s: %w", s.Name, err)
+		}
+	}
+	return nil
+}
+
+func (b *startBackend) TearDown() error {
+	b.exec.Run("tmux", "kill-server") //nolint:errcheck — ignore if server wasn't running
+	return nil
 }
 
 // Start implements the bs tmux start flow:
@@ -87,50 +138,19 @@ func LoadSessions(dir string) ([]SessionConfig, error) {
 // 3. Optionally kill conflicting sessions (--override)
 // 4. Create sessions from YAML configs
 func Start(opts StartOptions, exec iexec.Executor) error {
-	if _, err := exec.Run("tmux", "info"); err != nil {
-		if _, err2 := exec.Run("tmux", "new-session", "-d", "-s", "main"); err2 != nil {
-			return fmt.Errorf("start tmux: %w", err2)
-		}
-	}
-
-	if !opts.NoRestore {
-		if _, err := os.Stat(opts.ResurrectPath); err != nil {
-			return fmt.Errorf("tmux-resurrect not found at %s", opts.ResurrectPath)
-		}
-		if _, err := exec.Run("tmux", "run-shell", opts.ResurrectPath); err != nil {
-			return fmt.Errorf("resurrect restore: %w", err)
-		}
-		if opts.AfterRestoreWait > 0 {
-			time.Sleep(opts.AfterRestoreWait)
-		}
-	}
-
-	sessions, err := LoadSessions(opts.SessionsDir)
+	sessions, err := loadAll(opts.SessionsDir, opts.LocalSessionsDir)
 	if err != nil {
-		return fmt.Errorf("load sessions: %w", err)
+		return err
 	}
-	if opts.LocalSessionsDir != "" {
-		local, err := LoadSessions(opts.LocalSessionsDir)
-		if err != nil {
-			return fmt.Errorf("load local sessions: %w", err)
-		}
-		sessions = append(sessions, local...)
-	}
-
-	if opts.Override {
-		for _, s := range sessions {
-			if sessionExists(s.Name, exec) {
-				exec.Run("tmux", "kill-session", "-t", s.Name) //nolint:errcheck
-			}
-		}
-	}
-
-	for _, s := range sessions {
-		if err := createSessionFromConfig(s, exec); err != nil {
-			return fmt.Errorf("session %s: %w", s.Name, err)
-		}
-	}
-	return nil
+	return workspace.Start(
+		workspace.StartOptions{NoRestore: opts.NoRestore, Override: opts.Override},
+		&startBackend{
+			exec:             exec,
+			sessions:         sessions,
+			resurrectPath:    opts.ResurrectPath,
+			afterRestoreWait: opts.AfterRestoreWait,
+		},
+	)
 }
 
 func createSessionFromConfig(s SessionConfig, exec iexec.Executor) error {
@@ -141,7 +161,7 @@ func createSessionFromConfig(s SessionConfig, exec iexec.Executor) error {
 	}
 
 	for i, w := range s.Windows {
-		root := coalesce(w.Root, s.Root)
+		root := workspace.Coalesce(w.Root, s.Root)
 		if i == 0 {
 			if !sessionExists(s.Name, exec) {
 				if _, err := exec.Run("tmux", "new-session", "-d", "-s", s.Name, "-n", w.Name, "-c", expandHome(root)); err != nil {
@@ -169,7 +189,7 @@ func createSessionFromConfig(s SessionConfig, exec iexec.Executor) error {
 
 func createPanesFromConfig(session string, w WindowConfig, defaultRoot string, exec iexec.Executor) error {
 	target := session + ":" + w.Name
-	root := coalesce(w.Root, defaultRoot)
+	root := workspace.Coalesce(w.Root, defaultRoot)
 
 	for i, p := range w.Panes {
 		if i > 0 {
@@ -304,27 +324,17 @@ type ResetOptions struct {
 // Reset kills the tmux server and rebuilds sessions from YAML configs.
 // Resurrect restore is intentionally skipped — this is a clean-slate rebuild.
 func Reset(opts ResetOptions, exec iexec.Executor) error {
-	exec.Run("tmux", "kill-server") //nolint:errcheck — ignore if server wasn't running
-	return Start(StartOptions{
-		NoRestore:        true,
-		SessionsDir:      opts.SessionsDir,
-		LocalSessionsDir: opts.LocalSessionsDir,
-	}, exec)
-}
-
-func coalesce(a, b string) string {
-	if a != "" {
-		return a
+	sessions, err := loadAll(opts.SessionsDir, opts.LocalSessionsDir)
+	if err != nil {
+		return err
 	}
-	return b
+	return workspace.Reset(&startBackend{exec: exec, sessions: sessions})
 }
 
+// expandHome expands a leading "~/" best-effort: tmux's -c flag tolerates an
+// unexpanded path, so a home-lookup failure falls back to the original string
+// rather than aborting session creation.
 func expandHome(path string) string {
-	if strings.HasPrefix(path, "~/") {
-		home, err := os.UserHomeDir()
-		if err == nil {
-			return home + path[1:]
-		}
-	}
-	return path
+	expanded, _ := workspace.ExpandHome(path)
+	return expanded
 }
