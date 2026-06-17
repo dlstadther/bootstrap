@@ -2,6 +2,7 @@
 # Don't install "latest"/fuzzy versions released within the last 7 days.
 # Pinned versions bypass this; per-tool overrides take precedence.
 minimum_release_age = "7d"
+idiomatic_version_file_enable_tools = ["python"]
 
 [tools]
 bun           = "1"
