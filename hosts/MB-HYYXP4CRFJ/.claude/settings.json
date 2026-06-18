@@ -118,54 +118,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
-  "statusLine": {
-    "type": "command",
-    "command": "/Users/dstadther/.local/share/mise/shims/ccstatusline",
-    "padding": 0,
-    "refreshInterval": 10
-  },
-  "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "github@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "caveman@caveman": true,
-    "circleci-logs@inmarket-skills": true,
-    "jira@measurement-reporting-tools": true,
-    "pr-wrapup@measurement-reporting-tools": true
-  },
-  "tui": "fullscreen",
-  "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    },
-    "dlstadther-agentsmith": {
-      "source": {
-        "source": "github",
-        "repo": "dlstadther/agentsmith"
-      }
-    },
-    "inmarket-skills": {
-      "source": {
-        "source": "github",
-        "repo": "ThinkNear/agent-skills"
-      }
-    },
-    "measurement-reporting-tools": {
-      "source": {
-        "source": "github",
-        "repo": "NinthDecimal/measurement_reporting_scripts"
-      }
-    }
-  },
+  "model": "sonnet",
   "hooks": {
     "SessionStart": [
       {
@@ -240,5 +193,53 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/dstadther/.local/share/mise/shims/ccstatusline",
+    "padding": 0,
+    "refreshInterval": 10
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "github@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "caveman@caveman": true,
+    "circleci-logs@inmarket-skills": true,
+    "jira@measurement-reporting-tools": true,
+    "pr-wrapup@measurement-reporting-tools": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "dlstadther-agentsmith": {
+      "source": {
+        "source": "github",
+        "repo": "dlstadther/agentsmith"
+      }
+    },
+    "inmarket-skills": {
+      "source": {
+        "source": "github",
+        "repo": "ThinkNear/agent-skills"
+      }
+    },
+    "measurement-reporting-tools": {
+      "source": {
+        "source": "github",
+        "repo": "NinthDecimal/measurement_reporting_scripts"
+      }
+    }
+  },
+  "autoCompactWindow": 180000,
+  "tui": "fullscreen",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
 }
