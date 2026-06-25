@@ -5,7 +5,7 @@
       {
         "id": "1",
         "type": "model",
-        "color": "cyan",
+        "color": "brightYellow",
         "rawValue": true
       },
       {
@@ -13,21 +13,13 @@
         "type": "separator"
       },
       {
-        "id": "0bb9385a-790f-43b8-b251-28f01baca60b",
+        "id": "5b2fa834-1da6-46c1-bb86-7824f75f4400",
         "type": "context-bar",
         "metadata": {
           "display": "slider"
         },
+        "rawValue": false,
         "color": "white"
-      },
-      {
-        "id": "473187e8-d175-4a69-b54b-ef467f9dc21c",
-        "type": "separator"
-      },
-      {
-        "id": "655bd01e-e6fd-48a1-b6d2-1774914c90c6",
-        "type": "free-memory",
-        "rawValue": false
       }
     ],
     [
@@ -45,10 +37,10 @@
       {
         "id": "817289d8-49ba-473a-a1d2-038707129962",
         "type": "git-branch",
+        "color": "brightRed",
         "metadata": {
           "linkToRepo": "true"
-        },
-        "color": "brightRed"
+        }
       },
       {
         "id": "fe5c8961-06d6-4aae-b19f-a73b92749fec",
@@ -70,14 +62,6 @@
     ],
     [
       {
-        "id": "ee31e7e1-adc3-465b-a3f2-6f6fabeb4811",
-        "type": "session-clock"
-      },
-      {
-        "id": "89e6fd8d-d741-4456-b582-71a1245fbfb2",
-        "type": "separator"
-      },
-      {
         "id": "05955a28-8823-4519-8625-86b3e9f91cf2",
         "type": "weekly-usage"
       },
@@ -86,12 +70,24 @@
         "type": "separator"
       },
       {
+        "id": "4b36b48c-b010-4ee3-b15f-85242d45866f",
+        "type": "weekly-reset-timer",
+        "metadata": {
+          "compact": "true"
+        },
+        "rawValue": false
+      },
+      {
+        "id": "9172a9bf-cf6b-434c-8341-dfe3fe4f4c5a",
+        "type": "separator"
+      },
+      {
         "id": "d19a7902-6f1e-4507-8c5e-10daaa313a2b",
         "type": "session-usage",
+        "color": "green",
         "metadata": {
           "display": "time"
-        },
-        "color": "green"
+        }
       },
       {
         "id": "f3f095be-7b30-40b8-9dbd-d471c179f41e",
@@ -102,7 +98,8 @@
         "type": "reset-timer",
         "metadata": {
           "compact": "true"
-        }
+        },
+        "color": "green"
       }
     ]
   ],
