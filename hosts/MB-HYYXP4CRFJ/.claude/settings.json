@@ -238,7 +238,7 @@
       }
     }
   },
-  "autoCompactWindow": 180000,
+  "autoCompactWindow": 250000,
   "tui": "fullscreen",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true
