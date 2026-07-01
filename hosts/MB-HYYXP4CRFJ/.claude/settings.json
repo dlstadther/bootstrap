@@ -118,7 +118,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
+  "model": "sonnet",
   "hooks": {
     "SessionStart": [
       {
@@ -210,7 +210,9 @@
     "caveman@caveman": true,
     "circleci-logs@inmarket-skills": true,
     "jira@measurement-reporting-tools": true,
-    "pr-wrapup@measurement-reporting-tools": true
+    "pr-wrapup@measurement-reporting-tools": true,
+    "meas-debug@measurement-reporting-tools": true,
+    "agentsmith-superset-pr-review@dlstadther-agentsmith": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -240,6 +242,7 @@
   },
   "autoCompactWindow": 250000,
   "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true
 }
