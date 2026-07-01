@@ -3,6 +3,7 @@
 # Pinned versions bypass this; per-tool overrides take precedence.
 minimum_release_age = "7d"
 idiomatic_version_file_enable_tools = ["python"]
+trusted_config_paths = ['["~/.superset/worktrees", "~/.claude/worktrees"]']
 
 [tools]
 bun           = "1"
