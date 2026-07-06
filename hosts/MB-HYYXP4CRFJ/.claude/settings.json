@@ -212,7 +212,8 @@
     "jira@measurement-reporting-tools": true,
     "pr-wrapup@measurement-reporting-tools": true,
     "meas-debug@measurement-reporting-tools": true,
-    "agentsmith-superset-pr-review@dlstadther-agentsmith": true
+    "agentsmith-superset-pr-review@dlstadther-agentsmith": true,
+    "dtash-guidance@cc-guidance": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -237,6 +238,12 @@
       "source": {
         "source": "github",
         "repo": "NinthDecimal/measurement_reporting_scripts"
+      }
+    },
+    "cc-guidance": {
+      "source": {
+        "source": "github",
+        "repo": "Wopple/cc-guidance"
       }
     }
   },
