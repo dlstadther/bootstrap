@@ -118,7 +118,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "sonnet",
   "hooks": {
     "SessionStart": [
       {
@@ -192,6 +191,16 @@
           }
         ]
       }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_AGENT_ID=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -210,10 +219,12 @@
     "caveman@caveman": true,
     "circleci-logs@inmarket-skills": true,
     "jira@measurement-reporting-tools": true,
-    "pr-wrapup@measurement-reporting-tools": true,
     "meas-debug@measurement-reporting-tools": true,
     "agentsmith-superset-pr-review@dlstadther-agentsmith": true,
-    "dtash-guidance@cc-guidance": true
+    "dtash-guidance@cc-guidance": true,
+    "agentsmith-refinement@dlstadther-agentsmith": true,
+    "agentsmith-pr-comments@dlstadther-agentsmith": true,
+    "pr-wrapup@inmarket-skills": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -230,8 +241,8 @@
     },
     "inmarket-skills": {
       "source": {
-        "source": "github",
-        "repo": "ThinkNear/agent-skills"
+        "source": "git",
+        "url": "git@github.com:ThinkNear/agent-skills"
       }
     },
     "measurement-reporting-tools": {
