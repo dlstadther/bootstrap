@@ -1,7 +1,7 @@
 name: admin
 root: ~
 windows:
-  - agentsview: agentsview update && agentsview serve
+  - agentsview: agentsview update --yes && agentsview serve --no-browser
   - middleman:
       root: ~/code/middleman
       panes:
