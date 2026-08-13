@@ -20,6 +20,16 @@ Write comments by default to one of two tests; if a comment passes neither, don'
 
 Apply this when writing the first draft — don't wait to be told to clean up.
 
+## Feedback Loops
+
+Seek fastest feedback loop available for the task at hand — unit test over full suite, single build/lint over full CI, local run over deploy-and-check, targeted repro over broad exploration. Prioritize whichever avenue confirms or refutes fastest.
+
+Full suites and whole-codebase checks (full test run, full lint, full CI) still have their place — e.g. before merge, after wide-reaching changes, or when checking for regressions elsewhere. Fast loops are for iterating on the change itself; full checks are for confirming nothing broke around it. Run both where each is warranted.
+
+The point: don't default to "push, wait for CI, click through a UI" as the only way to see if code works. If a component runs locally — even one that calls out to remote dev resources (AWS Glue, GCP Managed Airflow, some other API over the internet) — run it locally first. Reserve remote-only execution for the parts that genuinely can't run outside that environment.
+
+This is not license to refactor. A small change stays a small change — don't restructure a non-trivial existing project just to make it more testable.
+
 ## Git
 
 - Do not commit AI-generated planning artifacts (plans, solution docs, learning summaries) unless explicitly requested.
