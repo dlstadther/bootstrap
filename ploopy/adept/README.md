@@ -88,6 +88,37 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 
 ---
 
+### madromys_02
+
+| Field     | Value |
+|-----------|-------|
+| Rotation  | 0°    |
+| Direction | None  |
+| DPI       | 1600  |
+
+```
+ +------------+--------+--------+------------+
+ |            |        |        |            |
+ |   LClick   |  Back  |  Fwd   |   RClick   |
+ |            +--------+--------+            |
+ +------+-----+                 +-----+------+
+ |      |                             |      |
+ |DragMo|          ( O )              |MCtrl |
+ |      |                             |      |
+ +------+-----------------------------+------+
+```
+
+| Button | Position           | Keycode     | Label  |
+|--------|---------------------|-------------|--------|
+| B1     | Lower-left          | CUSTOM(2)   | DragMo |
+| B2     | Upper-left          | KC_MS_BTN1  | LClick |
+| B3     | Upper-center-left   | KC_MS_BTN4  | Back   |
+| B4     | Upper-center-right  | KC_MS_BTN5  | Fwd    |
+| B5     | Upper-right         | KC_MS_BTN2  | RClick |
+| B6     | Lower-right         | KC_MCTL     | MCtrl  |
+
+---
+
 ## Resources
 
 - [VIA](https://usevia.app/) — standard keymap configuration
@@ -100,6 +131,8 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 |----------------|--------|----------------------------------|
 | KC_MS_BTN1     | LClick | Left mouse button                |
 | KC_MS_BTN2     | RClick | Right mouse button               |
+| KC_MS_BTN4     | Back   | Mouse button 4 (back)            |
+| KC_MS_BTN5     | Fwd    | Mouse button 5 (forward)         |
 | KC_WWW_BACK    | Back   | Browser back                     |
 | KC_WWW_FORWARD | Fwd    | Browser forward                  |
 | CUSTOM(0)      | DPI+   | Increase DPI                     |
@@ -107,4 +140,5 @@ The Adept has 6 buttons. **Button 1** is the lower-left; buttons are numbered **
 | CUSTOM(2)      | DragMo | Momentary drag scroll (hold to scroll instead of moving cursor) |
 | CUSTOM(3)      | Cust3  | Unknown custom action            |
 | 0xc1           | MCtrl  | Mission Control (macOS)          |
+| KC_MCTL        | MCtrl  | Mission Control (macOS, alt keycode) |
 | KC_TRNS        | ▽      | Transparent (pass to lower layer)|
