@@ -2,7 +2,7 @@ name: admin
 root: ~
 windows:
   - agentsview: agentsview update --yes && agentsview serve --no-browser
-  - middleman:
-      root: ~/code/middleman
+  - kenn-forge:
+      root: ~/code/kenn-forge
       panes:
-        - git pull origin main && mise install && make install && middleman
+        - git pull origin main && mise install && make install && kenn-forge daemon start
