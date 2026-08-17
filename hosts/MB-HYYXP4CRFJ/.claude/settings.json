@@ -18,7 +18,6 @@
       "Bash(jq *)",
       "Bash(ls:*)",
       "Bash(ps *)",
-      "Bash(python3 *)",
       "Bash(sed *)",
       "Bash(sleep *)",
       "Bash(tail *)",
@@ -210,21 +209,21 @@
     "refreshInterval": 10
   },
   "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
+    "code-review@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": false,
     "github@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": false,
     "caveman@caveman": true,
     "circleci-logs@inmarket-skills": true,
     "jira@measurement-reporting-tools": true,
     "meas-debug@measurement-reporting-tools": true,
-    "agentsmith-superset-pr-review@dlstadther-agentsmith": true,
-    "dtash-guidance@cc-guidance": true,
+    "agentsmith-superset-pr-review@dlstadther-agentsmith": false,
+    "dtash-guidance@cc-guidance": false,
     "agentsmith-refinement@dlstadther-agentsmith": true,
     "agentsmith-pr-comments@dlstadther-agentsmith": true,
-    "pr-wrapup@inmarket-skills": true
+    "pr-wrapup@inmarket-skills": false
   },
   "extraKnownMarketplaces": {
     "caveman": {
