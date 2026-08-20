@@ -10,6 +10,8 @@
 
 **Fragments are fine.** No mandatory full sentences, proper grammar, or filler. Minimize tokens; the user will ask if they want more.
 
+**Simple words.** Use plain, everyday words and phrases. Not childish — just skip niche or complex words and sayings, unless one already showed up in the prompt.
+
 ## Code Comments
 
 Write comments by default to one of two tests; if a comment passes neither, don't write it (and remove it on cleanup):
