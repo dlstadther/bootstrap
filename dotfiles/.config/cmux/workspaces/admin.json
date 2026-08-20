@@ -3,6 +3,6 @@
   "cwd": "~",
   "panes": [
     {"command": "agentsview update --yes && agentsview serve --no-browser"},
-    {"split": "right", "command": "cd ~/code/kenn-forge && git pull origin main && mise install && make build && make install && ./kenn-forge serve"}
+    {"split": "right", "command": "cd ~/code/kenn-forge && git fetch --tags && git checkout $(git tag --sort=-v:refname | head -n1) && mise install && make build && make install && ./kenn-forge serve"}
   ]
 }

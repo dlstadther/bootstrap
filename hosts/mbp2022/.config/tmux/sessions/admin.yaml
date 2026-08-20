@@ -5,4 +5,4 @@ windows:
   - kenn-forge:
       root: ~/code/kenn-forge
       panes:
-        - git pull origin main && mise install && make build && make install && ./kenn-forge serve
+        - git fetch --tags && git checkout $(git tag --sort=-v:refname | head -n1) && mise install && make build && make install && ./kenn-forge serve
