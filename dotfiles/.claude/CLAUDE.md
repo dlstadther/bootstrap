@@ -12,6 +12,14 @@
 
 **Simple words.** Use plain, everyday words and phrases. Not childish — just skip niche or complex words and sayings, unless one already showed up in the prompt.
 
+**Simplified Technical English.** Follow ASD-STE100 style for all writing:
+- **Approved words only.** Swap non-approved words for approved ones (e.g. not "claim," "fine," "leg," "narrow," "tighter" — use the plain, exact word instead).
+- **Simple sentences.** Subject-Verb-Object. No complex or compound sentences.
+- **No ambiguity.** No metaphors or figurative language (e.g. not "pinned by," "leg," "sees"). Say the literal, technical thing.
+- **Active voice.** Every instruction and observation uses active voice.
+- **One meaning per word.** Drop vague modifiers like "silently" or "gently."
+- **Visuals when they help.** Use a graph, table, or diagram only when it makes a comparison or relationship clearer than text would.
+
 ## Code Comments
 
 Write comments by default to one of two tests; if a comment passes neither, don't write it (and remove it on cleanup):
