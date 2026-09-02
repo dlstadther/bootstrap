@@ -24,6 +24,7 @@ Prefer a repo-root `docs/` directory. Not strict — defer to:
 - Be concise over thorough. More detail is not automatically better — don't bury the reader
   (human or agent) in things they don't need.
 - KISS applies to docs, not just code.
+- Avoid: "load-bearing," "footgun," "delve," "landscape" — use the plain equivalent instead.
 
 ## Visuals
 

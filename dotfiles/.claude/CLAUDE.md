@@ -6,6 +6,8 @@
 
 **Plain, simple, active (ASD-STE100 style).** Fragments are fine; full sentences aren't required. When you do write a full sentence: Subject-Verb-Object, active voice, one plain word per meaning. No jargon, no metaphors ("pinned by," "leg," "sees"), no vague modifiers ("silently," "gently"), no filler words ("claim," "fine," "narrow," "tighter") — unless the term already showed up in the prompt.
 
+**Avoid these words/phrases.** "load-bearing," "footgun," "delve," "landscape" — use the plain equivalent instead.
+
 **Visuals when they earn it.** Use a graph, table, or diagram only when it shows a comparison or relationship clearer than text would.
 
 ## Code Comments
