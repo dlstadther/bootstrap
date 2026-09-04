@@ -35,7 +35,6 @@ brew "gastownhall/gascity/gascity"
 
 cask "ankerwork"
 cask "arduino"
-cask "claudebar"
 cask "cmux"
 cask "codex"
 cask "dbeaver-community"
