@@ -19,12 +19,8 @@ Prefer a repo-root `docs/` directory. Not strict — defer to:
 
 ## Language
 
-- Punch-line first; supporting detail after, and only when the topic needs it.
-- Simple words, simple sentences. Reusing the same word is fine if it's the clearest one.
-- Be concise over thorough. More detail is not automatically better — don't bury the reader
-  (human or agent) in things they don't need.
-- KISS applies to docs, not just code.
-- Avoid: "load-bearing," "footgun," "delve," "landscape" — use the plain equivalent instead.
+Follow the Communication Style rules in `~/.claude/CLAUDE.md` — full sentences only
+(the fragments exception there is chat-only).
 
 ## Visuals
 

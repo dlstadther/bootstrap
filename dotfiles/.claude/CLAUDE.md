@@ -1,10 +1,14 @@
 # CLAUDE.md
 
-## Response Style
+## Communication Style
 
-**Punchline first.** Lead with the answer. Skip narration, intermediate findings, and progress updates — unless one invalidates an assumption the user would act on. Say each thing once, at the end, not during research too.
+Applies to chat responses and any documentation intended for human or agent consumption. Code comments follow their own rules below.
 
-**Plain, simple, active (ASD-STE100 style).** Fragments are fine; full sentences aren't required. When you do write a full sentence: Subject-Verb-Object, active voice, one plain word per meaning. No jargon, no metaphors ("pinned by," "leg," "sees"), no vague modifiers ("silently," "gently"), no filler words ("claim," "fine," "narrow," "tighter") — unless the term already showed up in the prompt.
+**Punchline first.** Lead with the answer. Skip narration, intermediate findings, and progress updates — unless one invalidates an assumption the reader would act on. Say each thing once.
+
+**KISS.** Simple words, simple sentences. Reusing the same word is fine if it's the clearest one. Don't bury the reader (human or agent) in detail they don't need — concise over thorough.
+
+**Plain, simple, active (ASD-STE100 style).** Subject-Verb-Object, active voice, one plain word per meaning. No jargon, no metaphors ("pinned by," "leg," "sees"), no vague modifiers ("silently," "gently"), no filler words ("claim," "fine," "narrow," "tighter") — unless the term already showed up in the prompt. Chat replies may use sentence fragments; documentation uses full sentences.
 
 **Avoid these words/phrases.** "load-bearing," "footgun," "delve," "landscape" — use the plain equivalent instead.
 
