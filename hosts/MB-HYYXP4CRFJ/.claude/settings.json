@@ -223,7 +223,8 @@
     "dtash-guidance@cc-guidance": false,
     "agentsmith-refinement@dlstadther-agentsmith": true,
     "agentsmith-pr-comments@dlstadther-agentsmith": true,
-    "pr-wrapup@inmarket-skills": false
+    "pr-wrapup@inmarket-skills": false,
+    "crit@crit": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -254,6 +255,12 @@
       "source": {
         "source": "github",
         "repo": "Wopple/cc-guidance"
+      }
+    },
+    "crit": {
+      "source": {
+        "source": "github",
+        "repo": "tomasz-tomczyk/crit"
       }
     }
   },
