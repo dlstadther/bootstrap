@@ -224,7 +224,8 @@
     "agentsmith-refinement@dlstadther-agentsmith": true,
     "agentsmith-pr-comments@dlstadther-agentsmith": true,
     "pr-wrapup@inmarket-skills": false,
-    "crit@crit": true
+    "crit@crit": true,
+    "simple-english@simple-english": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -262,11 +263,18 @@
         "source": "github",
         "repo": "tomasz-tomczyk/crit"
       }
+    },
+    "simple-english": {
+      "source": {
+        "source": "github",
+        "repo": "AminBlg/SimpleEnglish"
+      }
     }
   },
   "autoCompactWindow": 300000,
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "outputStyle": "simple-english:simple-english"
 }
