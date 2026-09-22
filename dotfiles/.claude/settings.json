@@ -340,7 +340,8 @@
     "skill-creator@claude-plugins-official": true,
     "caveman@caveman": true,
     "agentsmith-refinement@dlstadther-agentsmith": true,
-    "agentsmith-pr-comments@dlstadther-agentsmith": true
+    "agentsmith-pr-comments@dlstadther-agentsmith": true,
+    "simple-english@simple-english": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -355,7 +356,7 @@
         "repo": "dlstadther/agentsmith"
       }
     },
-    "simpleenglish": {
+    "simple-english": {
       "source": {
         "source": "github",
         "repo": "AminBlg/SimpleEnglish"
