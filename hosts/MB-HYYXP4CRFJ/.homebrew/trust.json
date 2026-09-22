@@ -2,5 +2,9 @@
   "trustedtaps": [
     "atlassian/acli",
     "gastownhall/gascity"
+  ],
+  "trustedformulae": [
+    "atlassian/acli/acli",
+    "gastownhall/gascity/gascity"
   ]
 }
