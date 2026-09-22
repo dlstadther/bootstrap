@@ -354,6 +354,12 @@
         "source": "github",
         "repo": "dlstadther/agentsmith"
       }
+    },
+    "simpleenglish": {
+      "source": {
+        "source": "github",
+        "repo": "AminBlg/SimpleEnglish"
+      }
     }
   },
   "tui": "fullscreen",
