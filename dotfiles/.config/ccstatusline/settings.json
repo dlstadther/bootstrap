@@ -9,17 +9,26 @@
         "rawValue": true
       },
       {
+        "id": "0ab6333d-227d-4085-adad-2b9f45d3e551",
+        "type": "separator"
+      },
+      {
+        "id": "fdf670b5-3401-4240-84e7-b847c44eb439",
+        "type": "thinking-effort",
+        "rawValue": true
+      },
+      {
         "id": "2",
         "type": "separator"
       },
       {
         "id": "5b2fa834-1da6-46c1-bb86-7824f75f4400",
         "type": "context-bar",
+        "color": "white",
+        "rawValue": false,
         "metadata": {
           "display": "slider"
-        },
-        "rawValue": false,
-        "color": "white"
+        }
       }
     ],
     [
@@ -72,10 +81,10 @@
       {
         "id": "4b36b48c-b010-4ee3-b15f-85242d45866f",
         "type": "weekly-reset-timer",
+        "rawValue": false,
         "metadata": {
           "compact": "true"
-        },
-        "rawValue": false
+        }
       },
       {
         "id": "9172a9bf-cf6b-434c-8341-dfe3fe4f4c5a",
@@ -96,10 +105,10 @@
       {
         "id": "2fcf7a9c-9d08-45eb-a9fd-c32529263efb",
         "type": "reset-timer",
+        "color": "green",
         "metadata": {
           "compact": "true"
-        },
-        "color": "green"
+        }
       }
     ]
   ],
