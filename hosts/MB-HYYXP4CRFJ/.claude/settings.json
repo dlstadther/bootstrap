@@ -360,9 +360,9 @@
     "commit-commands@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": false,
     "github@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "skill-creator@claude-plugins-official": false,
-    "caveman@caveman": true,
+    "caveman@caveman": false,
     "circleci-logs@inmarket-skills": true,
     "jira@measurement-reporting-tools": true,
     "meas-debug@measurement-reporting-tools": true,
@@ -372,7 +372,9 @@
     "agentsmith-pr-comments@dlstadther-agentsmith": true,
     "pr-wrapup@inmarket-skills": false,
     "crit@crit": true,
-    "simple-english@simple-english": true
+    "simple-english@simple-english": true,
+    "mattpocock-skills@claude-plugins-official": true,
+    "superset@skills-dir": false
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -421,7 +423,8 @@
   "outputStyle": "simple-english:simple-english",
   "autoCompactWindow": 300000,
   "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "remoteControlAtStartup": true,
+  "remoteControlAtStartup": false,
   "agentPushNotifEnabled": true
 }
