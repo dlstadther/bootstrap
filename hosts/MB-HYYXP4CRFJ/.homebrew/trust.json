@@ -6,5 +6,8 @@
   "trustedformulae": [
     "atlassian/acli/acli",
     "gastownhall/gascity/gascity"
+  ],
+  "trustedcasks": [
+    "docker/tap/sbx"
   ]
 }
