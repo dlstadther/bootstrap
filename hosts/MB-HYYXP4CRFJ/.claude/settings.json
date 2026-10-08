@@ -266,7 +266,8 @@
     "crit@crit": true,
     "simple-english@simple-english": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "superset@skills-dir": false
+    "superset@skills-dir": false,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -309,6 +310,12 @@
       "source": {
         "source": "github",
         "repo": "AminBlg/SimpleEnglish"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "dietrichgebert/ponytail"
       }
     }
   },
