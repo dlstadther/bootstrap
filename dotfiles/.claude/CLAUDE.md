@@ -36,33 +36,17 @@ This is not license to refactor. A small change stays a small change — don't r
 
 ## Model and Effort Selection
 
-Match the model, the effort, and the place the work runs to the task. Use the smallest choice that does the job well.
+Run work in the session by default. Use a subagent for parallel work, or for a broad search where only the answer
+matters. Use a workflow only when I ask. If a workflow can help, propose it with its cost.
 
-### Where the work runs
+Pick the subagent model and effort by task. If a task outgrows its tier, move up one tier instead of retrying.
+Raise effort only for significant ambiguity or high risk.
 
-- **Within the session** — the default. Use it for work that needs the conversation context, or for a quick
-  lookup in a known file.
-- **Subagent** — use it for independent work that can run in parallel, or for a search across many files where
-  only the conclusion matters. A subagent keeps the file dumps out of the main context.
-- **Workflow** — use it only when I ask for multi-agent orchestration. A workflow can start many agents and use
-  many tokens. If a task can benefit from a workflow, describe the plan and the cost, then ask.
-
-### Model
-
-When you start a subagent, select its model by the task:
-
-| Model | Use for |
-|-------|---------|
-| Haiku 5.5 | Development tasks with clear, explicit steps. Direct code searches. |
-| Sonnet 5.5 | Moderate development tasks. Investigations with some ambiguity. |
-| Opus 5.5 | Complex development that touches many files or modules. Tasks with significant ambiguity. |
-
-If a task grows past its tier, move it to the next tier. Do not retry on the same model.
-
-### Effort
-
-Set subagent effort by model: high for Haiku 5.5, high for Sonnet 5.5, medium for Opus 5.5.
-Use higher effort only for significant ambiguity or high-risk changes.
+| Model | Effort | Use for |
+|-------|--------|---------|
+| Haiku 5.5 | high | Clear, explicit development tasks. Direct code searches. |
+| Sonnet 5.5 | high | Moderate development tasks. Somewhat vague investigations. |
+| Opus 5.5 | medium | Complex development across many files or modules. Significant ambiguity. |
 
 ## Git
 
