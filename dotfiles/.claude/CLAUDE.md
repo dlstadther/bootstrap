@@ -53,15 +53,15 @@ When you start a subagent, select its model by the task:
 
 | Model | Use for |
 |-------|---------|
-| Haiku | Development tasks with clear, explicit steps. Direct code searches. |
-| Sonnet | Moderate development tasks. Investigations with some ambiguity. |
-| Opus | Complex development that touches many files or modules. Tasks with significant ambiguity. |
+| Haiku 5.5 | Development tasks with clear, explicit steps. Direct code searches. |
+| Sonnet 5.5 | Moderate development tasks. Investigations with some ambiguity. |
+| Opus 5.5 | Complex development that touches many files or modules. Tasks with significant ambiguity. |
 
 If a task grows past its tier, move it to the next tier. Do not retry on the same model.
 
 ### Effort
 
-Set subagent effort by model: high for Haiku, high for Sonnet, medium for Opus.
+Set subagent effort by model: high for Haiku 5.5, high for Sonnet 5.5, medium for Opus 5.5.
 Use higher effort only for significant ambiguity or high-risk changes.
 
 ## Git
