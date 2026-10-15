@@ -61,7 +61,7 @@ If a task grows past its tier, move it to the next tier. Do not retry on the sam
 
 ### Effort
 
-Set subagent effort to match the model tier: low for Haiku tasks, medium for Sonnet tasks, high for Opus tasks.
+Set subagent effort by model: high for Haiku, high for Sonnet, medium for Opus.
 Use higher effort only for significant ambiguity or high-risk changes.
 
 ## Git
