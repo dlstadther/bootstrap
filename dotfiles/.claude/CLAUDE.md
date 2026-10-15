@@ -34,6 +34,36 @@ The point: don't default to "push, wait for CI, click through a UI" as the only 
 
 This is not license to refactor. A small change stays a small change — don't restructure a non-trivial existing project just to make it more testable.
 
+## Model and Effort Selection
+
+Match the model, the effort, and the place the work runs to the task. Use the smallest choice that does the job well.
+
+### Where the work runs
+
+- **Within the session** — the default. Use it for work that needs the conversation context, or for a quick
+  lookup in a known file.
+- **Subagent** — use it for independent work that can run in parallel, or for a search across many files where
+  only the conclusion matters. A subagent keeps the file dumps out of the main context.
+- **Workflow** — use it only when I ask for multi-agent orchestration. A workflow can start many agents and use
+  many tokens. If a task can benefit from a workflow, describe the plan and the cost, then ask.
+
+### Model
+
+When you start a subagent, select its model by the task:
+
+| Model | Use for |
+|-------|---------|
+| Haiku | Development tasks with clear, explicit steps. Direct code searches. |
+| Sonnet | Moderate development tasks. Investigations with some ambiguity. |
+| Opus | Complex development that touches many files or modules. Tasks with significant ambiguity. |
+
+If a task grows past its tier, move it to the next tier. Do not retry on the same model.
+
+### Effort
+
+Set subagent effort to match the model tier: low for Haiku tasks, medium for Sonnet tasks, high for Opus tasks.
+Use higher effort only for significant ambiguity or high-risk changes.
+
 ## Git
 
 - Do not commit AI-generated planning artifacts (plans, solution docs, learning summaries) unless explicitly requested.
